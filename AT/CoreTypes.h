@@ -11,7 +11,7 @@
 //       order to have access to it throughout the entire codebase without including it.
 #include <initializer_list>
 
-namespace Moonrise::AT {
+namespace AT {
 
 //
 // Unsigned integer primitive types with fixed size.
@@ -74,11 +74,11 @@ using ReadWriteBytes = ReadWriteByte*;
 using UnicodeCodepoint = u64;
 constexpr UnicodeCodepoint invalid_unicode_codepoint = static_cast<UnicodeCodepoint>(-1);
 
-#define AT_MAKE_NONCOPYABLE(type_name) \
-    type_name(const type_name&) = delete;    \
+#define AT_MAKE_NONCOPYABLE(type_name)    \
+    type_name(const type_name&) = delete; \
     type_name& operator=(const type_name&) = delete;
 
-#define AT_MAKE_NONMOVABLE(type_name)   \
+#define AT_MAKE_NONMOVABLE(type_name)         \
     type_name(type_name&&) noexcept = delete; \
     type_name& operator=(type_name&&) noexcept = delete;
 
@@ -143,12 +143,10 @@ NODISCARD ALWAYS_INLINE constexpr T&& forward(RemoveReference<T>&& instance) noe
     return static_cast<T&&>(instance);
 }
 
-} // namespace Moonrise::AT
+} // namespace AT
 
-namespace Moonrise {
 // NOTE: Writing the AT:: prefix everywhere is very verbose and doesn't have
 //       any benefits, so we just 'using namespace' it.
 //       Objectively, this is not amazing code, but the alternative would be
 //       to 'using AT::ClassName' for every type name, constant or function.
 using namespace AT;
-} // namespace Moonrise
