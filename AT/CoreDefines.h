@@ -41,6 +41,14 @@
     #error Unknown or unsupported platform!
 #endif // Any desktop supported platform.
 
+#ifdef _DEBUG
+    #define AT_CONFIGURATION_DEBUG   1
+    #define AT_CONFIGURATION_RELEASE 0
+#else
+    #define AT_CONFIGURATION_DEBUG   0
+    #define AT_CONFIGURATION_RELEASE 1
+#endif // _DEBUG
+
 #if defined(_MSC_BUILD) && !defined(__clang__)
     #define AT_COMPILER_MSVC  1
     #define AT_COMPILER_CLANG 0
