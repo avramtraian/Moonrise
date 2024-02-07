@@ -8,10 +8,16 @@
 
 # Project files.
 Build/Debug-Clang/
+Build/Release-Clang/
 Build/Debug-GNU/
+Build/Release-GNU/
 Build/Debug-MSVC/
+Build/Release-MSVC/
 
 # Binaries.
 Build/Bin-Debug-Clang/
+Build/Bin-Release-Clang/
 Build/Bin-Debug-GNU/
+Build/Bin-Release-GNU/
 Build/Bin-Debug-MSVC/
+Build/Bin-Release-MSVC/
