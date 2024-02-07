@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause.
 
 set(AT_SOURCE_FILES
+    Assertion.cpp
+    Assertion.h
     CoreDefines.h
     CoreTypes.h
 )
