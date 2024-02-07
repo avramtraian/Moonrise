@@ -6,6 +6,8 @@ set(AT_SOURCE_FILES
     Assertion.h
     CoreDefines.h
     CoreTypes.h
+    MemoryOperations.cpp
+    MemoryOperations.h
 )
 
 add_library(AT-Framework SHARED ${AT_SOURCE_FILES})
