@@ -1,0 +1,27 @@
+Checks: >
+  -*,
+  
+  readability-*,
+  -readability-avoid-unconditional-preprocessor-if,
+  -readability-function-cognitive-complexity,
+  -readability-magic-numbers,
+  -readability-redundant-access-specifiers,
+  -readability-redundant-preprocessor,
+
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-narrowing-conversions,
+  -bugprone-redundant-branch-condition,
+  -bugprone-unhandled-self-assignment,
+
+  modernize-*,
+  -modernize-avoid-c-arrays,
+  -modernize-loop-convert,
+  -modernize-pass-by-value,
+  -modernize-return-braced-init-list,
+  -modernize-use-auto,
+  -modernize-use-default-member-init,
+  -modernize-use-equals-delete,
+  -modernize-use-nodiscard,
+  -modernize-use-trailing-return-type,
