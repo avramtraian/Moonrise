@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause.
 
 set(AT_SOURCE_FILES
+    CoreDefines.h
+    CoreTypes.h
 )
 
 add_library(AT-Framework SHARED ${AT_SOURCE_FILES})
