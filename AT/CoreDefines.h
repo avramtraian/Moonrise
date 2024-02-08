@@ -115,3 +115,7 @@
 #else
     #define AT_API AT_API_SPECIFIER_IMPORT
 #endif // AT_EXPORT_API
+
+// Every class, struct, function or variable will be included in the global namespace.
+// As the AT framework is used everywhere, it would not be ergonomic to type AT:: everywhere.
+#define AT_INCLUDE_GLOBALLY

@@ -144,9 +144,3 @@ NODISCARD ALWAYS_INLINE constexpr T&& forward(RemoveReference<T>&& instance) noe
 }
 
 } // namespace AT
-
-// NOTE: Writing the AT:: prefix everywhere is very verbose and doesn't have
-//       any benefits, so we just 'using namespace' it.
-//       Objectively, this is not amazing code, but the alternative would be
-//       to 'using AT::ClassName' for every type name, constant or function.
-using namespace AT;
