@@ -4,7 +4,7 @@
 # NOTE(traian): The minimum required version is currently pretty arbitrary.
 #               Feel free to change this value as you see fit.
 cmake_minimum_required(VERSION 3.14)
-project(AtWidgets CXX C)
+project(Moonrise CXX C)
 
 # Set the project global C++ configuration.
 set(CMAKE_CXX_STANDARD 20)
