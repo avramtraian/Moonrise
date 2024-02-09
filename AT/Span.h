@@ -36,6 +36,11 @@ public:
         other.m_count = 0;
     }
 
+    ALWAYS_INLINE constexpr Span(T* elements, usize count)
+        : m_elements(elements)
+        , m_count(count)
+    {}
+
     ALWAYS_INLINE constexpr Span& operator=(Span&& other) noexcept
     {
         m_elements = other.m_elements;
