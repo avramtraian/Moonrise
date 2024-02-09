@@ -10,6 +10,7 @@ set(AT_SOURCE_FILES
     Error.h
     MemoryOperations.cpp
     MemoryOperations.h
+    Vector.h
 )
 
 add_library(AT-Framework SHARED ${AT_SOURCE_FILES})
