@@ -10,6 +10,8 @@ set(AT_SOURCE_FILES
     Error.h
     MemoryOperations.cpp
     MemoryOperations.h
+    String.cpp
+    String.h
     StringView.cpp
     StringView.h
     Utf8.cpp
