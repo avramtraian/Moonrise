@@ -144,3 +144,30 @@ NODISCARD ALWAYS_INLINE constexpr T&& forward(RemoveReference<T>&& instance) noe
 }
 
 } // namespace AT
+
+#ifdef AT_INCLUDE_GLOBALLY
+using AT::forward;
+using AT::i16;
+using AT::i32;
+using AT::i64;
+using AT::i8;
+using AT::invalid_size;
+using AT::invalid_unicode_codepoint;
+using AT::move;
+using AT::ReadonlyByte;
+using AT::ReadonlyBytes;
+using AT::ReadWriteByte;
+using AT::ReadWriteBytes;
+using AT::RemoveConst;
+using AT::RemoveReference;
+using AT::ssize;
+using AT::u16;
+using AT::u32;
+using AT::u64;
+using AT::u8;
+using AT::uintptr;
+using AT::UnicodeCodepoint;
+using AT::usize;
+using AT::WriteonlyByte;
+using AT::WriteonlyBytes;
+#endif // AT_INCLUDE_GLOBALLY
