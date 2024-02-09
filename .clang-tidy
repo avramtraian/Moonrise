@@ -4,6 +4,7 @@ Checks: >
   readability-*,
   -readability-avoid-unconditional-preprocessor-if,
   -readability-function-cognitive-complexity,
+  -readability-implicit-bool-conversion,
   -readability-magic-numbers,
   -readability-redundant-access-specifiers,
   -readability-redundant-preprocessor,

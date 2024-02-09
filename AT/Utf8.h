@@ -138,3 +138,7 @@ public:
 };
 
 } // namespace AT
+
+#ifdef AT_INCLUDE_GLOBALLY
+using AT::UTF8;
+#endif // AT_INCLUDE_GLOBALLY
