@@ -344,7 +344,7 @@ private:
         AT_ASSERT(new_capacity != m_capacity);
 
         TRY_ASSIGN(auto new_elements, allocate_memory(new_capacity));
-        move_elements(new_elements, m_elements);
+        move_elements(new_elements, m_elements, m_count);
         TRY(release_memory(m_elements, m_capacity));
 
         m_elements = new_elements;
