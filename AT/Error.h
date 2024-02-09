@@ -39,7 +39,7 @@ public:
 
 private:
     Error() = default;
-    Error(Error&& other) noexcept;
+    AT_API Error(Error&& other) noexcept;
     Error& operator=(Error&& other) noexcept = delete;
 
 private:
