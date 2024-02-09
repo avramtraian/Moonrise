@@ -11,14 +11,16 @@ namespace AT {
 ErrorOr<String> String::try_copy(StringView source_view)
 {
     String destination_string;
-    destination_string.m_byte_count = source_view.byte_count();
+    destination_string.m_byte_count = source_view.byte_count() + 1;
 
     if (destination_string.is_stored_inline()) {
-        copy_memory(destination_string.m_inline_buffer, source_view.characters(), destination_string.m_byte_count);
+        copy_memory(destination_string.m_inline_buffer, source_view.characters(), source_view.byte_count());
+        destination_string.m_inline_buffer[destination_string.m_byte_count - 1] = '\0';
     }
     else {
         TRY_ASSIGN(destination_string.m_heap_buffer, allocate_memory(destination_string.m_byte_count));
-        copy_memory(destination_string.m_heap_buffer, source_view.characters(), destination_string.m_byte_count);
+        copy_memory(destination_string.m_heap_buffer, source_view.characters(), source_view.byte_count());
+        destination_string.m_heap_buffer[destination_string.m_byte_count - 1] = '\0';
     }
 
     return destination_string;
@@ -27,32 +29,36 @@ ErrorOr<String> String::try_copy(StringView source_view)
 ErrorOr<void> String::try_assign(String& self, StringView view_to_assign)
 {
     if (self.is_stored_inline()) {
-        if (view_to_assign.byte_count() <= inline_capacity) {
-            self.m_byte_count = view_to_assign.byte_count();
+        if (view_to_assign.byte_count() < inline_capacity) {
+            self.m_byte_count = view_to_assign.byte_count() + 1;
             zero_memory(self.m_inline_buffer, inline_capacity);
-            copy_memory(self.m_inline_buffer, view_to_assign.characters(), self.m_byte_count);
+            copy_memory(self.m_inline_buffer, view_to_assign.characters(), view_to_assign.byte_count());
+            self.m_inline_buffer[self.m_byte_count - 1] = 0;
         }
         else {
-            self.m_byte_count = view_to_assign.byte_count();
+            self.m_byte_count = view_to_assign.byte_count() + 1;
             TRY_ASSIGN(self.m_heap_buffer, allocate_memory(self.m_byte_count));
-            copy_memory(self.m_heap_buffer, view_to_assign.characters(), self.m_byte_count);
+            copy_memory(self.m_heap_buffer, view_to_assign.characters(), view_to_assign.byte_count());
+            self.m_heap_buffer[self.m_byte_count - 1] = 0;
         }
     }
     else {
         if (view_to_assign.byte_count() <= inline_capacity) {
             TRY(release_memory(self.m_heap_buffer, self.m_byte_count));
             self.m_heap_buffer = nullptr;
-            self.m_byte_count = view_to_assign.byte_count();
-            copy_memory(self.m_inline_buffer, view_to_assign.characters(), self.m_byte_count);
+            self.m_byte_count = view_to_assign.byte_count() + 1;
+            copy_memory(self.m_inline_buffer, view_to_assign.characters(), view_to_assign.byte_count());
+            self.m_inline_buffer[self.m_byte_count - 1] = 0;
         }
         else {
             if (self.m_byte_count != view_to_assign.byte_count()) {
                 TRY(release_memory(self.m_heap_buffer, self.m_byte_count));
-                self.m_byte_count = view_to_assign.byte_count();
+                self.m_byte_count = view_to_assign.byte_count() + 1;
                 TRY_ASSIGN(self.m_heap_buffer, allocate_memory(self.m_byte_count));
             }
 
-            copy_memory(self.m_heap_buffer, view_to_assign.characters(), self.m_byte_count);
+            copy_memory(self.m_heap_buffer, view_to_assign.characters(), view_to_assign.byte_count());
+            self.m_heap_buffer[self.m_byte_count - 1] = 0;
         }
     }
 
@@ -98,14 +104,16 @@ String::String(String&& other) noexcept
 }
 
 String::String(StringView string_view)
-    : m_byte_count(string_view.byte_count())
+    : m_byte_count(string_view.byte_count() + 1)
 {
     if (is_stored_inline()) {
-        copy_memory(m_inline_buffer, *string_view, m_byte_count);
+        copy_memory(m_inline_buffer, *string_view, string_view.byte_count());
+        m_inline_buffer[m_byte_count - 1] = '\0';
     }
     else {
         MUST_ASSIGN(m_heap_buffer, allocate_memory(m_byte_count));
-        copy_memory(m_heap_buffer, *string_view, m_byte_count);
+        copy_memory(m_heap_buffer, *string_view, string_view.byte_count());
+        m_heap_buffer[m_byte_count - 1] = '\0';
     }
 }
 
