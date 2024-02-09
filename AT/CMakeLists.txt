@@ -10,6 +10,8 @@ set(AT_SOURCE_FILES
     Error.h
     MemoryOperations.cpp
     MemoryOperations.h
+    Utf8.cpp
+    Utf8.h
     Vector.h
 )
 
