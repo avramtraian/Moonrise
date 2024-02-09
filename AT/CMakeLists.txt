@@ -10,6 +10,7 @@ set(AT_SOURCE_FILES
     Error.h
     MemoryOperations.cpp
     MemoryOperations.h
+    Span.h
     String.cpp
     String.h
     StringView.cpp
