@@ -7,6 +7,7 @@
 
 #include "AT/CoreDefines.h"
 #include "AT/CoreTypes.h"
+#include "AT/Span.h"
 
 namespace AT {
 
@@ -15,6 +16,12 @@ AT_API void copy_memory(void* destination_buffer, const void* source_buffer, usi
 AT_API void set_memory(void* destination_buffer, u8 value, usize byte_count);
 
 AT_API void zero_memory(void* destination_buffer, usize byte_count);
+
+template<typename T>
+ALWAYS_INLINE static void copy_memory_from_span(void* destination, Span<T> span)
+{
+    copy_memory(destination, span.elements(), span.count() * span.element_size());
+}
 
 } // namespace AT
 
