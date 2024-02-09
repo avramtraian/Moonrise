@@ -35,7 +35,7 @@ void zero_memory(void* destination_buffer, usize byte_count)
 
 } // namespace AT
 
-void* operator new(size_t byte_count, void* memory_block)
+void* operator new(size_t byte_count, void* memory_block) noexcept
 {
     (void)byte_count;
     return memory_block;
