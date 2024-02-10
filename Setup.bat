@@ -13,11 +13,11 @@ if not exist "Build/" ( mkdir "Build" )
 pushd "Build"
 
 :: Create the configuration-specific directories, if they don't exist.
-if not exist "Debug-Clang/" ( mkdir "Debug-Clang" )
-if not exist "Release-Clang/" ( mkdir "Release-Clang" )
+if not exist "Debug-MSVC/" ( mkdir "Debug-MSVC" )
+if not exist "Release-MSVC/" ( mkdir "Release-MSVC" )
 
-cmake -S ../ -B "Debug-Clang"   -DCMAKE_CXX_COMPILER=clang -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
-cmake -S ../ -B "Release-Clang" -DCMAKE_CXX_COMPILER=clang -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+cmake -S ../ -B "Debug-MSVC"   -DCMAKE_CXX_COMPILER=cl -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
+cmake -S ../ -B "Release-MSVC" -DCMAKE_CXX_COMPILER=cl -G "Ninja" -DCMAKE_BUILD_TYPE=Release
 
 popd
 
