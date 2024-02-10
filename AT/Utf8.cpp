@@ -7,58 +7,58 @@
 
 namespace AT {
 
-UnicodeCodepoint UTF8::bytes_to_codepoint(ReadonlyBytes bytes, usize byte_count, usize& out_codepoint_width)
+UnicodeCodepoint UTF8::bytes_to_codepoint(ReadonlyByteSpan byte_span, usize& out_codepoint_width)
 {
-    if (byte_count == 0) {
+    if (byte_span.count() == 0) {
         out_codepoint_width = 0;
         return invalid_unicode_codepoint;
     }
 
-    if ((bytes[0] & 0x80) == 0x00) {
+    if ((byte_span.elements()[0] & 0x80) == 0x00) {
         out_codepoint_width = 1;
-        return (UnicodeCodepoint)bytes[0];
+        return (UnicodeCodepoint)byte_span.elements()[0];
     }
 
-    if ((bytes[0] & 0xE0) == 0xC0) {
-        if (byte_count < 2) {
+    if ((byte_span.elements()[0] & 0xE0) == 0xC0) {
+        if (byte_span.count() < 2) {
             out_codepoint_width = 0;
             return invalid_unicode_codepoint;
         }
 
         UnicodeCodepoint codepoint = 0;
-        codepoint += (bytes[0] & 0x1F) << 6;
-        codepoint += (bytes[1] & 0x3F) << 0;
+        codepoint += (byte_span.elements()[0] & 0x1F) << 6;
+        codepoint += (byte_span.elements()[1] & 0x3F) << 0;
 
         out_codepoint_width = 2;
         return codepoint;
     }
 
-    if ((bytes[0] & 0xF0) == 0xE0) {
-        if (byte_count < 3) {
+    if ((byte_span.elements()[0] & 0xF0) == 0xE0) {
+        if (byte_span.count() < 3) {
             out_codepoint_width = 0;
             return invalid_unicode_codepoint;
         }
 
         UnicodeCodepoint codepoint = 0;
-        codepoint += (bytes[0] & 0x1F) << 12;
-        codepoint += (bytes[1] & 0x3F) << 6;
-        codepoint += (bytes[2] & 0x3F) << 0;
+        codepoint += (byte_span.elements()[0] & 0x1F) << 12;
+        codepoint += (byte_span.elements()[1] & 0x3F) << 6;
+        codepoint += (byte_span.elements()[2] & 0x3F) << 0;
 
         out_codepoint_width = 3;
         return codepoint;
     }
 
-    if ((bytes[0] & 0xF8) == 0xF0) {
-        if (byte_count < 4) {
+    if ((byte_span.elements()[0] & 0xF8) == 0xF0) {
+        if (byte_span.count() < 4) {
             out_codepoint_width = 0;
             return invalid_unicode_codepoint;
         }
 
         UnicodeCodepoint codepoint = 0;
-        codepoint += (bytes[0] & 0x1F) << 18;
-        codepoint += (bytes[1] & 0x3F) << 12;
-        codepoint += (bytes[2] & 0x3F) << 6;
-        codepoint += (bytes[3] & 0x3F) << 0;
+        codepoint += (byte_span.elements()[0] & 0x1F) << 18;
+        codepoint += (byte_span.elements()[1] & 0x3F) << 12;
+        codepoint += (byte_span.elements()[2] & 0x3F) << 6;
+        codepoint += (byte_span.elements()[3] & 0x3F) << 0;
 
         out_codepoint_width = 4;
         return codepoint;
@@ -68,32 +68,32 @@ UnicodeCodepoint UTF8::bytes_to_codepoint(ReadonlyBytes bytes, usize byte_count,
     return invalid_unicode_codepoint;
 }
 
-usize UTF8::bytes_to_codepoint_width(ReadonlyBytes bytes, usize byte_count)
+usize UTF8::bytes_to_codepoint_width(ReadonlyByteSpan byte_span)
 {
-    if (byte_count == 0) {
+    if (byte_span.count() == 0) {
         return 0;
     }
 
-    if ((bytes[0] & 0x80) == 0x00) {
+    if ((byte_span.elements()[0] & 0x80) == 0x00) {
         return 1;
     }
 
-    if ((bytes[0] & 0xE0) == 0xC0) {
-        if (byte_count < 2) {
+    if ((byte_span.elements()[0] & 0xE0) == 0xC0) {
+        if (byte_span.count() < 2) {
             return 0;
         }
         return 2;
     }
 
-    if ((bytes[0] & 0xF0) == 0xE0) {
-        if (byte_count < 3) {
+    if ((byte_span.elements()[0] & 0xF0) == 0xE0) {
+        if (byte_span.count() < 3) {
             return 0;
         }
         return 3;
     }
 
-    if ((bytes[0] & 0xF8) == 0xF0) {
-        if (byte_count < 4) {
+    if ((byte_span.elements()[0] & 0xF8) == 0xF0) {
+        if (byte_span.count() < 4) {
             return 0;
         }
         return 4;
@@ -102,45 +102,43 @@ usize UTF8::bytes_to_codepoint_width(ReadonlyBytes bytes, usize byte_count)
     return 0;
 }
 
-usize UTF8::bytes_from_codepoint(
-    UnicodeCodepoint codepoint, WriteonlyBytes destination_buffer, usize destination_buffer_byte_count
-)
+usize UTF8::bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan destination_byte_span)
 {
     if (0x0000 <= codepoint && codepoint <= 0x007F) {
-        if (destination_buffer_byte_count < 1) {
+        if (destination_byte_span.count() < 1) {
             return 0;
         }
-        destination_buffer[0] = (u8)codepoint;
+        destination_byte_span.elements()[0] = (u8)codepoint;
         return 1;
     }
 
     if (0x0080 <= codepoint && codepoint <= 0x07FF) {
-        if (destination_buffer_byte_count < 2) {
+        if (destination_byte_span.count() < 2) {
             return 0;
         }
-        destination_buffer[0] = ((codepoint >> 6) & 0x1F) | 0xC0;
-        destination_buffer[1] = ((codepoint >> 0) & 0x3F) | 0x80;
+        destination_byte_span.elements()[0] = ((codepoint >> 6) & 0x1F) | 0xC0;
+        destination_byte_span.elements()[1] = ((codepoint >> 0) & 0x3F) | 0x80;
         return 2;
     }
 
     if (0x0800 <= codepoint && codepoint <= 0xFFFF) {
-        if (destination_buffer_byte_count < 3) {
+        if (destination_byte_span.count() < 3) {
             return 0;
         }
-        destination_buffer[0] = ((codepoint >> 12) & 0x0F) | 0xE0;
-        destination_buffer[1] = ((codepoint >> 6) & 0x3F) | 0x80;
-        destination_buffer[2] = ((codepoint >> 0) & 0x3F) | 0x80;
+        destination_byte_span.elements()[0] = ((codepoint >> 12) & 0x0F) | 0xE0;
+        destination_byte_span.elements()[1] = ((codepoint >> 6) & 0x3F) | 0x80;
+        destination_byte_span.elements()[2] = ((codepoint >> 0) & 0x3F) | 0x80;
         return 3;
     }
 
     if (0x10000 <= codepoint) {
-        if (destination_buffer_byte_count < 4) {
+        if (destination_byte_span.count() < 4) {
             return 0;
         }
-        destination_buffer[0] = ((codepoint >> 18) & 0x07) | 0xF0;
-        destination_buffer[1] = ((codepoint >> 12) & 0x3F) | 0x80;
-        destination_buffer[2] = ((codepoint >> 6) & 0x3F) | 0x80;
-        destination_buffer[3] = ((codepoint >> 0) & 0x3F) | 0x80;
+        destination_byte_span.elements()[0] = ((codepoint >> 18) & 0x07) | 0xF0;
+        destination_byte_span.elements()[1] = ((codepoint >> 12) & 0x3F) | 0x80;
+        destination_byte_span.elements()[2] = ((codepoint >> 6) & 0x3F) | 0x80;
+        destination_byte_span.elements()[3] = ((codepoint >> 0) & 0x3F) | 0x80;
         return 4;
     }
 
@@ -165,18 +163,19 @@ usize UTF8::codepoint_width(UnicodeCodepoint codepoint)
     return 0;
 }
 
-usize UTF8::length(ReadonlyBytes bytes, usize byte_count)
+usize UTF8::length(ReadonlyByteSpan byte_span)
 {
     usize len = 0;
-    while (byte_count) {
-        usize codepoint_width = bytes_to_codepoint_width(bytes, byte_count);
+    usize byte_offset = 0;
+
+    while (byte_offset < byte_span.count()) {
+        usize codepoint_width = bytes_to_codepoint_width(byte_span.subrange(byte_offset));
         if (codepoint_width == 0) {
             return invalid_size;
         }
 
         ++len;
-        bytes += codepoint_width;
-        byte_count -= codepoint_width;
+        byte_offset += codepoint_width;
     }
 
     return len;
@@ -197,7 +196,7 @@ usize UTF8::byte_count(ReadonlyBytes bytes)
     const usize byte_count = bytes - base;
 
     // Check that the byte sequence is actually valid UTF-8.
-    if (!check_validity(base, byte_count)) {
+    if (!check_validity({ base, byte_count })) {
         // If not, return 'invalid_size' in order to signal an error.
         return invalid_size;
     }
@@ -205,11 +204,11 @@ usize UTF8::byte_count(ReadonlyBytes bytes)
     return byte_count;
 }
 
-bool UTF8::check_validity(ReadonlyBytes bytes, usize byte_count)
+bool UTF8::check_validity(ReadonlyByteSpan byte_span)
 {
     usize byte_offset = 0;
-    while (byte_offset < byte_count) {
-        const usize codepoint_width = bytes_to_codepoint_width(bytes + byte_offset, byte_count - byte_offset);
+    while (byte_offset < byte_span.count()) {
+        const usize codepoint_width = bytes_to_codepoint_width(byte_span.subrange(byte_offset));
         if (codepoint_width == 0) {
             // A valid UTF-8 codepoint can't have a width of zero, so the string is not correctly encoded.
             return false;

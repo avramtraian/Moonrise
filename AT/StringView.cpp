@@ -10,7 +10,7 @@ namespace AT {
 
 ErrorOr<StringView> StringView::create_from_utf8(const char* characters, usize byte_count)
 {
-    TRY(UTF8::try_check_validity(reinterpret_cast<ReadonlyBytes>(characters), byte_count));
+    TRY(UTF8::try_check_validity({ reinterpret_cast<ReadonlyBytes>(characters), byte_count }));
     return unsafe_create_from_utf8(characters, byte_count);
 }
 

@@ -18,16 +18,15 @@ public:
     // If the byte sequence is not valid UTF-8, 'invalid_unicode_codepoint' will be returned and
     // the 'out_codepoint_width' parameter will be set as zero.
     //
-    NODISCARD AT_API static UnicodeCodepoint
-    bytes_to_codepoint(ReadonlyBytes bytes, usize byte_count, usize& out_codepoint_width);
+    NODISCARD AT_API static UnicodeCodepoint bytes_to_codepoint(ReadonlyByteSpan byte_span, usize& out_codepoint_width);
 
     //
     // Function that wraps the result of bytes_to_codepoint() into an ErrorOr.
     //
     ALWAYS_INLINE static ErrorOr<UnicodeCodepoint>
-    try_bytes_to_codepoint(ReadonlyBytes bytes, usize byte_count, usize& out_codepoint_width)
+    try_bytes_to_codepoint(ReadonlyByteSpan byte_span, usize& out_codepoint_width)
     {
-        auto codepoint = bytes_to_codepoint(bytes, byte_count, out_codepoint_width);
+        auto codepoint = bytes_to_codepoint(byte_span, out_codepoint_width);
         if (codepoint == invalid_unicode_codepoint) {
             return Error::from_error_code(Error::InvalidEncoding);
         }
@@ -39,14 +38,14 @@ public:
     // by the given UTF-8 encoded byte sequence.
     // If the byte sequence is not valid UTF-8, zero will be returned.
     //
-    NODISCARD AT_API static usize bytes_to_codepoint_width(ReadonlyBytes bytes, usize byte_count);
+    NODISCARD AT_API static usize bytes_to_codepoint_width(ReadonlyByteSpan byte_span);
 
     //
     // Functions that wraps the result of bytes_to_codepoint_width() into an ErrorOr.
     //
-    NODISCARD ALWAYS_INLINE static ErrorOr<usize> try_bytes_to_codepoint_width(ReadonlyBytes bytes, usize byte_count)
+    NODISCARD ALWAYS_INLINE static ErrorOr<usize> try_bytes_to_codepoint_width(ReadonlyByteSpan byte_span)
     {
-        auto codepoint_width = bytes_to_codepoint_width(bytes, byte_count);
+        auto codepoint_width = bytes_to_codepoint_width(byte_span);
         if (codepoint_width == 0) {
             return Error::from_error_code(Error::InvalidEncoding);
         }
@@ -58,18 +57,16 @@ public:
     // If the codepoint is not valid Unicode, no memory will be written and zero will be returned.
     // If the destination buffer is not big enough, no memory will be written and zero will be returned.
     //
-    NODISCARD AT_API static usize bytes_from_codepoint(
-        UnicodeCodepoint codepoint, WriteonlyBytes destination_buffer, usize destination_buffer_byte_count
-    );
+    NODISCARD AT_API static usize
+    bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan destination_byte_span);
 
     //
     // Functions that wraps the result of bytes_from_codepoint() into an ErrorOr.
     //
-    NODISCARD ALWAYS_INLINE static ErrorOr<usize> try_bytes_from_codepoint(
-        UnicodeCodepoint codepoint, WriteonlyBytes destination_buffer, usize destination_buffer_byte_count
-    )
+    NODISCARD ALWAYS_INLINE static ErrorOr<usize>
+    try_bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan destination_byte_span)
     {
-        auto codepoint_width = bytes_from_codepoint(codepoint, destination_buffer, destination_buffer_byte_count);
+        auto codepoint_width = bytes_from_codepoint(codepoint, destination_byte_span);
         if (codepoint_width == 0) {
             // TODO: This can also be caused by the buffer not being big enough, so this error code
             //       might be very misleading. However, the base bytes_from_codepoint() function
@@ -103,14 +100,14 @@ public:
     // The length will include any character and the function will not stop if it encounters a null-termination
     // character. If the byte sequence is not valid UTF-8, 'invalid_size' will be returned.
     //
-    NODISCARD AT_API static usize length(ReadonlyBytes bytes, usize byte_count);
+    NODISCARD AT_API static usize length(ReadonlyByteSpan byte_span);
 
     //
     // Functions that wraps the result of length() into an ErrorOr.
     //
-    NODISCARD ALWAYS_INLINE static ErrorOr<usize> try_length(ReadonlyBytes bytes, usize byte_count)
+    NODISCARD ALWAYS_INLINE static ErrorOr<usize> try_length(ReadonlyByteSpan byte_span)
     {
-        auto len = length(bytes, byte_count);
+        auto len = length(byte_span);
         if (len == invalid_size) {
             return Error::from_error_code(Error::InvalidEncoding);
         }
@@ -136,12 +133,12 @@ public:
         return count;
     }
 
-    NODISCARD AT_API static bool check_validity(ReadonlyBytes bytes, usize byte_count);
+    NODISCARD AT_API static bool check_validity(ReadonlyByteSpan byte_span);
 
     ALWAYS_INLINE static ErrorOr<void>
-    try_check_validity(ReadonlyBytes bytes, usize byte_count, Error::Code error_code = Error::InvalidEncoding)
+    try_check_validity(ReadonlyByteSpan byte_span, Error::Code error_code = Error::InvalidEncoding)
     {
-        if (!check_validity(bytes, byte_count)) {
+        if (!check_validity(byte_span)) {
             return Error::from_error_code(error_code);
         }
         return {};
