@@ -117,6 +117,8 @@ public:
 
     ALWAYS_INLINE Vector& operator=(Vector&& other) noexcept
     {
+        clear_and_shrink();
+
         m_elements = other.m_elements;
         m_capacity = other.m_capacity;
         m_count = other.m_count;
