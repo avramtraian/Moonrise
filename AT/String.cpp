@@ -5,64 +5,46 @@
 
 #include "AT/String.h"
 #include "AT/MemoryOperations.h"
+#include "AT/Utf8.h"
 
 namespace AT {
 
-ErrorOr<String> String::try_copy(StringView source_view)
+ErrorOr<String> String::create(StringView view)
 {
-    String destination_string;
-    destination_string.m_byte_count = source_view.byte_count() + 1;
+    String string;
+    string.m_byte_count = view.byte_span().count() + sizeof('\0');
 
-    if (destination_string.is_stored_inline()) {
-        copy_memory(destination_string.m_inline_buffer, source_view.characters(), source_view.byte_count());
-        destination_string.m_inline_buffer[destination_string.m_byte_count - 1] = '\0';
+    if (string.is_stored_inline()) {
+        copy_memory_from_span(string.m_inline_buffer, view.byte_span());
+        string.m_inline_buffer[string.m_byte_count - 1] = '\0';
     }
     else {
-        TRY_ASSIGN(destination_string.m_heap_buffer, allocate_memory(destination_string.m_byte_count));
-        copy_memory(destination_string.m_heap_buffer, source_view.characters(), source_view.byte_count());
-        destination_string.m_heap_buffer[destination_string.m_byte_count - 1] = '\0';
+        TRY_ASSIGN(string.m_heap_buffer, allocate_memory(string.m_byte_count));
+        copy_memory_from_span(string.m_heap_buffer, view.byte_span());
+        string.m_heap_buffer[string.m_byte_count - 1] = '\0';
     }
 
-    return destination_string;
+    return string;
 }
 
-ErrorOr<void> String::try_assign(String& self, StringView view_to_assign)
+ErrorOr<String> String::create(const String& other)
 {
-    if (self.is_stored_inline()) {
-        if (view_to_assign.byte_count() < inline_capacity) {
-            self.m_byte_count = view_to_assign.byte_count() + 1;
-            zero_memory(self.m_inline_buffer, inline_capacity);
-            copy_memory(self.m_inline_buffer, view_to_assign.characters(), view_to_assign.byte_count());
-            self.m_inline_buffer[self.m_byte_count - 1] = 0;
-        }
-        else {
-            self.m_byte_count = view_to_assign.byte_count() + 1;
-            TRY_ASSIGN(self.m_heap_buffer, allocate_memory(self.m_byte_count));
-            copy_memory(self.m_heap_buffer, view_to_assign.characters(), view_to_assign.byte_count());
-            self.m_heap_buffer[self.m_byte_count - 1] = 0;
-        }
-    }
-    else {
-        if (view_to_assign.byte_count() <= inline_capacity) {
-            TRY(release_memory(self.m_heap_buffer, self.m_byte_count));
-            self.m_heap_buffer = nullptr;
-            self.m_byte_count = view_to_assign.byte_count() + 1;
-            copy_memory(self.m_inline_buffer, view_to_assign.characters(), view_to_assign.byte_count());
-            self.m_inline_buffer[self.m_byte_count - 1] = 0;
-        }
-        else {
-            if (self.m_byte_count != view_to_assign.byte_count()) {
-                TRY(release_memory(self.m_heap_buffer, self.m_byte_count));
-                self.m_byte_count = view_to_assign.byte_count() + 1;
-                TRY_ASSIGN(self.m_heap_buffer, allocate_memory(self.m_byte_count));
-            }
+    TRY_ASSIGN(String string, create(other.view()));
+    return string;
+}
 
-            copy_memory(self.m_heap_buffer, view_to_assign.characters(), view_to_assign.byte_count());
-            self.m_heap_buffer[self.m_byte_count - 1] = 0;
-        }
-    }
+ErrorOr<String> String::create_from_utf8(const char* characters, usize byte_count)
+{
+    TRY_ASSIGN(auto view, StringView::create_from_utf8(characters, byte_count));
+    TRY_ASSIGN(auto string, create(view));
+    return string;
+}
 
-    return {};
+ErrorOr<String> String::create_from_utf8(const char* null_terminated_characters)
+{
+    TRY_ASSIGN(auto view, StringView::create_from_utf8(null_terminated_characters));
+    TRY_ASSIGN(auto string, create(view));
+    return string;
 }
 
 String::String()
@@ -79,20 +61,9 @@ String::~String()
 }
 
 String::String(const String& other)
-    : m_byte_count(other.m_byte_count)
 {
-    // NOTE: Currently, the exact same code is also located in try_copy(). However, wrapping the
-    //       constructor around that function would create many additional move operations. These
-    //       operations are not expensive, but they make the code a lot harder to follow.
-    // TODO: Maybe wrap the constructor around try_copy()?
-
-    if (is_stored_inline()) {
-        copy_memory(m_inline_buffer, other.m_inline_buffer, m_byte_count);
-    }
-    else {
-        MUST_ASSIGN(m_heap_buffer, allocate_memory(m_byte_count));
-        copy_memory(m_heap_buffer, other.m_heap_buffer, m_byte_count);
-    }
+    MUST_ASSIGN(String string, create(other));
+    new (this) String(move(string));
 }
 
 String::String(String&& other) noexcept
@@ -104,22 +75,14 @@ String::String(String&& other) noexcept
 }
 
 String::String(StringView string_view)
-    : m_byte_count(string_view.byte_count() + 1)
 {
-    if (is_stored_inline()) {
-        copy_memory(m_inline_buffer, *string_view, string_view.byte_count());
-        m_inline_buffer[m_byte_count - 1] = '\0';
-    }
-    else {
-        MUST_ASSIGN(m_heap_buffer, allocate_memory(m_byte_count));
-        copy_memory(m_heap_buffer, *string_view, string_view.byte_count());
-        m_heap_buffer[m_byte_count - 1] = '\0';
-    }
+    MUST_ASSIGN(String string, create(string_view));
+    new (this) String(move(string));
 }
 
 String& String::operator=(const String& other)
 {
-    MUST(try_assign(*this, other.view()));
+    MUST_ASSIGN(*this, create(other));
     return *this;
 }
 
@@ -141,7 +104,7 @@ String& String::operator=(String&& other) noexcept
 
 String& String::operator=(StringView string_view)
 {
-    MUST(try_assign(*this, string_view));
+    MUST_ASSIGN(*this, create(string_view));
     return *this;
 }
 

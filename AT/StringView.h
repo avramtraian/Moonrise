@@ -7,6 +7,8 @@
 
 #include "AT/CoreDefines.h"
 #include "AT/CoreTypes.h"
+#include "AT/Error.h"
+#include "AT/Span.h"
 
 namespace AT {
 
@@ -16,7 +18,11 @@ namespace AT {
 //
 class StringView {
 public:
-    NODISCARD ALWAYS_INLINE static constexpr StringView from_utf8(const char* characters, usize byte_count)
+    AT_API static ErrorOr<StringView> create_from_utf8(const char* characters, usize byte_count);
+    AT_API static ErrorOr<StringView> create_from_utf8(const char* null_terminated_characters);
+
+    NODISCARD ALWAYS_INLINE static constexpr StringView
+    unsafe_create_from_utf8(const char* characters, usize byte_count)
     {
         StringView view;
         view.m_characters = characters;
@@ -51,13 +57,10 @@ public:
     }
 
 public:
-    NODISCARD ALWAYS_INLINE const char* characters() const { return m_characters; }
-    NODISCARD ALWAYS_INLINE const char* operator*() const { return characters(); }
-
-    NODISCARD ALWAYS_INLINE usize byte_count() const { return m_byte_count; }
-    NODISCARD ALWAYS_INLINE usize is_empty() const { return (m_byte_count == 0); }
-
-    NODISCARD AT_API usize length() const;
+    NODISCARD ALWAYS_INLINE Span<ReadonlyByte> byte_span() const
+    {
+        return Span<ReadonlyByte>(reinterpret_cast<ReadonlyBytes>(m_characters), m_byte_count);
+    }
 
 private:
     const char* m_characters;
@@ -83,8 +86,10 @@ private:
 
 NODISCARD ALWAYS_INLINE constexpr StringView operator""sv(const char* ascii_literal, usize ascii_literal_count)
 {
-    // Because ASCII is a subset of UTF-8, no conversion is needed.
-    return StringView::from_utf8(ascii_literal, ascii_literal_count);
+    // NOTE: Because ASCII is a subset of UTF-8, no conversion is needed.
+    //       Also, we can be sure that the string literals are valid, unless something truly
+    //       horrible happened to the project source files! :)
+    return StringView::unsafe_create_from_utf8(ascii_literal, ascii_literal_count);
 }
 
 #if AT_COMPILER_MSVC
