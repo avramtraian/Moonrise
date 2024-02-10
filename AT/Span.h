@@ -153,3 +153,6 @@ private:
 };
 
 } // namespace AT
+#ifdef AT_INCLUDE_GLOBALLY
+using AT::Span;
+#endif // AT_INCLUDE_GLOBALLY
