@@ -152,7 +152,15 @@ private:
     usize m_count;
 };
 
+using ReadonlyByteSpan = Span<ReadonlyByte>;
+using WriteonlyByteSpan = Span<WriteonlyByte>;
+using ReadWriteByteSpan = Span<ReadWriteByte>;
+
 } // namespace AT
+
 #ifdef AT_INCLUDE_GLOBALLY
+using AT::ReadonlyByteSpan;
+using AT::ReadWriteByteSpan;
 using AT::Span;
+using AT::WriteonlyByteSpan;
 #endif // AT_INCLUDE_GLOBALLY

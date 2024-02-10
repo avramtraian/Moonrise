@@ -50,46 +50,46 @@ public:
         return StringView::unsafe_create_from_utf8(span.elements(), span.count() * span.element_size());
     }
 
-    NODISCARD ALWAYS_INLINE Span<ReadWriteByte> byte_span()
+    NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span()
     {
         AT_ASSERT(m_byte_count > 0);
         auto* bytes = reinterpret_cast<ReadWriteBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return Span<ReadWriteByte>(bytes, m_byte_count - 1);
+        return ReadonlyByteSpan(bytes, m_byte_count - 1);
     }
 
-    NODISCARD ALWAYS_INLINE Span<ReadonlyByte> byte_span() const
+    NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span() const
     {
         AT_ASSERT(m_byte_count > 0);
         const auto* bytes = reinterpret_cast<ReadonlyBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return Span<ReadonlyByte>(bytes, m_byte_count - 1);
+        return ReadonlyByteSpan(bytes, m_byte_count - 1);
     }
 
-    NODISCARD ALWAYS_INLINE Span<ReadonlyByte> readonly_byte_span()
+    NODISCARD ALWAYS_INLINE ReadonlyByteSpan readonly_byte_span()
     {
         AT_ASSERT(m_byte_count > 0);
         const auto* bytes = reinterpret_cast<ReadonlyBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return Span<ReadonlyByte>(bytes, m_byte_count - 1);
+        return ReadonlyByteSpan(bytes, m_byte_count - 1);
     }
 
-    NODISCARD ALWAYS_INLINE Span<ReadWriteByte> byte_span_with_null_termination()
+    NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span_with_null_termination()
     {
         AT_ASSERT(m_byte_count > 0);
         auto* bytes = reinterpret_cast<ReadWriteBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return Span<ReadWriteByte>(bytes, m_byte_count);
+        return ReadonlyByteSpan(bytes, m_byte_count);
     }
 
-    NODISCARD ALWAYS_INLINE Span<ReadonlyByte> byte_span_with_null_termination() const
+    NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span_with_null_termination() const
     {
         AT_ASSERT(m_byte_count > 0);
         const auto* bytes = reinterpret_cast<ReadonlyBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return Span<ReadonlyByte>(bytes, m_byte_count);
+        return ReadonlyByteSpan(bytes, m_byte_count);
     }
 
-    NODISCARD ALWAYS_INLINE Span<ReadonlyByte> readonly_byte_span_with_null_termination()
+    NODISCARD ALWAYS_INLINE ReadonlyByteSpan readonly_byte_span_with_null_termination()
     {
         AT_ASSERT(m_byte_count > 0);
         const auto* bytes = reinterpret_cast<ReadonlyBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return Span<ReadonlyByte>(bytes, m_byte_count);
+        return ReadonlyByteSpan(bytes, m_byte_count);
     }
 
     NODISCARD ALWAYS_INLINE bool is_stored_inline() const { return m_byte_count <= inline_capacity; }

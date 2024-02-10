@@ -57,9 +57,9 @@ public:
     }
 
 public:
-    NODISCARD ALWAYS_INLINE Span<ReadonlyByte> byte_span() const
+    NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span() const
     {
-        return Span<ReadonlyByte>(reinterpret_cast<ReadonlyBytes>(m_characters), m_byte_count);
+        return ReadonlyByteSpan(reinterpret_cast<ReadonlyBytes>(m_characters), m_byte_count);
     }
 
 private:
