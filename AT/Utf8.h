@@ -135,6 +135,17 @@ public:
         }
         return count;
     }
+
+    NODISCARD AT_API static bool check_validity(ReadonlyBytes bytes, usize byte_count);
+
+    ALWAYS_INLINE static ErrorOr<void>
+    try_check_validity(ReadonlyBytes bytes, usize byte_count, Error::Code error_code = Error::InvalidEncoding)
+    {
+        if (!check_validity(bytes, byte_count)) {
+            return Error::from_error_code(error_code);
+        }
+        return {};
+    }
 };
 
 } // namespace AT

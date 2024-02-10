@@ -189,7 +189,7 @@ usize UTF8::byte_count(ReadonlyBytes bytes)
         return 0;
     }
 
-    const u8* base = bytes;
+    ReadonlyBytes base = bytes;
     while (*bytes++) {};
 
     // Determining the number of bytes this way doesn't guarantee that the byte sequence
@@ -197,17 +197,26 @@ usize UTF8::byte_count(ReadonlyBytes bytes)
     const usize byte_count = bytes - base;
 
     // Check that the byte sequence is actually valid UTF-8.
-    usize byte_offset = 0;
-    while (byte_offset < byte_count) {
-        const usize codepoint_width = bytes_to_codepoint_width(base + byte_offset, byte_count - byte_offset);
-        if (codepoint_width == 0) {
-            // The byte sequence is not valid UTF-8.
-            return invalid_size;
-        }
-        byte_offset += codepoint_width;
+    if (!check_validity(base, byte_count)) {
+        // If not, return 'invalid_size' in order to signal an error.
+        return invalid_size;
     }
 
     return byte_count;
+}
+
+bool UTF8::check_validity(ReadonlyBytes bytes, usize byte_count)
+{
+    usize byte_offset = 0;
+    while (byte_offset < byte_count) {
+        const usize codepoint_width = bytes_to_codepoint_width(bytes + byte_offset, byte_count - byte_offset);
+        if (codepoint_width == 0) {
+            // A valid UTF-8 codepoint can't have a width of zero, so the string is not correctly encoded.
+            return false;
+        }
+        byte_offset += codepoint_width;
+    }
+    return true;
 }
 
 } // namespace AT
