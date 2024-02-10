@@ -8,6 +8,7 @@ Checks: >
   -readability-magic-numbers,
   -readability-redundant-access-specifiers,
   -readability-redundant-preprocessor,
+  -readability-static-accessed-through-instance,
 
   bugprone-*,
   -bugprone-easily-swappable-parameters,
