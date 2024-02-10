@@ -11,19 +11,24 @@ namespace AT {
 
 ErrorOr<String> String::create(StringView view)
 {
-    String string;
-    string.m_byte_count = view.byte_span().count() + sizeof('\0');
+    const usize byte_count = view.byte_span().count() + sizeof('\0');
 
-    if (string.is_stored_inline()) {
+    if (byte_count <= inline_capacity) {
+        String string;
         copy_memory_from_span(string.m_inline_buffer, view.byte_span());
+
+        string.m_byte_count = byte_count;
         string.m_inline_buffer[string.m_byte_count - 1] = '\0';
-    }
-    else {
-        TRY_ASSIGN(string.m_heap_buffer, allocate_memory(string.m_byte_count));
-        copy_memory_from_span(string.m_heap_buffer, view.byte_span());
-        string.m_heap_buffer[string.m_byte_count - 1] = '\0';
+        return string;
     }
 
+    TRY_ASSIGN(char* heap_buffer, allocate_memory(byte_count));
+    copy_memory_from_span(heap_buffer, view.byte_span());
+
+    String string;
+    string.m_byte_count = byte_count;
+    string.m_heap_buffer = heap_buffer;
+    string.m_heap_buffer[string.m_byte_count - 1] = '\0';
     return string;
 }
 
