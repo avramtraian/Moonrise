@@ -128,6 +128,12 @@ public:
         return Span(m_elements + offset, count);
     }
 
+    template<typename Q>
+    NODISCARD ALWAYS_INLINE Span<Q> as() const
+    {
+        return Span<Q>(reinterpret_cast<Q*>(m_elements), m_count);
+    }
+
 public:
     NODISCARD ALWAYS_INLINE Iterator begin() { return Iterator(m_elements); }
     NODISCARD ALWAYS_INLINE Iterator end() { return Iterator(m_elements + m_count); }
