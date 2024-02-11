@@ -87,6 +87,18 @@ String::String(StringView string_view)
 
 String& String::operator=(const String& other)
 {
+    if (m_byte_count == other.m_byte_count) {
+        if (is_stored_inline()) {
+            copy_memory(m_inline_buffer, other.m_inline_buffer, m_byte_count);
+        }
+        else {
+            copy_memory(m_heap_buffer, other.m_heap_buffer, m_byte_count);
+        }
+        return *this;
+    }
+
+    // NOTE: Unless the sizes of strings match exactly, passing a newly constructed
+    //       string to the move assignment operator has almost no performance penalty.
     MUST_ASSIGN(*this, create(other));
     return *this;
 }
