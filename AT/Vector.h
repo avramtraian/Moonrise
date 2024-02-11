@@ -9,6 +9,7 @@
 #include "AT/CoreDefines.h"
 #include "AT/CoreTypes.h"
 #include "AT/Error.h"
+#include "AT/Span.h"
 
 namespace AT {
 
@@ -27,46 +28,40 @@ public:
     using ReverseConstIterator = const T*;
 
 public:
-    // NOTE: Copying & assigning vectors can be done easily using the appropriate constructor
-    //       and assignment operator. However, by using that method you lose the ability to
-    //       report failures using ErrorOr, as those function don't return anything.
-    //       Thus, the recommended way of copying vectors, by constructing or assigning, is to
-    //       use the following two functions, that provide error handling out of the box.
-    //       We don't delete the copy constructor & assignment operator because that would really
-    //       affect the ergonomics of using this container. Any class/struct that has a vector
-    //       as a field would also lose its default copy constructor & assignment operator, which
-    //       would be very inconvenient to use.
-
-    ALWAYS_INLINE static ErrorOr<Vector> try_copy(const Vector& source_vector)
+    ALWAYS_INLINE static ErrorOr<Vector> create(const Vector& other)
     {
-        Vector destination_vector;
-        destination_vector.m_count = source_vector.m_count;
-        destination_vector.m_capacity = source_vector.m_count;
-        TRY_ASSIGN(destination_vector.m_elements, allocate_memory(destination_vector.m_capacity));
-        copy_elements(destination_vector.m_elements, source_vector.m_elements, destination_vector.m_count);
-        return destination_vector;
-    }
+        TRY_ASSIGN(auto elements, allocate_memory(other.m_count));
+        copy_elements(elements, other.m_elements, other.m_count);
 
-    ALWAYS_INLINE static ErrorOr<void> try_assign(Vector& self, const Vector& other)
-    {
-        self.clear();
-        TRY(self.allocate_new_if_required(other.m_count));
-        self.m_count = other.m_count;
-        copy_elements(self.m_elements, other.m_elements, self.m_count);
-        return {};
-    }
-
-    ALWAYS_INLINE static ErrorOr<Vector> try_create(usize initial_capacity)
-    {
         Vector vector;
-        vector.m_capacity = initial_capacity;
-        TRY_ASSIGN(vector.m_elements, allocate_memory(vector.m_capacity));
+        vector.m_elements = elements;
+        vector.m_capacity = other.m_count;
+        vector.m_count = other.m_count;
         return vector;
     }
 
-    ALWAYS_INLINE static ErrorOr<Vector> try_create_filled(usize initial_count)
+    ALWAYS_INLINE static ErrorOr<Vector> create_with_initial_capacity(usize initial_capacity)
     {
-        TRY_ASSIGN(Vector vector, try_create(initial_count));
+        TRY_ASSIGN(auto elements, allocate_memory(initial_capacity));
+
+        Vector vector;
+        vector.m_elements = elements;
+        vector.m_capacity = initial_capacity;
+        vector.m_count = 0;
+        return vector;
+    }
+
+    ALWAYS_INLINE static ErrorOr<Vector> create_from_span(Span<T> element_span)
+    {
+        TRY_ASSIGN(Vector vector, create_with_initial_capacity(element_span.count()));
+        vector.m_count = element_span.count();
+        copy_elements(vector.m_elements, element_span.elements(), element_span.count());
+        return vector;
+    }
+
+    ALWAYS_INLINE static ErrorOr<Vector> create_filled(usize initial_count)
+    {
+        TRY_ASSIGN(Vector vector, create_with_initial_capacity(initial_count));
         vector.m_count = initial_count;
         for (usize index = 0; index < vector.m_count; ++index) {
             new (vector.m_elements + index) T();
@@ -74,14 +69,24 @@ public:
         return vector;
     }
 
-    ALWAYS_INLINE static ErrorOr<Vector> try_create_filled(usize initial_count, const T& element)
+    ALWAYS_INLINE static ErrorOr<Vector> create_filled(usize initial_count, const T& template_element)
     {
-        TRY_ASSIGN(Vector vector, try_create(initial_count));
+        TRY_ASSIGN(Vector vector, create_with_initial_capacity(initial_count));
         vector.m_count = initial_count;
         for (usize index = 0; index < vector.m_count; ++index) {
-            new (vector.m_elements + index) T(element);
+            new (vector.m_elements + index) T(template_element);
         }
         return vector;
+    }
+
+    ALWAYS_INLINE static ErrorOr<void> assign(Vector& self, const Vector& other)
+    {
+        self.clear();
+        TRY(self.allocate_new_if_required(other.m_count));
+        self.m_count = other.m_count;
+
+        copy_elements(self.m_elements, other.m_elements, other.m_count);
+        return {};
     }
 
 public:
@@ -93,7 +98,7 @@ public:
 
     ALWAYS_INLINE Vector(const Vector& other)
     {
-        MUST_ASSIGN(Vector copied_vector, try_copy(other));
+        MUST_ASSIGN(Vector copied_vector, create(other));
         // NOTE: Invoking the move constructor is extremely cheap as there are only a few
         //       raw pointer assignments and no memory allocation or object initialization.
         new (this) Vector(move(copied_vector));
@@ -111,7 +116,7 @@ public:
 
     ALWAYS_INLINE Vector& operator=(const Vector& other)
     {
-        MUST(try_assign(*this, other));
+        MUST(assign(*this, other));
         return *this;
     }
 
