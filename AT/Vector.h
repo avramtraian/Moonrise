@@ -51,7 +51,7 @@ public:
         return vector;
     }
 
-    ALWAYS_INLINE static ErrorOr<Vector> create_from_span(Span<T> element_span)
+    ALWAYS_INLINE static ErrorOr<Vector> create_from_span(Span<const T> element_span)
     {
         TRY_ASSIGN(Vector vector, create_with_initial_capacity(element_span.count()));
         vector.m_count = element_span.count();
