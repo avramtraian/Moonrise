@@ -25,8 +25,8 @@ public:
         , m_count(0)
     {}
 
-    Span(const Span& other) = default;
-    Span& operator=(const Span& other) = default;
+    constexpr Span(const Span& other) = default;
+    constexpr Span& operator=(const Span& other) = default;
 
     ALWAYS_INLINE constexpr Span(Span&& other) noexcept
         : m_elements(other.m_elements)
@@ -36,7 +36,8 @@ public:
         other.m_count = 0;
     }
 
-    ALWAYS_INLINE constexpr Span(Span<RemoveConst<T>> other)
+    ALWAYS_INLINE constexpr Span(const Span<RemoveConst<T>>& other)
+    requires (is_const<T>)
         : m_elements(other.m_elements)
         , m_count(other.m_count)
     {}
@@ -52,13 +53,6 @@ public:
         m_count = other.m_count;
         other.m_elements = nullptr;
         other.m_count = 0;
-        return *this;
-    }
-
-    ALWAYS_INLINE constexpr Span& operator=(Span<RemoveConst<T>> other)
-    {
-        m_elements = other.m_elements;
-        m_count = other.m_count;
         return *this;
     }
 

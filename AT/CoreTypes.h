@@ -109,12 +109,25 @@ struct RemoveConst<const T> {
     using Type = T;
 };
 
+template<typename T>
+struct IsConst {
+    static constexpr bool value = false;
+};
+
+template<typename T>
+struct IsConst<const T> {
+    static constexpr bool value = true;
+};
+
 } // namespace Detail
 
 template<typename T>
 using RemoveReference = typename Detail::RemoveReference<T>::Type;
 template<typename T>
 using RemoveConst = typename Detail::RemoveConst<T>::Type;
+
+template<typename T>
+constexpr bool is_const = Detail::IsConst<bool>::value;
 
 //
 // The STL equivalent of the move function. Same signature and behaviour.
