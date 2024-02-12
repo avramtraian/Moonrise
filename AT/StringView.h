@@ -73,6 +73,9 @@ public:
     NODISCARD AT_API usize find(char ascii_character) const;
     NODISCARD AT_API usize find(UnicodeCodepoint codepoint) const;
 
+    NODISCARD AT_API StringView substring(usize offset_in_bytes) const;
+    NODISCARD AT_API StringView substring(usize offset_in_bytes, usize bytes_count) const;
+
 private:
     const char* m_characters;
     usize m_byte_count;

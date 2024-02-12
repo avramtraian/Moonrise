@@ -48,4 +48,16 @@ usize StringView::find(UnicodeCodepoint codepoint_to_find) const
     return invalid_position;
 }
 
+StringView StringView::substring(usize offset_in_bytes) const
+{
+    AT_ASSERT(offset_in_bytes <= m_byte_count);
+    return StringView::unsafe_create_from_utf8(m_characters + offset_in_bytes, m_byte_count - offset_in_bytes);
+}
+
+StringView StringView::substring(usize offset_in_bytes, usize bytes_count) const
+{
+    AT_ASSERT(offset_in_bytes + bytes_count <= m_byte_count);
+    return StringView::unsafe_create_from_utf8(m_characters + offset_in_bytes, bytes_count);
+}
+
 } // namespace AT
