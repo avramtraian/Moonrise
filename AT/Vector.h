@@ -213,6 +213,14 @@ public:
         return {};
     }
 
+    ALWAYS_INLINE ErrorOr<void> add_span(Span<const T> elements)
+    {
+        TRY(re_allocate_if_required(m_count + elements.count()));
+        copy_elements(m_elements + m_count, elements.elements(), elements.count());
+        m_count += elements.count();
+        return {};
+    }
+
 public:
     ALWAYS_INLINE void remove_last()
     {
