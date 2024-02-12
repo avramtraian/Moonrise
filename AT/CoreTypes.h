@@ -82,7 +82,7 @@ constexpr UnicodeCodepoint invalid_unicode_codepoint = static_cast<UnicodeCodepo
     type_name(type_name&&) noexcept = delete; \
     type_name& operator=(type_name&&) noexcept = delete;
 
-namespace Internal {
+namespace Detail {
 
 template<typename T>
 struct RemoveReference {
@@ -109,12 +109,12 @@ struct RemoveConst<const T> {
     using Type = T;
 };
 
-} // namespace Internal
+} // namespace Detail
 
 template<typename T>
-using RemoveReference = typename Internal::RemoveReference<T>::Type;
+using RemoveReference = typename Detail::RemoveReference<T>::Type;
 template<typename T>
-using RemoveConst = typename Internal::RemoveConst<T>::Type;
+using RemoveConst = typename Detail::RemoveConst<T>::Type;
 
 //
 // The STL equivalent of the move function. Same signature and behaviour.
