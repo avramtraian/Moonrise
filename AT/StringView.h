@@ -106,6 +106,13 @@ NODISCARD ALWAYS_INLINE constexpr StringView operator""sv(const char* ascii_lite
     return StringView::unsafe_create_from_utf8(ascii_literal, ascii_literal_count);
 }
 
+} // namespace AT
+
+#ifdef AT_INCLUDE_GLOBALLY
+using AT::StringView;
+using AT::operator""sv;
+#endif // AT_INCLUDE_GLOBALLY
+
 #if AT_COMPILER_MSVC
     #pragma warning(pop)
 #elif AT_COMPILER_CLANG
@@ -113,9 +120,3 @@ NODISCARD ALWAYS_INLINE constexpr StringView operator""sv(const char* ascii_lite
 #elif AT_COMPILER_GCC
     #pragma GCC diagnostic pop
 #endif // Compiler enumeration.
-
-} // namespace AT
-
-#ifdef AT_INCLUDE_GLOBALLY
-using AT::StringView;
-#endif // AT_INCLUDE_GLOBALLY
