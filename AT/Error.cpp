@@ -13,7 +13,7 @@ Error::Error(Error&& other) noexcept
     switch (m_error_kind) {
         case Kind::Code: {
             m_error.code = other.m_error.code;
-            other.m_error.code = None;
+            other.m_error.code = Unknown;
             break;
         }
 

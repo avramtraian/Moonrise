@@ -20,7 +20,7 @@ class Error {
 
 public:
     enum Code : u32 {
-        None = 0,
+        Unknown = 0,
 
         BufferOverflow,
         IndexOutOfRange,
