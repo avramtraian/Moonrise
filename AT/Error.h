@@ -61,7 +61,12 @@ class NODISCARD ErrorOr {
     AT_MAKE_NONMOVABLE(ErrorOr);
 
 public:
-    ALWAYS_INLINE ErrorOr(T value)
+    ALWAYS_INLINE ErrorOr(const T& value)
+        : m_is_error(false)
+        , m_value_storage(value)
+    {}
+
+    ALWAYS_INLINE ErrorOr(T&& value)
         : m_is_error(false)
         , m_value_storage(move(value))
     {}
