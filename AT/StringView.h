@@ -18,6 +18,9 @@ namespace AT {
 //
 class StringView {
 public:
+    static constexpr usize invalid_position = invalid_size;
+
+public:
     AT_API static ErrorOr<StringView> create_from_utf8(const char* characters, usize byte_count);
     AT_API static ErrorOr<StringView> create_from_utf8(const char* null_terminated_characters);
 
@@ -63,6 +66,12 @@ public:
     {
         return ReadonlyByteSpan(reinterpret_cast<ReadonlyBytes>(m_characters), m_byte_count);
     }
+
+public:
+    // NOTE: The value these function return represents the offset in bytes and not the number
+    //       codepoints until the given character/codepoint.
+    NODISCARD AT_API usize find(char ascii_character) const;
+    NODISCARD AT_API usize find(UnicodeCodepoint codepoint) const;
 
 private:
     const char* m_characters;
