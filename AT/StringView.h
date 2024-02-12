@@ -57,6 +57,8 @@ public:
     }
 
 public:
+    NODISCARD ALWAYS_INLINE bool is_empty() const { return (m_byte_count == 0); }
+
     NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span() const
     {
         return ReadonlyByteSpan(reinterpret_cast<ReadonlyBytes>(m_characters), m_byte_count);
