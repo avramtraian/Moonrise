@@ -155,6 +155,9 @@ public:
     NODISCARD ALWAYS_INLINE bool is_empty() const { return (m_count == 0); }
     NODISCARD ALWAYS_INLINE bool has_elements() const { return (m_count > 0); }
 
+    NODISCARD ALWAYS_INLINE Span<T> span() { return Span<T>(m_elements, m_count); }
+    NODISCARD ALWAYS_INLINE Span<const T> span() const { return Span<const T>(m_elements, m_count); }
+
 public:
     NODISCARD ALWAYS_INLINE T& at(usize index)
     {
