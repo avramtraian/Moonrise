@@ -36,6 +36,11 @@ public:
         other.m_count = 0;
     }
 
+    ALWAYS_INLINE constexpr Span(Span<RemoveConst<T>> other)
+        : m_elements(other.m_elements)
+        , m_count(other.m_count)
+    {}
+
     ALWAYS_INLINE constexpr Span(T* elements, usize count)
         : m_elements(elements)
         , m_count(count)
@@ -47,6 +52,13 @@ public:
         m_count = other.m_count;
         other.m_elements = nullptr;
         other.m_count = 0;
+        return *this;
+    }
+
+    ALWAYS_INLINE constexpr Span& operator=(Span<RemoveConst<T>> other)
+    {
+        m_elements = other.m_elements;
+        m_count = other.m_count;
         return *this;
     }
 
