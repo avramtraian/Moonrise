@@ -8,6 +8,8 @@ set(AT_SOURCE_FILES
     CoreTypes.h
     Error.cpp
     Error.h
+    Format.cpp
+    Format.h
     MemoryOperations.cpp
     MemoryOperations.h
     Optional.h

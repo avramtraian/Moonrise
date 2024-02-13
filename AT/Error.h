@@ -25,6 +25,7 @@ public:
         BufferOverflow,
         IndexOutOfRange,
         InvalidEncoding,
+        InvalidStringFormat,
         OutOfMemory,
     };
 
