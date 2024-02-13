@@ -189,6 +189,30 @@ public:
         return m_elements[m_count - 1];
     }
 
+    NODISCARD ALWAYS_INLINE Span<T> slice(usize offset)
+    {
+        AT_ASSERT(offset <= m_count);
+        return Span<T>(m_elements + offset, m_count - offset);
+    }
+
+    NODISCARD ALWAYS_INLINE Span<const T> slice(usize offset) const
+    {
+        AT_ASSERT(offset <= m_count);
+        return Span<const T>(m_elements + offset, m_count - offset);
+    }
+
+    NODISCARD ALWAYS_INLINE Span<T> slice(usize offset, usize count)
+    {
+        AT_ASSERT(offset + count <= m_count);
+        return Span<T>(m_elements + offset, count);
+    }
+
+    NODISCARD ALWAYS_INLINE Span<const T> slice(usize offset, usize count) const
+    {
+        AT_ASSERT(offset + count <= m_count);
+        return Span<const T>(m_elements + offset, count);
+    }
+
 public:
     template<typename... Args>
     ALWAYS_INLINE ErrorOr<void> emplace(Args&&... args)
