@@ -127,7 +127,7 @@ template<typename T>
 using RemoveConst = typename Detail::RemoveConst<T>::Type;
 
 template<typename T>
-constexpr bool is_const = Detail::IsConst<bool>::value;
+constexpr bool is_const = Detail::IsConst<T>::value;
 
 //
 // The STL equivalent of the move function. Same signature and behaviour.
