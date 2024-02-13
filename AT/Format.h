@@ -35,6 +35,7 @@ public:
 
     AT_API ErrorOr<void> push_unsigned_integer(const Specifier& specifier, u64 value);
     AT_API ErrorOr<void> push_signed_integer(const Specifier& specifier, i64 value);
+    AT_API ErrorOr<void> push_string(const Specifier& specifier, StringView value);
 
 private:
     StringView m_string_format;
@@ -65,6 +66,26 @@ struct Formatter<T> {
         else {
             TRY(builder.push_unsigned_integer(specifier, static_cast<u64>(value)));
         }
+        return {};
+    }
+};
+
+template<>
+struct Formatter<StringView> {
+    ALWAYS_INLINE static ErrorOr<void>
+    format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const StringView& value)
+    {
+        TRY(builder.push_string(specifier, value));
+        return {};
+    }
+};
+
+template<>
+struct Formatter<String> {
+    ALWAYS_INLINE static ErrorOr<void>
+    format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const String& value)
+    {
+        TRY(builder.push_string(specifier, value.view()));
         return {};
     }
 };

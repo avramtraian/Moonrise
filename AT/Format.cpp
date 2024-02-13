@@ -113,4 +113,10 @@ ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64
     return {};
 }
 
+ErrorOr<void> FormatBuilder::push_string(const Specifier& specifier, StringView value)
+{
+    TRY(m_formatted_string_buffer.add_span(value.byte_span().as<const char>()));
+    return {};
+}
+
 } // namespace AT
