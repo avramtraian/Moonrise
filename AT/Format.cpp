@@ -76,7 +76,7 @@ ErrorOr<FormatBuilder::Specifier> FormatBuilder::parse_specifier(StringView spec
     return Specifier();
 }
 
-ErrorOr<void> FormatBuilder::push_unsigned_integer(const Specifier& specifier, u64 value)
+ErrorOr<void> FormatBuilder::push_unsigned_integer(const Specifier&, u64 value)
 {
     // NOTE: The longest integer representation (in binary) is no longer than 64 characters.
     char buffer[64] = {};
@@ -113,7 +113,7 @@ ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64
     return {};
 }
 
-ErrorOr<void> FormatBuilder::push_string(const Specifier& specifier, StringView value)
+ErrorOr<void> FormatBuilder::push_string(const Specifier&, StringView value)
 {
     TRY(m_formatted_string_buffer.add_span(value.byte_span().as<const char>()));
     return {};
