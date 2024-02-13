@@ -12,7 +12,7 @@ namespace AT {
 
 ErrorOr<String> FormatBuilder::release_string()
 {
-    // NOTE: Creating a string from a vector of characters is very wasteful. In out current implementation,
+    // NOTE: Creating a string from a vector of characters is very wasteful. In our current implementation,
     //       there is always an unnecessary memory allocation. If the formatted string fits in a String
     //       inline capacity then allocating the memory for the vector is not necessary. Otherwise, memory
     //       is allocated for both the vector and the released string even though the vector memory is
@@ -23,8 +23,8 @@ ErrorOr<String> FormatBuilder::release_string()
     auto formatted_view =
         StringView::unsafe_create_from_utf8(m_formatted_string_buffer.elements(), m_formatted_string_buffer.count());
     TRY_ASSIGN(auto formatted_string, String::create(formatted_view));
-    return formatted_string;
     m_formatted_string_buffer.clear_and_shrink();
+    return formatted_string;
 }
 
 ErrorOr<void> FormatBuilder::consume_until_format_specifier()
