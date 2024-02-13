@@ -78,11 +78,38 @@ ErrorOr<FormatBuilder::Specifier> FormatBuilder::parse_specifier(StringView spec
 
 ErrorOr<void> FormatBuilder::push_unsigned_integer(const Specifier& specifier, u64 value)
 {
+    // NOTE: The longest integer representation (in binary) is no longer than 64 characters.
+    char buffer[64] = {};
+    u8 digit_count = 0;
+
+    if (value == 0) {
+        buffer[0] = '0';
+        digit_count = 1;
+    }
+    else {
+        for (u64 temp_value = value; temp_value > 0; temp_value /= 10) {
+            ++digit_count;
+        }
+
+        for (u8 digit_index = 0; digit_index < digit_count; ++digit_index) {
+            u8 digit = value % 10;
+            buffer[digit_count - digit_index - 1] = '0' + digit;
+            value /= 10;
+        }
+    }
+
+    TRY(m_formatted_string_buffer.add_span({ buffer, digit_count }));
     return {};
 }
 
 ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64 value)
 {
+    if (value < 0) {
+        TRY(m_formatted_string_buffer.add('-'));
+        value = -value;
+    }
+
+    TRY(push_unsigned_integer(specifier, static_cast<u64>(value)));
     return {};
 }
 
