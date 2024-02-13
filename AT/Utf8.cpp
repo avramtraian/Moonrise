@@ -169,7 +169,7 @@ usize UTF8::length(ReadonlyByteSpan byte_span)
     usize byte_offset = 0;
 
     while (byte_offset < byte_span.count()) {
-        usize codepoint_width = bytes_to_codepoint_width(byte_span.subrange(byte_offset));
+        usize codepoint_width = bytes_to_codepoint_width(byte_span.slice(byte_offset));
         if (codepoint_width == 0) {
             return invalid_size;
         }
@@ -208,7 +208,7 @@ bool UTF8::check_validity(ReadonlyByteSpan byte_span)
 {
     usize byte_offset = 0;
     while (byte_offset < byte_span.count()) {
-        const usize codepoint_width = bytes_to_codepoint_width(byte_span.subrange(byte_offset));
+        const usize codepoint_width = bytes_to_codepoint_width(byte_span.slice(byte_offset));
         if (codepoint_width == 0) {
             // A valid UTF-8 codepoint can't have a width of zero, so the string is not correctly encoded.
             return false;

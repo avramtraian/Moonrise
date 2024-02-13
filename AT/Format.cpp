@@ -35,8 +35,8 @@ ErrorOr<void> FormatBuilder::consume_until_format_specifier()
         return {};
     }
 
-    TRY(m_formatted_string_buffer.add_span(m_string_format.byte_span().subrange(0, specifier_offset).as<const char>()));
-    m_string_format = m_string_format.substring(specifier_offset);
+    TRY(m_formatted_string_buffer.add_span(m_string_format.byte_span().slice(0, specifier_offset).as<const char>()));
+    m_string_format = m_string_format.slice(specifier_offset);
     return {};
 }
 
@@ -50,7 +50,7 @@ ErrorOr<FormatBuilder::Specifier> FormatBuilder::parse_specifier()
     }
 
     // Advance the format string to the next character, ignoring the AT_FORMAT_SPECIFIER_BEGIN_TOKEN.
-    m_string_format = m_string_format.substring(1);
+    m_string_format = m_string_format.slice(1);
 
     usize specifier_count = m_string_format.find(AT_FORMAT_SPECIFIER_END_TOKEN);
     if (specifier_count == StringView::invalid_position) {
@@ -59,8 +59,8 @@ ErrorOr<FormatBuilder::Specifier> FormatBuilder::parse_specifier()
         return Error::InvalidStringFormat;
     }
 
-    const StringView specifier_string = m_string_format.substring(0, specifier_count);
-    m_string_format = m_string_format.substring(specifier_count + 1);
+    const StringView specifier_string = m_string_format.slice(0, specifier_count);
+    m_string_format = m_string_format.slice(specifier_count + 1);
 
     TRY_ASSIGN(auto specifier, FormatBuilder::parse_specifier(specifier_string));
     return specifier;

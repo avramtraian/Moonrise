@@ -110,28 +110,28 @@ public:
     }
 
 public:
-    NODISCARD ALWAYS_INLINE Span<T> subrange(usize offset)
+    NODISCARD ALWAYS_INLINE Span<T> slice(usize offset)
     {
         AT_ASSERT(offset <= m_count);
-        return Span(m_elements + offset, m_count - offset);
+        return Span<T>(m_elements + offset, m_count - offset);
     }
 
-    NODISCARD ALWAYS_INLINE Span<T> subrange(usize offset) const
+    NODISCARD ALWAYS_INLINE Span<const T> slice(usize offset) const
     {
         AT_ASSERT(offset <= m_count);
-        return Span(m_elements + offset, m_count - offset);
+        return Span<const T>(m_elements + offset, m_count - offset);
     }
 
-    NODISCARD ALWAYS_INLINE Span<T> subrange(usize offset, usize count)
+    NODISCARD ALWAYS_INLINE Span<T> slice(usize offset, usize count)
     {
         AT_ASSERT(count + offset <= m_count);
-        return Span(m_elements + offset, count);
+        return Span<T>(m_elements + offset, count);
     }
 
-    NODISCARD ALWAYS_INLINE Span<T> subrange(usize offset, usize count) const
+    NODISCARD ALWAYS_INLINE Span<const T> slice(usize offset, usize count) const
     {
         AT_ASSERT(count + offset <= m_count);
-        return Span(m_elements + offset, count);
+        return Span<const T>(m_elements + offset, count);
     }
 
     template<typename Q>
