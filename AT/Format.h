@@ -54,6 +54,23 @@ public:
     }
 };
 
+template<typename T>
+requires (is_integral<T>)
+struct Formatter<T> {
+public:
+    ALWAYS_INLINE static ErrorOr<void>
+    format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const T& value)
+    {
+        if constexpr (is_signed_integral<T>) {
+            TRY(builder.push_signed_integer(specifier, static_cast<i64>(value)));
+        }
+        else {
+            TRY(builder.push_unsigned_integer(specifier, static_cast<u64>(value)));
+        }
+        return {};
+    }
+};
+
 namespace Detail {
 
 NODISCARD ALWAYS_INLINE ErrorOr<void> format(FormatBuilder& builder)
