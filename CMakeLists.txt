@@ -1,14 +1,24 @@
 # Copyright (c) 2024 Traian Avram. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause.
 
-# NOTE(traian): The minimum required version is currently pretty arbitrary.
-#               Feel free to change this value as you see fit.
 cmake_minimum_required(VERSION 3.14)
 project(Moonrise CXX C)
 
-# Set the project global C++ configuration.
+#
+# Set the project global C++ configuration settings.
+#
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Disables compiler-specific extensions.
+set(CXX_EXTENSIONS OFF)
+set(COMPILE_WARNING_AS_ERROR ON)
+
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "/W4 /WX")
+else ()
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic")
+endif ()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Build/Bin-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Build/Bin-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}")
