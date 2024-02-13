@@ -88,12 +88,10 @@ template<typename T>
 struct RemoveReference {
     using Type = T;
 };
-
 template<typename T>
 struct RemoveReference<T&> {
     using Type = T;
 };
-
 template<typename T>
 struct RemoveReference<T&&> {
     using Type = T;
@@ -103,7 +101,6 @@ template<typename T>
 struct RemoveConst {
     using Type = T;
 };
-
 template<typename T>
 struct RemoveConst<const T> {
     using Type = T;
@@ -113,9 +110,50 @@ template<typename T>
 struct IsConst {
     static constexpr bool value = false;
 };
-
 template<typename T>
 struct IsConst<const T> {
+    static constexpr bool value = true;
+};
+
+template<typename T>
+struct IsUnsignedIntegral {
+    static constexpr bool value = false;
+};
+template<>
+struct IsUnsignedIntegral<u8> {
+    static constexpr bool value = true;
+};
+template<>
+struct IsUnsignedIntegral<u16> {
+    static constexpr bool value = true;
+};
+template<>
+struct IsUnsignedIntegral<u32> {
+    static constexpr bool value = true;
+};
+template<>
+struct IsUnsignedIntegral<u64> {
+    static constexpr bool value = true;
+};
+
+template<typename T>
+struct IsSignedIntegral {
+    static constexpr bool value = false;
+};
+template<>
+struct IsSignedIntegral<i8> {
+    static constexpr bool value = true;
+};
+template<>
+struct IsSignedIntegral<i16> {
+    static constexpr bool value = true;
+};
+template<>
+struct IsSignedIntegral<i32> {
+    static constexpr bool value = true;
+};
+template<>
+struct IsSignedIntegral<i64> {
     static constexpr bool value = true;
 };
 
@@ -128,6 +166,12 @@ using RemoveConst = typename Detail::RemoveConst<T>::Type;
 
 template<typename T>
 constexpr bool is_const = Detail::IsConst<T>::value;
+template<typename T>
+constexpr bool is_unsigned_integral = Detail::IsUnsignedIntegral<T>::value;
+template<typename T>
+constexpr bool is_signed_integral = Detail::IsSignedIntegral<T>::value;
+template<typename T>
+constexpr bool is_integral = is_unsigned_integral<T> || is_signed_integral<T>;
 
 //
 // The STL equivalent of the move function. Same signature and behaviour.
@@ -166,6 +210,9 @@ using AT::i64;
 using AT::i8;
 using AT::invalid_size;
 using AT::invalid_unicode_codepoint;
+using AT::is_integral;
+using AT::is_signed_integral;
+using AT::is_unsigned_integral;
 using AT::move;
 using AT::ReadonlyByte;
 using AT::ReadonlyBytes;
