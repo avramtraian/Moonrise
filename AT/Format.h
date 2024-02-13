@@ -43,7 +43,6 @@ private:
 
 template<typename T>
 struct Formatter {
-public:
     ALWAYS_INLINE static ErrorOr<void>
     format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const T& value)
     {
@@ -57,7 +56,6 @@ public:
 template<typename T>
 requires (is_integral<T>)
 struct Formatter<T> {
-public:
     ALWAYS_INLINE static ErrorOr<void>
     format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const T& value)
     {
