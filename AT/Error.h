@@ -63,23 +63,23 @@ class NODISCARD ErrorOr {
 
 public:
     ALWAYS_INLINE ErrorOr(const T& value)
-        : m_is_error(false)
-        , m_value_storage(value)
+        : m_value_storage(value)
+        , m_is_error(false)
     {}
 
     ALWAYS_INLINE ErrorOr(T&& value)
-        : m_is_error(false)
-        , m_value_storage(move(value))
+        : m_value_storage(move(value))
+        , m_is_error(false)
     {}
 
     ALWAYS_INLINE ErrorOr(Error&& error)
-        : m_is_error(true)
-        , m_error_storage(move(error))
+        : m_error_storage(move(error))
+        , m_is_error(true)
     {}
 
     ALWAYS_INLINE ErrorOr(Error::Code error_code)
-        : m_is_error(true)
-        , m_error_storage(Error::from_error_code(error_code))
+        : m_error_storage(Error::from_error_code(error_code))
+        , m_is_error(true)
     {}
 
     ALWAYS_INLINE ~ErrorOr()
@@ -114,18 +114,18 @@ class NODISCARD ErrorOr<T&> {
 
 public:
     ALWAYS_INLINE ErrorOr(T& value)
-        : m_is_error(false)
-        , m_value_storage(&value)
+        : m_value_storage(&value)
+        , m_is_error(false)
     {}
 
     ALWAYS_INLINE ErrorOr(Error&& error)
-        : m_is_error(true)
-        , m_error_storage(move(error))
+        : m_error_storage(move(error))
+        , m_is_error(true)
     {}
 
     ALWAYS_INLINE ErrorOr(Error::Code error_code)
-        : m_is_error(true)
-        , m_error_storage(Error::from_error_code(error_code))
+        : m_error_storage(Error::from_error_code(error_code))
+        , m_is_error(true)
     {}
 
     ALWAYS_INLINE ~ErrorOr()
@@ -157,8 +157,8 @@ class NODISCARD ErrorOr<void> {
 
 public:
     ALWAYS_INLINE ErrorOr()
-        : m_is_error(false)
-        , m_error_storage {}
+        : m_error_storage {}
+        , m_is_error(false)
     {}
 
     ALWAYS_INLINE ~ErrorOr()
