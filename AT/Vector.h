@@ -301,6 +301,44 @@ public:
         m_capacity = 0;
     }
 
+    //
+    // Ensures that the capacity of the vector will be at least equal to the given value.
+    // The vector only grows if necessary and there are no guarantees that the new capacity
+    // will be exactly equal to required_capacity.
+    //
+    ALWAYS_INLINE ErrorOr<void> ensure_capacity(usize required_capacity)
+    {
+        TRY(re_allocate_if_required(required_capacity));
+        return {};
+    }
+
+    //
+    // Ensures that the capacity of the vector will be at least equal to the given value.
+    // The vector only grows if necessary and if so the new capacity will be equal to fixed_required_capacity.
+    //
+    ALWAYS_INLINE ErrorOr<void> ensure_fixed_capacity(usize fixed_required_capacity)
+    {
+        if (m_capacity < fixed_required_capacity) {
+            TRY(re_allocate_to_fixed(fixed_required_capacity));
+        }
+        return {};
+    }
+
+    //
+    // The given capacity must be sufficient to store the elements currently held by the container.
+    //
+    ALWAYS_INLINE ErrorOr<void> set_fixed_capacity(usize fixed_capacity)
+    {
+        if (fixed_capacity == m_capacity) {
+            // No action needed. Calling re_allocate_to_fixed() in this case would actually trigger an assertion.
+            return {};
+        }
+
+        AT_ASSERT(fixed_capacity >= m_count);
+        TRY(re_allocate_to_fixed(fixed_capacity));
+        return {};
+    }
+
 public:
     NODISCARD ALWAYS_INLINE Iterator begin() { return Iterator(m_elements); }
     NODISCARD ALWAYS_INLINE Iterator end() { return Iterator(m_elements + m_count); }
