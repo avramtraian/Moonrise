@@ -28,7 +28,7 @@ public:
     {
         auto codepoint = bytes_to_codepoint(byte_span, out_codepoint_width);
         if (codepoint == invalid_unicode_codepoint) {
-            return Error::from_error_code(Error::InvalidEncoding);
+            return Error::InvalidEncoding;
         }
         return codepoint;
     }
@@ -47,7 +47,7 @@ public:
     {
         auto codepoint_width = bytes_to_codepoint_width(byte_span);
         if (codepoint_width == 0) {
-            return Error::from_error_code(Error::InvalidEncoding);
+            return Error::InvalidEncoding;
         }
         return codepoint_width;
     }
@@ -71,7 +71,7 @@ public:
             // TODO: This can also be caused by the buffer not being big enough, so this error code
             //       might be very misleading. However, the base bytes_from_codepoint() function
             //       gives no feedback regarding which failure occurred.
-            return Error::from_error_code(Error::InvalidEncoding);
+            return Error::InvalidEncoding;
         }
         return codepoint_width;
     }
@@ -89,7 +89,7 @@ public:
     {
         auto width = codepoint_width(codepoint);
         if (width == 0) {
-            return Error::from_error_code(Error::InvalidEncoding);
+            return Error::InvalidEncoding;
         }
         return width;
     }
@@ -109,7 +109,7 @@ public:
     {
         auto len = length(byte_span);
         if (len == invalid_size) {
-            return Error::from_error_code(Error::InvalidEncoding);
+            return Error::InvalidEncoding;
         }
         return len;
     }
@@ -128,7 +128,7 @@ public:
     {
         auto count = byte_count(bytes);
         if (count == invalid_size) {
-            return Error::from_error_code(Error::InvalidEncoding);
+            return Error::InvalidEncoding;
         }
         return count;
     }
@@ -139,7 +139,7 @@ public:
     try_check_validity(ReadonlyByteSpan byte_span, Error::Code error_code = Error::InvalidEncoding)
     {
         if (!check_validity(byte_span)) {
-            return Error::from_error_code(error_code);
+            return error_code;
         }
         return {};
     }

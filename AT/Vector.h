@@ -321,7 +321,7 @@ private:
         void* memory_block = ::operator new(capacity * sizeof(T));
 
         if (memory_block == nullptr) {
-            return Error::from_error_code(Error::OutOfMemory);
+            return Error::OutOfMemory;
         }
         return reinterpret_cast<T*>(memory_block);
     }

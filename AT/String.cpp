@@ -130,7 +130,7 @@ ErrorOr<char*> String::allocate_memory(usize byte_count)
     void* memory_block = ::operator new(byte_count);
 
     if (memory_block == nullptr) {
-        return Error::from_error_code(Error::OutOfMemory);
+        return Error::OutOfMemory;
     }
     return reinterpret_cast<char*>(memory_block);
 }
