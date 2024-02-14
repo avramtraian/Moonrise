@@ -44,3 +44,7 @@ AT_API void assertion_failed(const char* expression, const char* filename, const
 #else
     #define AT_ASSERT_DEBUG(...) // Excluded from build.
 #endif // AT_CONFIGURATION_DEBUG
+
+constexpr bool ASSERTION_NOT_REACHED = false;
+#define AT_ASSERT_NOT_REACHED       AT_ASSERT(ASSERTION_NOT_REACHED)
+#define AT_ASSERT_NOT_REACHED_DEBUG AT_ASSERT_DEBUG(ASSERTION_NOT_REACHED)
