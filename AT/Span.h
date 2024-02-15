@@ -141,6 +141,14 @@ public:
         return Span<Q>(reinterpret_cast<Q*>(m_elements), m_count);
     }
 
+    template<typename Q>
+    requires ((Span<Q>::element_size() % element_size()) == 0 || (element_size() % Span<Q>::element_size() == 0))
+    NODISCARD ALWAYS_INLINE Span<Q> as_different_size() const
+    {
+        const usize casted_count = (m_count * element_size()) / Span<Q>::element_size();
+        return Span<Q>(reinterpret_cast<Q*>(m_elements), casted_count);
+    }
+
 public:
     NODISCARD ALWAYS_INLINE Iterator begin() { return Iterator(m_elements); }
     NODISCARD ALWAYS_INLINE Iterator end() { return Iterator(m_elements + m_count); }
