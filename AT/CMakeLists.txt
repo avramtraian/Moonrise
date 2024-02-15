@@ -13,7 +13,7 @@ set(AT_SOURCE_FILES
     MemoryOperations.cpp
     MemoryOperations.h
     Optional.h
-    ScopedRollbackValue.h
+    ScopedValueRollback.h
     Span.h
     String.cpp
     String.h
