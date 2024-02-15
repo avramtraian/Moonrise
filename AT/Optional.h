@@ -109,6 +109,9 @@ public:
         return unchecked_value();
     }
 
+    NODISCARD ALWAYS_INLINE T& operator*() { return value(); }
+    NODISCARD ALWAYS_INLINE const T& operator*() const { return value(); }
+
     NODISCARD ALWAYS_INLINE operator T() { return value(); }
     NODISCARD ALWAYS_INLINE operator const T() const { return value(); }
 
@@ -199,6 +202,9 @@ public:
         AT_ASSERT(has_value());
         return *m_value;
     }
+
+    NODISCARD ALWAYS_INLINE T& operator*() { return value(); }
+    NODISCARD ALWAYS_INLINE const T& operator*() const { return value(); }
 
     NODISCARD ALWAYS_INLINE operator T() { return value(); }
     NODISCARD ALWAYS_INLINE operator const T() const { return value(); }
