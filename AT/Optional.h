@@ -144,6 +144,86 @@ private:
     bool m_has_value;
 };
 
+template<typename T>
+class Optional<T&> {
+public:
+    ALWAYS_INLINE Optional()
+        : m_value(nullptr)
+    {}
+
+    ALWAYS_INLINE Optional(const Optional& other)
+        : m_value(other.m_value)
+    {}
+
+    ALWAYS_INLINE Optional(Optional&& other) noexcept
+        : m_value(other.m_value)
+    {
+        other.m_value = nullptr;
+    }
+
+    ALWAYS_INLINE Optional(T& value)
+        : m_value(&value)
+    {}
+
+    ALWAYS_INLINE Optional& operator=(const Optional& other)
+    {
+        m_value = other.m_value;
+        return *this;
+    }
+
+    ALWAYS_INLINE Optional& operator=(Optional&& other) noexcept
+    {
+        m_value = other.m_value;
+        other.m_value = nullptr;
+        return *this;
+    }
+
+    ALWAYS_INLINE Optional& operator=(T& value)
+    {
+        m_value = &value;
+        return *this;
+    }
+
+public:
+    NODISCARD ALWAYS_INLINE bool has_value() const { return (m_value != nullptr); }
+    NODISCARD ALWAYS_INLINE operator bool() const { return has_value(); }
+
+    NODISCARD ALWAYS_INLINE T& value()
+    {
+        AT_ASSERT(has_value());
+        return *m_value;
+    }
+
+    NODISCARD ALWAYS_INLINE const T& value() const
+    {
+        AT_ASSERT(has_value());
+        return *m_value;
+    }
+
+    NODISCARD ALWAYS_INLINE operator T() { return value(); }
+    NODISCARD ALWAYS_INLINE operator const T() const { return value(); }
+
+    NODISCARD ALWAYS_INLINE T& value_or(T& fallback_value) { return has_value() ? *m_value : fallback_value; }
+    NODISCARD ALWAYS_INLINE const T& value_or(const T& fallback_value) const
+    {
+        return has_value() ? *m_value : fallback_value;
+    }
+
+    // Moves the held value to a new variable and clears the Optional.
+    NODISCARD ALWAYS_INLINE T& release_value()
+    {
+        T& released_value = value();
+        clear();
+        return released_value;
+    }
+
+public:
+    ALWAYS_INLINE void clear() { m_value = nullptr; }
+
+private:
+    T* m_value;
+};
+
 } // namespace AT
 
 #ifdef AT_INCLUDE_GLOBALLY
