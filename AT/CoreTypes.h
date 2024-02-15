@@ -107,6 +107,19 @@ struct RemoveConst<const T> {
 };
 
 template<typename T>
+struct IsReference {
+    static constexpr bool value = false;
+};
+template<typename T>
+struct IsReference<T&> {
+    static constexpr bool value = true;
+};
+template<typename T>
+struct IsReference<T&&> {
+    static constexpr bool value = true;
+};
+
+template<typename T>
 struct IsConst {
     static constexpr bool value = false;
 };
@@ -164,6 +177,8 @@ using RemoveReference = typename Detail::RemoveReference<T>::Type;
 template<typename T>
 using RemoveConst = typename Detail::RemoveConst<T>::Type;
 
+template<typename T>
+constexpr bool is_reference = Detail::IsReference<T>::value;
 template<typename T>
 constexpr bool is_const = Detail::IsConst<T>::value;
 template<typename T>
