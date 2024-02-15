@@ -135,6 +135,7 @@ public:
     }
 
     template<typename Q>
+    requires (Span<Q>::element_size() == element_size())
     NODISCARD ALWAYS_INLINE Span<Q> as() const
     {
         return Span<Q>(reinterpret_cast<Q*>(m_elements), m_count);
