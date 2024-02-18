@@ -76,6 +76,9 @@ public:
     NODISCARD AT_API StringView slice(usize offset_in_bytes) const;
     NODISCARD AT_API StringView slice(usize offset_in_bytes, usize bytes_count) const;
 
+    NODISCARD AT_API bool operator==(const StringView& other) const;
+    NODISCARD AT_API bool operator!=(const StringView& other) const;
+
 private:
     const char* m_characters;
     usize m_byte_count;

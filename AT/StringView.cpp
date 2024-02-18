@@ -60,4 +60,25 @@ StringView StringView::slice(usize offset_in_bytes, usize bytes_count) const
     return StringView::unsafe_create_from_utf8(m_characters + offset_in_bytes, bytes_count);
 }
 
+bool StringView::operator==(const StringView& other) const
+{
+    if (m_byte_count != other.m_byte_count) {
+        return false;
+    }
+
+    for (usize byte_offset = 0; byte_offset < m_byte_count; ++byte_offset) {
+        if (m_characters[byte_offset] != other.m_characters[byte_offset]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool StringView::operator!=(const StringView& other) const
+{
+    const bool are_equal = ((*this) == other);
+    return !are_equal;
+}
+
 } // namespace AT
