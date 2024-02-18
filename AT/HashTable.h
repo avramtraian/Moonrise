@@ -143,10 +143,16 @@ public:
             return HashTable();
         }
 
+        usize slot_count = calculate_minimal_slot_count(capacity);
+        T* slots;
+        Metadata* slots_metadata;
+        TRY(allocate_and_initialize_memory(slot_count, slots, slots_metadata));
+
         HashTable self;
-        self.m_slot_count = calculate_minimal_slot_count(capacity);
+        self.m_slots = slots;
+        self.m_slots_metadata = slots_metadata;
+        self.m_slot_count = slot_count;
         self.m_occupied_slot_count = 0;
-        TRY(allocate_and_initialize_memory(self.m_slot_count, self.m_slots, self.m_slots_metadata));
 
         return self;
     }
