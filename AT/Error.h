@@ -26,6 +26,8 @@ public:
         IndexOutOfRange,
         InvalidEncoding,
         InvalidStringFormat,
+        KeyAlreadyExists,
+        KeyDoesNotExist,
         OutOfMemory,
     };
 
@@ -182,8 +184,6 @@ public:
 
 public:
     NODISCARD ALWAYS_INLINE bool is_error() const { return m_is_error; }
-
-    ALWAYS_INLINE void release_value() {}
     NODISCARD ALWAYS_INLINE Error&& release_error() { return move(*reinterpret_cast<Error*>(m_error_storage)); }
 
 private:
@@ -200,13 +200,12 @@ private:
 // This utility macro should only be used when actually handling errors is impossible or not useful. By throwing an
 // assertion, the application will crash.
 //
-#define MUST(expression)                                                 \
-    {                                                                    \
-        auto _at_error_or_##variable = (expression);                     \
-        if (_at_error_or_##variable.is_error()) [[unlikely]] {           \
-            /* TODO: Log the expression that caused the must to fail. */ \
-            AT_ASSERT(!#expression);                                     \
-        }                                                                \
+#define MUST(expression)                            \
+    {                                               \
+        auto _at_error_or = (expression);           \
+        if (_at_error_or.is_error()) [[unlikely]] { \
+            AT_ASSERT(!#expression);                \
+        }                                           \
     }
 
 //
@@ -217,7 +216,6 @@ private:
 #define MUST_ASSIGN(variable_declaration, expression)                    \
     auto&& AT_CONCATENATE(_at_error_or, AT_LINE) = (expression);         \
     if (AT_CONCATENATE(_at_error_or, AT_LINE).is_error()) [[unlikely]] { \
-        /* TODO: Log the expression that caused the must to fail. */     \
         AT_ASSERT(!#expression);                                         \
     }                                                                    \
     variable_declaration = AT_CONCATENATE(_at_error_or, AT_LINE).release_value();
@@ -235,7 +233,6 @@ private:
         if (_at_error_or.is_error()) [[unlikely]] { \
             return _at_error_or.release_error();    \
         }                                           \
-        _at_error_or.release_value();               \
     }
 
 //
