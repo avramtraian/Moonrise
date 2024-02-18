@@ -95,6 +95,13 @@ public:
     NODISCARD ALWAYS_INLINE bool is_stored_inline() const { return m_byte_count <= inline_capacity; }
     NODISCARD ALWAYS_INLINE bool is_stored_on_heap() const { return m_byte_count > inline_capacity; }
 
+public:
+    NODISCARD ALWAYS_INLINE bool operator==(const String& other) const { return (view() == other.view()); }
+    NODISCARD ALWAYS_INLINE bool operator==(StringView string_view) const { return (view() == string_view); }
+
+    NODISCARD ALWAYS_INLINE bool operator!=(const String& other) const { return (view() != other.view()); }
+    NODISCARD ALWAYS_INLINE bool operator!=(StringView string_view) const { return (view() != string_view); }
+
 private:
     NODISCARD static ErrorOr<char*> allocate_memory(usize byte_count);
     static ErrorOr<void> release_memory(char* heap_buffer, usize byte_count);
