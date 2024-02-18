@@ -32,7 +32,7 @@ using i32 = signed int;
 using i64 = signed long long;
 
 // Checks that ensure the sizes of the primitive integer types are as expected.
-// If an mismatch is found, we do not allow the compilation to succeed, as
+// If a mismatch is found, we do not allow the compilation to succeed, as
 // unexpected issues related to alignment or integer overflow may occur.
 static_assert(sizeof(u8) == 1);
 static_assert(sizeof(u16) == 2);
