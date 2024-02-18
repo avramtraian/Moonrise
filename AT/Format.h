@@ -70,6 +70,16 @@ struct Formatter<T> {
 };
 
 template<>
+struct Formatter<bool> {
+    ALWAYS_INLINE static ErrorOr<void>
+    format(FormatBuilder& builder, const FormatBuilder::Specifier&, const bool& value)
+    {
+        TRY(builder.push_string({}, value ? "true"sv : "false"sv));
+        return {};
+    }
+};
+
+template<>
 struct Formatter<StringView> {
     ALWAYS_INLINE static ErrorOr<void>
     format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const StringView& value)
