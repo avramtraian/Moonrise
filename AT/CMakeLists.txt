@@ -19,6 +19,7 @@ set(AT_SOURCE_FILES
     String.h
     StringView.cpp
     StringView.h
+    TypeTraits.h
     Utf8.cpp
     Utf8.h
     Vector.h
