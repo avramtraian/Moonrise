@@ -15,7 +15,7 @@ set(CXX_EXTENSIONS OFF)
 set(COMPILE_WARNING_AS_ERROR ON)
 
 if (MSVC)
-    set(CMAKE_CXX_FLAGS "/W4 /WX")
+    set(CMAKE_CXX_FLAGS "/W4 /WX /EHsc")
 else ()
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic")
 endif ()
