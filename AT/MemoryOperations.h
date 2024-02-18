@@ -25,7 +25,7 @@ ALWAYS_INLINE static void copy_memory_from_span(void* destination, Span<T> span)
 
 } // namespace AT
 
-void* operator new(size_t byte_count, void* memory_block) noexcept;
+AT_API void* operator new(size_t byte_count, void* memory_block) noexcept;
 
 #ifdef AT_INCLUDE_GLOBALLY
 using AT::copy_memory;
