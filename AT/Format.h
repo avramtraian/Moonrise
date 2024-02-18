@@ -44,8 +44,7 @@ private:
 
 template<typename T>
 struct Formatter {
-    ALWAYS_INLINE static ErrorOr<void>
-    format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const T& value)
+    ALWAYS_INLINE static ErrorOr<void> format(FormatBuilder&, const FormatBuilder::Specifier&, const T&)
     {
         // TODO: Maybe we should signal that the Formatter<T> isn't specialized by
         //       gracefully returning an error code?
