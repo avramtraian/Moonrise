@@ -10,6 +10,7 @@ set(AT_SOURCE_FILES
     Error.h
     Format.cpp
     Format.h
+    HashMap.h
     HashTable.h
     MemoryOperations.cpp
     MemoryOperations.h
