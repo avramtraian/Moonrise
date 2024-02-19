@@ -6,6 +6,7 @@ set(AT_SOURCE_FILES
     Assertion.h
     CoreDefines.h
     CoreTypes.h
+    DistinctNumeric.h
     Error.cpp
     Error.h
     Format.cpp
