@@ -5,8 +5,7 @@ set(AT_SOURCE_FILES
     Array.h
     Assertion.cpp
     Assertion.h
-    CoreDefines.h
-    CoreTypes.h
+    Defines.h
     DistinctNumeric.h
     Error.cpp
     Error.h
@@ -26,6 +25,7 @@ set(AT_SOURCE_FILES
     String.h
     StringView.cpp
     StringView.h
+    Types.h
     TypeTraits.h
     Utf8.cpp
     Utf8.h

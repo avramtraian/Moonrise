@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "AT/CoreDefines.h"
+#include "AT/Defines.h"
 
 #ifdef CORE_EXPORT_API
     #define MOONCORE_API AT_API_SPECIFIER_EXPORT

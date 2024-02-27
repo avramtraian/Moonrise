@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "AT/CoreDefines.h"
-#include "AT/CoreTypes.h"
+#include "AT/Defines.h"
 #include "AT/Span.h"
+#include "AT/Types.h"
 
 namespace AT {
 

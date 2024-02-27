@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "AT/CoreDefines.h"
+#include "AT/Defines.h"
 
 // NOTE: std::initializer_list can't be implemented by us, so we include its header file here in
 //       order to have access to it throughout the entire codebase without including it.
