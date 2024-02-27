@@ -31,11 +31,12 @@ ErrorOr<void> FormatBuilder::consume_until_format_specifier()
 {
     usize specifier_offset = m_string_format.find(AT_FORMAT_SPECIFIER_BEGIN_TOKEN);
     if (specifier_offset == StringView::invalid_position) {
-        TRY(m_formatted_string_buffer.add_span(m_string_format.byte_span().as<const char>()));
+        TRY(m_formatted_string_buffer.try_add_span(m_string_format.byte_span().as<const char>()));
         return {};
     }
 
-    TRY(m_formatted_string_buffer.add_span(m_string_format.byte_span().slice(0, specifier_offset).as<const char>()));
+    TRY(m_formatted_string_buffer.try_add_span(m_string_format.byte_span().slice(0, specifier_offset).as<const char>())
+    );
     m_string_format = m_string_format.slice(specifier_offset);
     return {};
 }
@@ -98,14 +99,14 @@ ErrorOr<void> FormatBuilder::push_unsigned_integer(const Specifier&, u64 value)
         }
     }
 
-    TRY(m_formatted_string_buffer.add_span({ buffer, digit_count }));
+    TRY(m_formatted_string_buffer.try_add_span({ buffer, digit_count }));
     return {};
 }
 
 ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64 value)
 {
     if (value < 0) {
-        TRY(m_formatted_string_buffer.add('-'));
+        TRY(m_formatted_string_buffer.try_add('-'));
         value = -value;
     }
 
@@ -115,7 +116,7 @@ ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64
 
 ErrorOr<void> FormatBuilder::push_string(const Specifier&, StringView value)
 {
-    TRY(m_formatted_string_buffer.add_span(value.byte_span().as<const char>()));
+    TRY(m_formatted_string_buffer.try_add_span(value.byte_span().as<const char>()));
     return {};
 }
 

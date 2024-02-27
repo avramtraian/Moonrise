@@ -215,7 +215,7 @@ public:
 
 public:
     template<typename... Args>
-    ALWAYS_INLINE ErrorOr<void> emplace(Args&&... args)
+    ALWAYS_INLINE ErrorOr<void> try_emplace(Args&&... args)
     {
         TRY(re_allocate_if_required(m_count + 1));
         new (m_elements + m_count) T(forward<Args>(args)...);
@@ -223,21 +223,21 @@ public:
         return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> add(const T& element)
+    ALWAYS_INLINE ErrorOr<void> try_add(const T& element)
     {
         // NOTE: It will invoke the copy constructor.
-        TRY(emplace(element));
+        TRY(try_emplace(element));
         return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> add(T&& element)
+    ALWAYS_INLINE ErrorOr<void> try_add(T&& element)
     {
         // NOTE: It will invoke the move constructor.
-        TRY(emplace(move(element)));
+        TRY(try_emplace(move(element)));
         return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> add_span(Span<const T> elements)
+    ALWAYS_INLINE ErrorOr<void> try_add_span(Span<const T> elements)
     {
         TRY(re_allocate_if_required(m_count + elements.count()));
         copy_elements(m_elements + m_count, elements.elements(), elements.count());
