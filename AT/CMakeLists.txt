@@ -11,6 +11,7 @@ set(AT_SOURCE_FILES
     Error.h
     Format.cpp
     Format.h
+    Function.h
     HashMap.h
     HashTable.h
     MemoryOperations.cpp
