@@ -15,6 +15,7 @@ set(AT_SOURCE_FILES
     HashTable.h
     MemoryOperations.cpp
     MemoryOperations.h
+    NonnullOwnPtr.h
     Optional.h
     OwnPtr.h
     ScopedValueRollback.h
