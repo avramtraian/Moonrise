@@ -223,6 +223,12 @@ public:
         return {};
     }
 
+    template<typename... Args>
+    ALWAYS_INLINE void emplace(Args&&... args)
+    {
+        MUST(try_emplace(forward<Args>(args)...));
+    }
+
     ALWAYS_INLINE ErrorOr<void> try_add(const T& element)
     {
         // NOTE: It will invoke the copy constructor.
@@ -237,6 +243,9 @@ public:
         return {};
     }
 
+    ALWAYS_INLINE void add(const T& element) { MUST(try_emplace(element)); }
+    ALWAYS_INLINE void add(T&& element) { MUST(try_emplace(move(element))); }
+
     ALWAYS_INLINE ErrorOr<void> try_add_span(Span<const T> elements)
     {
         TRY(re_allocate_if_required(m_count + elements.count()));
@@ -244,6 +253,8 @@ public:
         m_count += elements.count();
         return {};
     }
+
+    ALWAYS_INLINE void add_span(Span<const T> elements) { MUST(try_add_span(elements)); }
 
 public:
     ALWAYS_INLINE void remove_last()
