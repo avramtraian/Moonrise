@@ -86,7 +86,7 @@
     #define AT_FUNCTION   __PRETTY_FUNCTION__
     #define AT_DEBUGBREAK __builtin_trap()
 #elif AT_COMPILER_GCC
-    #define ALWAYS_INLINE __attribute__((always_inline))
+    #define ALWAYS_INLINE __attribute__((always_inline)) inline
     #define AT_FUNCTION   __PRETTY_FUNCTION__
     #define AT_DEBUGBREAK __builtin_trap()
 #endif // Compiler switch.
