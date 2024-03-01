@@ -76,11 +76,11 @@ constexpr UnicodeCodepoint invalid_unicode_codepoint = static_cast<UnicodeCodepo
 
 #define AT_MAKE_NONCOPYABLE(type_name)    \
     type_name(const type_name&) = delete; \
-    type_name& operator=(const type_name&) = delete;
+    type_name& operator=(const type_name&) = delete
 
 #define AT_MAKE_NONMOVABLE(type_name)         \
     type_name(type_name&&) noexcept = delete; \
-    type_name& operator=(type_name&&) noexcept = delete;
+    type_name& operator=(type_name&&) noexcept = delete
 
 namespace Detail {
 
