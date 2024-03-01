@@ -217,7 +217,7 @@ public:
 
     ALWAYS_INLINE HashTable(const HashTable& other)
     {
-        TRY_ASSIGN(HashTable self, create(other));
+        MUST_ASSIGN(HashTable self, create(other));
         new (this) HashTable(move(self));
     }
 
