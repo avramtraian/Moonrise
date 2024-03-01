@@ -104,7 +104,7 @@ usize UTF8::bytes_to_codepoint_width(ReadonlyByteSpan byte_span)
 
 usize UTF8::bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan destination_byte_span)
 {
-    if (0x0000 <= codepoint && codepoint <= 0x007F) {
+    if (codepoint <= 0x007F) {
         if (destination_byte_span.count() < 1) {
             return 0;
         }
@@ -147,7 +147,7 @@ usize UTF8::bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan d
 
 usize UTF8::codepoint_width(UnicodeCodepoint codepoint)
 {
-    if (0x0000 <= codepoint && codepoint <= 0x007F) {
+    if (codepoint <= 0x007F) {
         return 1;
     }
     if (0x0080 <= codepoint && codepoint <= 0x07FF) {
