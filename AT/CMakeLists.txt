@@ -18,6 +18,7 @@ set(AT_SOURCE_FILES
     MemoryOperations.cpp
     MemoryOperations.h
     NonnullOwnPtr.h
+    NonnullRefPtr.h
     Optional.h
     OwnPtr.h
     RefPtr.h
