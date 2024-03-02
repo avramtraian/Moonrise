@@ -10,6 +10,7 @@
 // NOTE: std::initializer_list can't be implemented by us, so we include its header file here in
 //       order to have access to it throughout the entire codebase without including it.
 #include <initializer_list>
+#include <type_traits>
 
 namespace AT {
 
@@ -170,6 +171,19 @@ struct IsSignedIntegral<i64> {
     static constexpr bool value = true;
 };
 
+template<typename TypeIfTrue, typename TypeIfFalse, bool condition>
+struct ConditionalType {};
+
+template<typename TypeIfTrue, typename TypeIfFalse>
+struct ConditionalType<TypeIfTrue, TypeIfFalse, true> {
+    using Type = TypeIfTrue;
+};
+
+template<typename TypeIfTrue, typename TypeIfFalse>
+struct ConditionalType<TypeIfTrue, TypeIfFalse, false> {
+    using Type = TypeIfFalse;
+};
+
 } // namespace Detail
 
 template<typename T>
@@ -214,6 +228,12 @@ NODISCARD ALWAYS_INLINE constexpr T&& forward(RemoveReference<T>&& instance) noe
 {
     return static_cast<T&&>(instance);
 }
+
+template<typename TypeIfTrue, typename TypeIfFalse, bool condition>
+using ConditionalType = typename Detail::ConditionalType<TypeIfTrue, TypeIfFalse, condition>::Type;
+
+template<typename DerivedType, typename BaseType>
+constexpr bool is_derived_from = std::is_base_of_v<BaseType, DerivedType>;
 
 } // namespace AT
 
