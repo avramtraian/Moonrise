@@ -20,6 +20,7 @@ set(AT_SOURCE_FILES
     NonnullOwnPtr.h
     Optional.h
     OwnPtr.h
+    RefPtr.h
     ScopedValueRollback.h
     Span.h
     String.cpp
