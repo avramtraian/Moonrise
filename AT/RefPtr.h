@@ -124,7 +124,7 @@ public:
     }
 
 private:
-    ALWAYS_INLINE RefPtr(T* pointer_to_adopt)
+    ALWAYS_INLINE explicit RefPtr(T* pointer_to_adopt)
         : m_instance(pointer_to_adopt)
     {
         if (m_instance) {
