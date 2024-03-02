@@ -65,7 +65,7 @@ public:
         : m_instance(other.m_instance)
     {
         if (m_instance) {
-            static_cast<RefCounted<T>*>(m_instance)->increment_reference_count();
+            increment_reference_count();
         }
     }
 
@@ -78,7 +78,7 @@ public:
     ALWAYS_INLINE ~RefPtr()
     {
         if (m_instance) {
-            static_cast<RefCounted<T>*>(m_instance)->decrement_reference_count();
+            decrement_reference_count();
         }
     }
 
@@ -87,7 +87,7 @@ public:
         clear();
         m_instance = other.m_instance;
         if (m_instance) {
-            static_cast<RefCounted<T>*>(m_instance)->increment_reference_count();
+            increment_reference_count();
         }
         return *this;
     }
@@ -107,7 +107,7 @@ public:
     ALWAYS_INLINE void clear()
     {
         if (m_instance) {
-            static_cast<RefCounted<T>*>(m_instance)->decrement_reference_count();
+            decrement_reference_count();
             m_instance = nullptr;
         }
     }
@@ -117,9 +117,12 @@ private:
         : m_instance(pointer_to_adopt)
     {
         if (m_instance) {
-            static_cast<RefCounted<T>*>(m_instance)->increment_reference_count();
+            increment_reference_count();
         }
     }
+
+    void increment_reference_count() { static_cast<RefCounted<T>*>(m_instance)->increment_reference_count(); }
+    void decrement_reference_count() { static_cast<RefCounted<T>*>(m_instance)->decrement_reference_count(); }
 
 private:
     T* m_instance;
