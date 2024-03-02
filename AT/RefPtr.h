@@ -104,6 +104,17 @@ public:
     NODISCARD ALWAYS_INLINE bool is_valid() const { return (m_instance != nullptr); }
     NODISCARD ALWAYS_INLINE operator bool() const { return is_valid(); }
 
+    NODISCARD ALWAYS_INLINE T& get() const
+    {
+        AT_ASSERT(is_valid());
+        return *m_instance;
+    }
+
+    NODISCARD ALWAYS_INLINE T* operator->() const { return &get(); }
+    NODISCARD ALWAYS_INLINE T& operator*() const { return get(); }
+
+    NODISCARD ALWAYS_INLINE T* raw() const { return m_instance; }
+
     ALWAYS_INLINE void clear()
     {
         if (m_instance) {
