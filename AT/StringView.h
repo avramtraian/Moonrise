@@ -6,7 +6,6 @@
 #pragma once
 
 #include "AT/Defines.h"
-#include "AT/Error.h"
 #include "AT/Span.h"
 #include "AT/Types.h"
 
@@ -21,8 +20,8 @@ public:
     static constexpr usize invalid_position = invalid_size;
 
 public:
-    AT_API static ErrorOr<StringView> create_from_utf8(const char* characters, usize byte_count);
-    AT_API static ErrorOr<StringView> create_from_utf8(const char* null_terminated_characters);
+    AT_API static StringView create_from_utf8(const char* characters, usize byte_count);
+    AT_API static StringView create_from_utf8(const char* null_terminated_characters);
 
     NODISCARD ALWAYS_INLINE static constexpr StringView
     unsafe_create_from_utf8(const char* characters, usize byte_count)

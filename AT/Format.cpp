@@ -22,7 +22,7 @@ ErrorOr<String> FormatBuilder::release_string()
 
     auto formatted_view =
         StringView::unsafe_create_from_utf8(m_formatted_string_buffer.elements(), m_formatted_string_buffer.count());
-    TRY_ASSIGN(auto formatted_string, String::create(formatted_view));
+    String formatted_string = String(formatted_view);
     m_formatted_string_buffer.clear_and_shrink();
     return formatted_string;
 }
@@ -31,12 +31,11 @@ ErrorOr<void> FormatBuilder::consume_until_format_specifier()
 {
     usize specifier_offset = m_string_format.find(AT_FORMAT_SPECIFIER_BEGIN_TOKEN);
     if (specifier_offset == StringView::invalid_position) {
-        TRY(m_formatted_string_buffer.try_add_span(m_string_format.byte_span().as<const char>()));
+        m_formatted_string_buffer.add_span(m_string_format.byte_span().as<const char>());
         return {};
     }
 
-    TRY(m_formatted_string_buffer.try_add_span(m_string_format.byte_span().slice(0, specifier_offset).as<const char>())
-    );
+    m_formatted_string_buffer.add_span(m_string_format.byte_span().slice(0, specifier_offset).as<const char>());
     m_string_format = m_string_format.slice(specifier_offset);
     return {};
 }
@@ -99,14 +98,14 @@ ErrorOr<void> FormatBuilder::push_unsigned_integer(const Specifier&, u64 value)
         }
     }
 
-    TRY(m_formatted_string_buffer.try_add_span({ buffer, digit_count }));
+    m_formatted_string_buffer.add_span({ buffer, digit_count });
     return {};
 }
 
 ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64 value)
 {
     if (value < 0) {
-        TRY(m_formatted_string_buffer.try_add('-'));
+        m_formatted_string_buffer.add('-');
         value = -value;
     }
 
@@ -116,7 +115,7 @@ ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64
 
 ErrorOr<void> FormatBuilder::push_string(const Specifier&, StringView value)
 {
-    TRY(m_formatted_string_buffer.try_add_span(value.byte_span().as<const char>()));
+    m_formatted_string_buffer.add_span(value.byte_span().as<const char>());
     return {};
 }
 

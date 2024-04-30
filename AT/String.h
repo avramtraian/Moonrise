@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "AT/Error.h"
 #include "AT/Span.h"
 #include "AT/StringView.h"
 
@@ -24,10 +23,8 @@ public:
     static_assert(inline_capacity > 0);
 
 public:
-    AT_API static ErrorOr<String> create(StringView view);
-    AT_API static ErrorOr<String> create(const String& other);
-    AT_API static ErrorOr<String> create_from_utf8(const char* characters, usize byte_count);
-    AT_API static ErrorOr<String> create_from_utf8(const char* null_terminated_characters);
+    AT_API static String create_from_utf8(const char* characters, usize byte_count);
+    AT_API static String create_from_utf8(const char* null_terminated_characters);
 
 public:
     AT_API String();
@@ -103,8 +100,8 @@ public:
     NODISCARD ALWAYS_INLINE bool operator!=(StringView string_view) const { return (view() != string_view); }
 
 private:
-    NODISCARD static ErrorOr<char*> allocate_memory(usize byte_count);
-    static ErrorOr<void> release_memory(char* heap_buffer, usize byte_count);
+    NODISCARD static char* allocate_memory(usize byte_count);
+    static void release_memory(char* heap_buffer, usize byte_count);
 
 private:
     union {
