@@ -3,6 +3,7 @@ Checks: >
   
   readability-*,
   -readability-avoid-unconditional-preprocessor-if,
+  -readability-braces-around-statements,
   -readability-function-cognitive-complexity,
   -readability-implicit-bool-conversion,
   -readability-magic-numbers,
