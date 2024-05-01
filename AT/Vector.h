@@ -5,10 +5,8 @@
 
 #pragma once
 
-#include "AT/Assertion.h"
-#include "AT/Defines.h"
+#include "AT/MemoryOperations.h"
 #include "AT/Span.h"
-#include "AT/Types.h"
 
 namespace AT {
 
