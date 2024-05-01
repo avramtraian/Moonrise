@@ -15,6 +15,8 @@ class NonnullOwnPtr {
 
     template<typename Q>
     friend NonnullOwnPtr<Q> adopt_nonnull_own(Q*);
+    template<typename Q>
+    friend class NonnullOwnPtr;
 
 public:
     ALWAYS_INLINE NonnullOwnPtr(NonnullOwnPtr&& other) noexcept
@@ -70,6 +72,14 @@ public:
         //       one to another would simply be a pointer reinterpretation.
         const auto& this_as_own_ptr = reinterpret_cast<const OwnPtr<T>&>(*this);
         return this_as_own_ptr;
+    }
+
+    template<typename Q>
+    NODISCARD ALWAYS_INLINE NonnullOwnPtr<Q> as()
+    {
+        NonnullOwnPtr<Q> casted_own_ptr = NonnullOwnPtr<Q>(reinterpret_cast<Q*>(m_instance));
+        m_instance = nullptr;
+        return casted_own_ptr;
     }
 
 private:

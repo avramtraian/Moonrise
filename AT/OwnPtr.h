@@ -16,6 +16,10 @@ class OwnPtr {
     AT_MAKE_NONCOPYABLE(OwnPtr);
 
     template<typename Q>
+    friend OwnPtr<Q> adopt_own(Q*);
+    template<typename Q>
+    friend class OwnPtr;
+    template<typename Q>
     friend class NonnullOwnPtr;
 
 public:
@@ -60,6 +64,14 @@ public:
             delete m_instance;
             m_instance = nullptr;
         }
+    }
+
+    template<typename Q>
+    NODISCARD ALWAYS_INLINE OwnPtr<Q> as()
+    {
+        OwnPtr<Q> casted_own_ptr = OwnPtr<Q>(reinterpret_cast<Q*>(m_instance));
+        m_instance = nullptr;
+        return casted_own_ptr;
     }
 
 private:
