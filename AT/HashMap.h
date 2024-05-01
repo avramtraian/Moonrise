@@ -168,69 +168,69 @@ public:
     }
 
 public:
-    ALWAYS_INLINE ErrorOr<void> add(const KeyType& key, const ValueType& value)
+    ALWAYS_INLINE void add(const KeyType& key, const ValueType& value)
     {
-        TRY_ASSIGN(const usize slot_index, add_without_constructing_bucket(key));
+        const usize slot_index = add_without_constructing_bucket(key);
+        AT_ASSERT(slot_index != invalid_size); // Key already exists.
 
         Bucket& bucket = m_buckets.m_slots[slot_index];
         new (bucket.key_ptr()) KeyType(key);
         new (bucket.value_ptr()) ValueType(value);
-        return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> add(const KeyType& key, ValueType&& value)
+    ALWAYS_INLINE void add(const KeyType& key, ValueType&& value)
     {
-        TRY_ASSIGN(const usize slot_index, add_without_constructing_bucket(key));
+        const usize slot_index = add_without_constructing_bucket(key);
+        AT_ASSERT(slot_index != invalid_size); // Key already exists.
 
         Bucket& bucket = m_buckets.m_slots[slot_index];
         new (bucket.key_ptr()) KeyType(key);
         new (bucket.value_ptr()) ValueType(move(value));
-        return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> add(KeyType&& key, const ValueType& value)
+    ALWAYS_INLINE void add(KeyType&& key, const ValueType& value)
     {
-        TRY_ASSIGN(const usize slot_index, add_without_constructing_bucket(key));
+        const usize slot_index = add_without_constructing_bucket(key);
+        AT_ASSERT(slot_index != invalid_size); // Key already exists.
 
         Bucket& bucket = m_buckets.m_slots[slot_index];
         new (bucket.key_ptr()) KeyType(move(key));
         new (bucket.value_ptr()) ValueType(value);
-        return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> add(KeyType&& key, ValueType&& value)
+    ALWAYS_INLINE void add(KeyType&& key, ValueType&& value)
     {
-        TRY_ASSIGN(const usize slot_index, add_without_constructing_bucket(key));
+        const usize slot_index = add_without_constructing_bucket(key);
+        AT_ASSERT(slot_index != invalid_size); // Key already exists.
 
         Bucket& bucket = m_buckets.m_slots[slot_index];
         new (bucket.key_ptr()) KeyType(move(key));
         new (bucket.value_ptr()) ValueType(move(value));
-        return {};
     }
 
     template<typename... Args>
-    ALWAYS_INLINE ErrorOr<void> emplace(const KeyType& key, Args&&... args)
+    ALWAYS_INLINE void emplace(const KeyType& key, Args&&... args)
     {
-        TRY_ASSIGN(const usize slot_index, add_without_constructing_bucket(key));
+        const usize slot_index = add_without_constructing_bucket(key);
+        AT_ASSERT(slot_index != invalid_size); // Key already exists.
 
         Bucket& bucket = m_buckets.m_slots[slot_index];
         new (bucket.key_ptr()) KeyType(key);
         new (bucket.value_ptr()) ValueType(forward<Args>(args)...);
-        return {};
     }
 
     template<typename... Args>
-    ALWAYS_INLINE ErrorOr<void> emplace(KeyType&& key, Args&&... args)
+    ALWAYS_INLINE void emplace(KeyType&& key, Args&&... args)
     {
-        TRY_ASSIGN(const usize slot_index, add_without_constructing_bucket(key));
+        const usize slot_index = add_without_constructing_bucket(key);
+        AT_ASSERT(slot_index != invalid_size); // Key already exists.
 
         Bucket& bucket = m_buckets.m_slots[slot_index];
         new (bucket.key_ptr()) KeyType(move(key));
         new (bucket.value_ptr()) ValueType(forward<Args>(args)...);
-        return {};
     }
 
-    ALWAYS_INLINE ErrorOr<ValueType&> get_or_add(const KeyType& key)
+    ALWAYS_INLINE ValueType& get_or_add(const KeyType& key)
     {
         const Bucket& key_as_bucket = unsafe_bucket_from_key(key);
         const u64 bucket_hash = InternalHashTable::get_element_hash(key_as_bucket);
@@ -244,7 +244,7 @@ public:
             return m_buckets.m_slots[slot_index].value();
         }
 
-        TRY_ASSIGN(bool has_re_allocated, m_buckets.re_allocate_if_overloaded(m_buckets.m_occupied_slot_count + 1));
+        bool has_re_allocated = m_buckets.re_allocate_if_overloaded(m_buckets.m_occupied_slot_count + 1);
         if (has_re_allocated) {
             // NOTE: We already know that the element doesn't exist in the table.
             slot_index = m_buckets.unchecked_find_first_available_slot(bucket_hash);
@@ -260,11 +260,7 @@ public:
         return bucket.value();
     }
 
-    ALWAYS_INLINE ErrorOr<ValueType&> operator[](const KeyType& key)
-    {
-        TRY_ASSIGN(auto& value, get_or_add(key));
-        return value;
-    }
+    ALWAYS_INLINE ValueType& operator[](const KeyType& key) { return get_or_add(key); }
 
 public:
     NODISCARD ALWAYS_INLINE Iterator begin() { return Iterator(m_buckets.begin()); }
@@ -285,9 +281,9 @@ private:
         return *reinterpret_cast<const Bucket*>(&key);
     }
 
-    ALWAYS_INLINE ErrorOr<usize> add_without_constructing_bucket(const KeyType& key)
+    ALWAYS_INLINE usize add_without_constructing_bucket(const KeyType& key)
     {
-        TRY(m_buckets.re_allocate_if_overloaded(m_buckets.m_occupied_slot_count + 1));
+        m_buckets.re_allocate_if_overloaded(m_buckets.m_occupied_slot_count + 1);
 
         const Bucket& key_as_bucket = unsafe_bucket_from_key(key);
         const u64 bucket_hash = InternalHashTable::get_element_hash(key_as_bucket);
@@ -295,9 +291,8 @@ private:
         const usize slot_index =
             m_buckets.unchecked_find_element_or_first_available_slot(key_as_bucket, bucket_hash, low_bucket_hash);
 
-        if (m_buckets.m_slots_metadata[slot_index] == low_bucket_hash) {
-            return Error::KeyAlreadyExists;
-        }
+        if (m_buckets.m_slots_metadata[slot_index] == low_bucket_hash)
+            return invalid_size;
 
         m_buckets.m_slots_metadata[slot_index] = low_bucket_hash;
         ++m_buckets.m_occupied_slot_count;
