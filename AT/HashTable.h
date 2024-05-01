@@ -7,7 +7,7 @@
 
 #include "AT/Assertion.h"
 #include "AT/Defines.h"
-#include "AT/Error.h"
+#include "AT/MemoryOperations.h"
 #include "AT/Optional.h"
 #include "AT/TypeTraits.h"
 #include "AT/Types.h"
@@ -114,100 +114,6 @@ public:
     using Iterator = Detail::HashTableIterator<const T, const Metadata, metadata_available_bit_mask>;
 
 public:
-    ALWAYS_INLINE static ErrorOr<HashTable> create(const HashTable& other)
-    {
-        if (other.m_occupied_slot_count == 0) {
-            return HashTable();
-        }
-
-        TRY_ASSIGN(HashTable self, create_with_initial_capacity(other.m_slot_count));
-        self.m_occupied_slot_count = other.m_slot_count;
-
-        for (usize index = 0; index < other.m_slot_count; ++index) {
-            if (!(other.m_slots_metadata[index] & metadata_available_bit_mask)) {
-                const T& element = other.m_slots[index];
-                const u64 element_hash = get_element_hash(element);
-
-                const usize slot_index = self.unchecked_find_first_available_slot(element_hash);
-                new (self.m_slots + slot_index) T(element);
-                self.m_slots_metadata[slot_index] = other.m_slots_metadata[index];
-            }
-        }
-
-        return self;
-    }
-
-    ALWAYS_INLINE static ErrorOr<HashTable> create_with_initial_capacity(usize capacity)
-    {
-        if (capacity == 0) {
-            return HashTable();
-        }
-
-        usize slot_count = calculate_minimal_slot_count(capacity);
-        T* slots;
-        Metadata* slots_metadata;
-        TRY(allocate_and_initialize_memory(slot_count, slots, slots_metadata));
-
-        HashTable self;
-        self.m_slots = slots;
-        self.m_slots_metadata = slots_metadata;
-        self.m_slot_count = slot_count;
-        self.m_occupied_slot_count = 0;
-
-        return self;
-    }
-
-    //
-    // Creates a hash table that contains the elements held in the given list.
-    // If an element exists in the list more than once, only its first occurrence will be inserted.
-    //
-    ALWAYS_INLINE static ErrorOr<HashTable> create_from_list(std::initializer_list<T> list)
-    {
-        if (list.size() == 0) {
-            return HashTable();
-        }
-
-        TRY_ASSIGN(HashTable self, create_with_initial_capacity(list.size()));
-        for (usize index = 0; index < list.size(); ++index) {
-            TRY(self.add_if_not_existing(list.begin()[index]));
-        }
-
-        return self;
-    }
-
-    ALWAYS_INLINE static ErrorOr<void> assign(HashTable& self, const HashTable& other)
-    {
-        const usize minimal_slot_count = calculate_minimal_slot_count(other.m_occupied_slot_count);
-        if (minimal_slot_count > self.m_slot_count) {
-            TRY(self.clear_and_shrink());
-            self.m_slot_count = minimal_slot_count;
-            TRY(allocate_and_initialize_memory(self.m_slot_count, self.m_slots, self.m_slots_metadata));
-        }
-        else {
-            self.clear();
-        }
-
-        if (other.m_occupied_slot_count == 0) {
-            // No more action is required.
-            return {};
-        }
-
-        self.m_occupied_slot_count = other.m_occupied_slot_count;
-        for (usize index = 0; index < other.m_slot_count; ++index) {
-            if (!(other.m_slots_metadata[index] & metadata_available_bit_mask)) {
-                const T& element = other.m_slots[index];
-                const u64 element_hash = get_element_hash(element);
-
-                const usize slot_index = self.unchecked_find_first_available_slot(element_hash);
-                new (self.m_slots + slot_index) T(element);
-                self.m_slots_metadata[slot_index] = other.m_slots_metadata[index];
-            }
-        }
-
-        return {};
-    }
-
-public:
     ALWAYS_INLINE HashTable()
         : m_slots(nullptr)
         , m_slots_metadata(nullptr)
@@ -216,9 +122,42 @@ public:
     {}
 
     ALWAYS_INLINE HashTable(const HashTable& other)
+        : m_slots(nullptr)
+        , m_slots_metadata(nullptr)
+        , m_slot_count(0)
+        , m_occupied_slot_count(0)
     {
-        MUST_ASSIGN(HashTable self, create(other));
-        new (this) HashTable(move(self));
+        if (other.m_occupied_slot_count == 0)
+            return;
+
+        m_slot_count = calculate_minimal_slot_count(other.m_occupied_slot_count);
+        allocate_and_initialize_memory(m_slot_count, m_slots, m_slots_metadata);
+
+        for (usize index = 0; index < other.m_slot_count; ++index) {
+            if (!(other.m_slots_metadata[index] & metadata_available_bit_mask)) {
+                const T& element = other.m_slots[index];
+                const u64 element_hash = get_element_hash(element);
+
+                const usize slot_index = unchecked_find_first_available_slot(element_hash);
+                new (m_slots + slot_index) T(element);
+                m_slots_metadata[slot_index] = other.m_slots_metadata[index];
+                ++m_occupied_slot_count;
+            }
+        }
+    }
+
+    // NOTE: If the list contains the same element multiple times, only the first occurrence will be added.
+    ALWAYS_INLINE HashTable(std::initializer_list<T> init_list)
+        : m_slots(nullptr)
+        , m_slots_metadata(nullptr)
+        , m_slot_count(0)
+        , m_occupied_slot_count(0)
+    {
+        m_slot_count = calculate_minimal_slot_count(init_list.size());
+        allocate_and_initialize_memory(m_slot_count, m_slots, m_slots_metadata);
+
+        for (T& element : init_list)
+            add_if_not_existing(element);
     }
 
     ALWAYS_INLINE HashTable(HashTable&& other) noexcept
@@ -233,17 +172,43 @@ public:
         other.m_occupied_slot_count = 0;
     }
 
-    ALWAYS_INLINE ~HashTable() { MUST(clear_and_shrink()); }
+    ALWAYS_INLINE ~HashTable() { clear_and_shrink(); }
 
     ALWAYS_INLINE HashTable& operator=(const HashTable& other)
     {
-        MUST(assign(*this, other));
+        const usize minimal_slot_count = calculate_minimal_slot_count(other.m_occupied_slot_count);
+        if (minimal_slot_count > m_slot_count) {
+            clear_and_shrink();
+            m_slot_count = minimal_slot_count;
+            allocate_and_initialize_memory(m_slot_count, m_slots, m_slots_metadata);
+        }
+        else {
+            clear();
+        }
+
+        if (other.m_occupied_slot_count == 0) {
+            // No more action is required.
+            return {};
+        }
+
+        for (usize index = 0; index < other.m_slot_count; ++index) {
+            if (!(other.m_slots_metadata[index] & metadata_available_bit_mask)) {
+                const T& element = other.m_slots[index];
+                const u64 element_hash = get_element_hash(element);
+
+                const usize slot_index = unchecked_find_first_available_slot(element_hash);
+                new (m_slots + slot_index) T(element);
+                m_slots_metadata[slot_index] = other.m_slots_metadata[index];
+                ++m_occupied_slot_count;
+            }
+        }
+
         return *this;
     }
 
     ALWAYS_INLINE HashTable& operator=(HashTable&& other) noexcept
     {
-        MUST(clear_and_shrink());
+        clear_and_shrink();
 
         m_slots = other.m_slots;
         m_slots_metadata = other.m_slots_metadata;
@@ -290,50 +255,42 @@ public:
 
     NODISCARD ALWAYS_INLINE bool contains(const T& element) const
     {
-        const auto index = find(element);
+        Optional<usize> index = find(element);
         return index.has_value();
     }
 
 public:
-    ALWAYS_INLINE ErrorOr<void> add(const T& element)
+    ALWAYS_INLINE void add(const T& element)
     {
-        TRY(re_allocate_if_overloaded(m_occupied_slot_count + 1));
+        re_allocate_if_overloaded(m_occupied_slot_count + 1);
 
         const u64 element_hash = get_element_hash(element);
         const u8 low_hash = get_low_hash(element_hash);
         const usize slot_index = unchecked_find_element_or_first_available_slot(element, element_hash, low_hash);
 
-        if (m_slots_metadata[slot_index] == low_hash) {
-            return Error::KeyAlreadyExists;
-        }
+        AT_ASSERT(m_slots_metadata[slot_index] != low_hash);
 
         new (m_slots + slot_index) T(element);
         m_slots_metadata[slot_index] = low_hash;
         ++m_occupied_slot_count;
-
-        return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> add(T&& element)
+    ALWAYS_INLINE void add(T&& element)
     {
-        TRY(re_allocate_if_overloaded(m_occupied_slot_count + 1));
+        re_allocate_if_overloaded(m_occupied_slot_count + 1);
 
         const u64 element_hash = get_element_hash(element);
         const u8 low_hash = get_low_hash(element_hash);
         const usize slot_index = unchecked_find_element_or_first_available_slot(element, element_hash, low_hash);
 
-        if (m_slots_metadata[slot_index] == low_hash) {
-            return Error::KeyAlreadyExists;
-        }
+        AT_ASSERT(m_slots_metadata[slot_index] != low_hash);
 
         new (m_slots + slot_index) T(move(element));
         m_slots_metadata[slot_index] = low_hash;
         ++m_occupied_slot_count;
-
-        return {};
     }
 
-    ALWAYS_INLINE ErrorOr<HashTableAddResult> add_if_not_existing(const T& element)
+    ALWAYS_INLINE HashTableAddResult add_if_not_existing(const T& element)
     {
         const u64 element_hash = get_element_hash(element);
         const u8 low_hash = get_low_hash(element_hash);
@@ -344,7 +301,7 @@ public:
             return HashTableAddResult::EntryAlreadyExists;
         }
 
-        TRY_ASSIGN(bool has_re_allocated, re_allocate_if_overloaded(m_occupied_slot_count + 1));
+        const bool has_re_allocated = re_allocate_if_overloaded(m_occupied_slot_count + 1);
         if (has_re_allocated) {
             // NOTE: We already know that the element doesn't exist in the table.
             slot_index = unchecked_find_first_available_slot(element_hash);
@@ -357,7 +314,7 @@ public:
         return HashTableAddResult::InsertedNewEntry;
     }
 
-    ALWAYS_INLINE ErrorOr<HashTableAddResult> add_if_not_existing(T&& element)
+    ALWAYS_INLINE HashTableAddResult add_if_not_existing(T&& element)
     {
         const u64 element_hash = get_element_hash(element);
         const u8 low_hash = get_low_hash(element_hash);
@@ -368,7 +325,7 @@ public:
             return HashTableAddResult::EntryAlreadyExists;
         }
 
-        TRY_ASSIGN(bool has_re_allocated, re_allocate_if_overloaded(m_occupied_slot_count + 1));
+        const bool has_re_allocated = re_allocate_if_overloaded(m_occupied_slot_count + 1);
         if (has_re_allocated) {
             // NOTE: We already know that the element doesn't exist in the table.
             slot_index = unchecked_find_first_available_slot(element_hash);
@@ -398,7 +355,7 @@ public:
         }
     }
 
-    ALWAYS_INLINE ErrorOr<void> clear_and_shrink()
+    ALWAYS_INLINE void clear_and_shrink()
     {
         if (m_occupied_slot_count > 0) {
             for (usize index = 0; index < m_slot_count; ++index) {
@@ -408,28 +365,22 @@ public:
             }
         }
 
-        TRY(release_memory(m_slots, m_slot_count));
+        release_memory(m_slots, m_slot_count);
         m_slots = nullptr;
         m_slots_metadata = nullptr;
         m_slot_count = 0;
         m_occupied_slot_count = 0;
-
-        return {};
     }
 
-    ALWAYS_INLINE ErrorOr<void> remove(const T& element)
+    ALWAYS_INLINE void remove(const T& element)
     {
-        const auto optional_slot_index = find(element);
-        if (!optional_slot_index) {
-            return Error::KeyDoesNotExist;
-        }
+        Optional<usize> optional_slot_index = find(element);
+        AT_ASSERT(optional_slot_index);
 
         const usize slot_index = *optional_slot_index;
         m_slots[slot_index].~T();
         m_slots_metadata[slot_index] = metadata_tombstone_value;
         --m_occupied_slot_count;
-
-        return {};
     }
 
     ALWAYS_INLINE HashTableRemoveResult remove_if_exists(const T& element)
@@ -459,29 +410,24 @@ public:
     }
 
 private:
-    ALWAYS_INLINE static ErrorOr<void>
+    ALWAYS_INLINE static void
     allocate_and_initialize_memory(usize slot_count, T*& out_slots, Metadata*& out_slots_metadata)
     {
         void* memory_block = ::operator new(slot_count * (sizeof(T) + sizeof(Metadata)));
-        if (!memory_block) {
-            return Error::OutOfMemory;
-        }
+        AT_ASSERT(memory_block);
 
         out_slots = reinterpret_cast<T*>(memory_block);
         out_slots_metadata = reinterpret_cast<Metadata*>(out_slots + slot_count);
         set_memory(out_slots_metadata, metadata_empty_value, slot_count * sizeof(Metadata));
-        return {};
     }
 
-    ALWAYS_INLINE static ErrorOr<void> release_memory(T* slots, usize slot_count)
+    ALWAYS_INLINE static void release_memory(T* slots, usize slot_count)
     {
         // NOTE: The standard operator delete doesn't need the size of the memory block.
         //       However, in future implementations we might switch to a custom memory allocator,
         //       so having this crucial information available out-of-the-box is really handy.
         MAYBE_UNUSED const usize byte_count = slot_count * (sizeof(T) + sizeof(Metadata));
-
         ::operator delete(slots);
-        return {};
     }
 
     NODISCARD ALWAYS_INLINE static usize calculate_minimal_slot_count(usize required_count)
@@ -540,7 +486,7 @@ private:
         return first_available_slot_index;
     }
 
-    ALWAYS_INLINE ErrorOr<void> re_allocate_to_fixed(usize new_slot_count)
+    ALWAYS_INLINE void re_allocate_to_fixed(usize new_slot_count)
     {
         AT_ASSERT(new_slot_count >= calculate_minimal_slot_count(m_slot_count));
 
@@ -549,7 +495,7 @@ private:
         const usize slot_count = m_slot_count;
 
         m_slot_count = new_slot_count;
-        TRY(allocate_and_initialize_memory(m_slot_count, m_slots, m_slots_metadata));
+        allocate_and_initialize_memory(m_slot_count, m_slots, m_slots_metadata);
 
         for (usize index = 0; index < slot_count; ++index) {
             if (!(slots_metadata[index] & metadata_available_bit_mask)) {
@@ -565,16 +511,15 @@ private:
             }
         }
 
-        TRY(release_memory(slots, slot_count));
-        return {};
+        release_memory(slots, slot_count);
     }
 
-    ALWAYS_INLINE ErrorOr<bool> re_allocate_if_overloaded(usize required_count)
+    ALWAYS_INLINE bool re_allocate_if_overloaded(usize required_count)
     {
         const usize minimal_slot_count = calculate_minimal_slot_count(required_count);
         if (minimal_slot_count > m_slot_count) {
             const usize new_slot_count = calculate_next_slot_count(m_slot_count, minimal_slot_count);
-            TRY(re_allocate_to_fixed(new_slot_count));
+            re_allocate_to_fixed(new_slot_count);
             return true;
         }
 
