@@ -21,7 +21,7 @@ public:
 
     void increment_reference_count()
     {
-        AT_ASSERT(m_reference_count > 0);
+        AT_ASSERT_DEBUG(m_reference_count > 0);
 
         // TODO: Ensure that addition would not overflow.
         ++m_reference_count;
@@ -29,7 +29,7 @@ public:
 
     bool decrement_reference_count()
     {
-        AT_ASSERT(m_reference_count > 0);
+        AT_ASSERT_DEBUG(m_reference_count > 0);
 
         if (--m_reference_count == 0) {
             auto* self = static_cast<T*>(this);
