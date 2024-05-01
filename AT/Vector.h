@@ -27,30 +27,17 @@ public:
     using ReverseConstIterator = const T*;
 
 public:
-    ALWAYS_INLINE static Vector create(const Vector& other)
-    {
-        T* elements = allocate_memory(other.m_count);
-        copy_elements(elements, other.m_elements, other.m_count);
-
-        Vector vector;
-        vector.m_elements = elements;
-        vector.m_capacity = other.m_count;
-        vector.m_count = other.m_count;
-        return vector;
-    }
-
-    ALWAYS_INLINE static Vector create_with_initial_capacity(usize initial_capacity)
+    NODISCARD ALWAYS_INLINE static Vector create_with_initial_capacity(usize initial_capacity)
     {
         T* elements = allocate_memory(initial_capacity);
 
         Vector vector;
         vector.m_elements = elements;
         vector.m_capacity = initial_capacity;
-        vector.m_count = 0;
         return vector;
     }
 
-    ALWAYS_INLINE static Vector create_from_span(Span<const T> element_span)
+    NODISCARD ALWAYS_INLINE static Vector create_from_span(Span<const T> element_span)
     {
         Vector vector = create_with_initial_capacity(element_span.count());
         vector.m_count = element_span.count();
@@ -58,7 +45,7 @@ public:
         return vector;
     }
 
-    ALWAYS_INLINE static Vector create_filled(usize initial_count)
+    NODISCARD ALWAYS_INLINE static Vector create_filled(usize initial_count)
     {
         Vector vector = create_with_initial_capacity(initial_count);
         vector.m_count = initial_count;
@@ -68,7 +55,7 @@ public:
         return vector;
     }
 
-    ALWAYS_INLINE static Vector create_filled(usize initial_count, const T& template_element)
+    NODISCARD ALWAYS_INLINE static Vector create_filled(usize initial_count, const T& template_element)
     {
         Vector vector = create_with_initial_capacity(initial_count);
         vector.m_count = initial_count;
