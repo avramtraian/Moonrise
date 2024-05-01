@@ -10,7 +10,7 @@
 
 namespace AT {
 
-ErrorOr<String> FormatBuilder::release_string()
+Optional<String> FormatBuilder::release_string()
 {
     // NOTE: Creating a string from a vector of characters is very wasteful. In our current implementation,
     //       there is always an unnecessary memory allocation. If the formatted string fits in a String
@@ -27,7 +27,7 @@ ErrorOr<String> FormatBuilder::release_string()
     return formatted_string;
 }
 
-ErrorOr<void> FormatBuilder::consume_until_format_specifier()
+FormatErrorCode FormatBuilder::consume_until_format_specifier()
 {
     usize specifier_offset = m_string_format.find(AT_FORMAT_SPECIFIER_BEGIN_TOKEN);
     if (specifier_offset == StringView::invalid_position) {
@@ -40,13 +40,13 @@ ErrorOr<void> FormatBuilder::consume_until_format_specifier()
     return {};
 }
 
-ErrorOr<FormatBuilder::Specifier> FormatBuilder::parse_specifier()
+Optional<FormatBuilder::Specifier> FormatBuilder::parse_specifier()
 {
     if (m_string_format.is_empty() || m_string_format.byte_span()[0] != AT_FORMAT_SPECIFIER_BEGIN_TOKEN) {
         // NOTE: This function is only called when there is an argument passed to the 'format()' function
         //       that hasn't been inserted in the formatted string yet. If this codepath is reached it
         //       means that more arguments were passed to the function than required.
-        return Error::InvalidStringFormat;
+        return {};
     }
 
     // Advance the format string to the next character, ignoring the AT_FORMAT_SPECIFIER_BEGIN_TOKEN.
@@ -56,27 +56,29 @@ ErrorOr<FormatBuilder::Specifier> FormatBuilder::parse_specifier()
     if (specifier_count == StringView::invalid_position) {
         // NOTE: Because the format specifier doesn't have an end token the
         //       string format is considered invalid.
-        return Error::InvalidStringFormat;
+        return {};
     }
 
     const StringView specifier_string = m_string_format.slice(0, specifier_count);
     m_string_format = m_string_format.slice(specifier_count + 1);
 
-    TRY_ASSIGN(auto specifier, FormatBuilder::parse_specifier(specifier_string));
-    return specifier;
+    Optional<Specifier> specifier = FormatBuilder::parse_specifier(specifier_string);
+    if (specifier.has_value())
+        return specifier.value();
+    return {};
 }
 
-ErrorOr<FormatBuilder::Specifier> FormatBuilder::parse_specifier(StringView specifier_string)
+Optional<FormatBuilder::Specifier> FormatBuilder::parse_specifier(StringView specifier_string)
 {
     if (!specifier_string.is_empty()) {
         // NOTE: Currently, we don't support any string format specifier!
-        return Error::InvalidStringFormat;
+        return {};
     }
 
     return Specifier();
 }
 
-ErrorOr<void> FormatBuilder::push_unsigned_integer(const Specifier&, u64 value)
+FormatErrorCode FormatBuilder::push_unsigned_integer(const Specifier&, u64 value)
 {
     // NOTE: The longest integer representation (in binary) is no longer than 64 characters.
     char buffer[64] = {};
@@ -99,24 +101,23 @@ ErrorOr<void> FormatBuilder::push_unsigned_integer(const Specifier&, u64 value)
     }
 
     m_formatted_string_buffer.add_span({ buffer, digit_count });
-    return {};
+    return FormatErrorCode::Success;
 }
 
-ErrorOr<void> FormatBuilder::push_signed_integer(const Specifier& specifier, i64 value)
+FormatErrorCode FormatBuilder::push_signed_integer(const Specifier& specifier, i64 value)
 {
     if (value < 0) {
         m_formatted_string_buffer.add('-');
         value = -value;
     }
 
-    TRY(push_unsigned_integer(specifier, static_cast<u64>(value)));
-    return {};
+    return push_unsigned_integer(specifier, static_cast<u64>(value));
 }
 
-ErrorOr<void> FormatBuilder::push_string(const Specifier&, StringView value)
+FormatErrorCode FormatBuilder::push_string(const Specifier&, StringView value)
 {
     m_formatted_string_buffer.add_span(value.byte_span().as<const char>());
-    return {};
+    return FormatErrorCode::Success;
 }
 
 } // namespace AT
