@@ -17,8 +17,6 @@ set(AT_SOURCE_FILES
     HashTable.h
     MemoryOperations.cpp
     MemoryOperations.h
-    NonnullOwnPtr.h
-    NonnullRefPtr.h
     Optional.h
     OwnPtr.h
     RefPtr.h
