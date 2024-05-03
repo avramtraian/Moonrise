@@ -246,3 +246,8 @@ private:
         return AT_CONCATENATE(_at_error_or, AT_LINE).release_error();    \
     }                                                                    \
     variable_declaration = AT_CONCATENATE(_at_error_or, AT_LINE).release_value();
+
+#ifdef AT_INCLUDE_GLOBALLY
+using AT::Error;
+using AT::ErrorOr;
+#endif // AT_INCLUDE_GLOBALLY
