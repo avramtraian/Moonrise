@@ -100,5 +100,6 @@ NODISCARD ALWAYS_INLINE OwnPtr<T> make_own(Args&&... args)
 
 #ifdef AT_INCLUDE_GLOBALLY
 using AT::adopt_own;
+using AT::make_own;
 using AT::OwnPtr;
 #endif // AT_INCLUDE_GLOBALLY

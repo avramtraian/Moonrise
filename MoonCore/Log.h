@@ -19,7 +19,7 @@ template<typename... Args>
 ALWAYS_INLINE void dbgln(StringView message, Args&&... args)
 {
     auto formatted_message_or_error = format(message, forward<Args>(args)...);
-    if (formatted_message_or_error.is_error()) {
+    if (!formatted_message_or_error.has_value()) {
         // NOTE: Asserting for failing to format the message in a log would be very excessive.
         return;
     }
@@ -32,7 +32,7 @@ template<typename... Args>
 ALWAYS_INLINE void warnln(StringView message, Args&&... args)
 {
     auto formatted_message_or_error = format(message, forward<Args>(args)...);
-    if (formatted_message_or_error.is_error()) {
+    if (!formatted_message_or_error.has_value()) {
         // NOTE: Asserting for failing to format the message in a log would be very excessive.
         return;
     }
@@ -45,7 +45,7 @@ template<typename... Args>
 ALWAYS_INLINE void errorln(StringView message, Args&&... args)
 {
     auto formatted_message_or_error = format(message, forward<Args>(args)...);
-    if (formatted_message_or_error.is_error()) {
+    if (!formatted_message_or_error.has_value()) {
         // NOTE: Asserting for failing to format the message in a log would be very excessive.
         return;
     }
