@@ -17,6 +17,7 @@ Checks: >
   -bugprone-implicit-widening-of-multiplication-result,
   -bugprone-narrowing-conversions,
   -bugprone-redundant-branch-condition,
+  -bugprone-switch-missing-default-case,
   -bugprone-unhandled-self-assignment,
 
   modernize-*,
