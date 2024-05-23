@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -31,14 +29,8 @@ public:
         }
     }
 
-    NODISCARD ALWAYS_INLINE bool operator==(const HashTableIterator& other) const
-    {
-        return m_current_slot == other.m_current_slot;
-    }
-    NODISCARD ALWAYS_INLINE bool operator!=(const HashTableIterator& other) const
-    {
-        return m_current_slot != other.m_current_slot;
-    }
+    NODISCARD ALWAYS_INLINE bool operator==(const HashTableIterator& other) const { return m_current_slot == other.m_current_slot; }
+    NODISCARD ALWAYS_INLINE bool operator!=(const HashTableIterator& other) const { return m_current_slot != other.m_current_slot; }
 
     NODISCARD ALWAYS_INLINE T& operator*() { return *m_current_slot; }
     NODISCARD ALWAYS_INLINE T* operator->() { return m_current_slot; }
@@ -301,8 +293,7 @@ public:
             return HashTableAddResult::EntryAlreadyExists;
         }
 
-        const bool has_re_allocated = re_allocate_if_overloaded(m_occupied_slot_count + 1);
-        if (has_re_allocated) {
+        if (re_allocate_if_overloaded(m_occupied_slot_count + 1)) {
             // NOTE: We already know that the element doesn't exist in the table.
             slot_index = unchecked_find_first_available_slot(element_hash);
         }
@@ -325,8 +316,7 @@ public:
             return HashTableAddResult::EntryAlreadyExists;
         }
 
-        const bool has_re_allocated = re_allocate_if_overloaded(m_occupied_slot_count + 1);
-        if (has_re_allocated) {
+        if (re_allocate_if_overloaded(m_occupied_slot_count + 1)) {
             // NOTE: We already know that the element doesn't exist in the table.
             slot_index = unchecked_find_first_available_slot(element_hash);
         }
@@ -385,7 +375,7 @@ public:
 
     ALWAYS_INLINE HashTableRemoveResult remove_if_exists(const T& element)
     {
-        const auto optional_slot_index = find(element);
+        const Optional<usize> optional_slot_index = find(element);
         if (!optional_slot_index) {
             return HashTableRemoveResult::EntryDoesNotExist;
         }
@@ -399,24 +389,16 @@ public:
     }
 
 public:
-    NODISCARD ALWAYS_INLINE Iterator begin() const
-    {
-        return Iterator(m_slots, m_slots + m_slot_count, m_slots_metadata);
-    }
-
-    NODISCARD ALWAYS_INLINE Iterator end() const
-    {
-        return Iterator(m_slots + m_slot_count, m_slots + m_slot_count, m_slots_metadata + m_slot_count);
-    }
+    NODISCARD ALWAYS_INLINE Iterator begin() const { return Iterator(m_slots, m_slots + m_slot_count, m_slots_metadata); }
+    NODISCARD ALWAYS_INLINE Iterator end() const { return Iterator(m_slots + m_slot_count, m_slots + m_slot_count, m_slots_metadata + m_slot_count); }
 
 private:
-    ALWAYS_INLINE static void
-    allocate_and_initialize_memory(usize slot_count, T*& out_slots, Metadata*& out_slots_metadata)
+    ALWAYS_INLINE static void allocate_and_initialize_memory(usize slot_count, T*& out_slots, Metadata*& out_slots_metadata)
     {
         void* memory_block = ::operator new(slot_count * (sizeof(T) + sizeof(Metadata)));
         AT_ASSERT(memory_block);
 
-        out_slots = reinterpret_cast<T*>(memory_block);
+        out_slots = static_cast<T*>(memory_block);
         out_slots_metadata = reinterpret_cast<Metadata*>(out_slots + slot_count);
         set_memory(out_slots_metadata, metadata_empty_value, slot_count * sizeof(Metadata));
     }
@@ -457,8 +439,7 @@ private:
     }
 
     // NOTE: Will return 'invalid_size' if no available slot was found and the element doesn't already exist.
-    NODISCARD ALWAYS_INLINE usize
-    unchecked_find_element_or_first_available_slot(const T& element, u64 element_hash, u8 low_hash) const
+    NODISCARD ALWAYS_INLINE usize unchecked_find_element_or_first_available_slot(const T& element, u64 element_hash, u8 low_hash) const
     {
         usize index = get_high_hash(element_hash) % m_slot_count;
         usize first_available_slot_index = invalid_size;

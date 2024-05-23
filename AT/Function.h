@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -41,18 +39,9 @@ public:
         virtual ~Functor() override = default;
 
     public:
-        virtual ReturnType invoke(ParameterTypes&&... parameters) override
-        {
-            return m_functor(forward<ParameterTypes>(parameters)...);
-        }
-        virtual void copy_to(WriteonlyBytes destination_buffer) override
-        {
-            new (destination_buffer) Functor(m_functor);
-        }
-        virtual void move_to(WriteonlyBytes destination_buffer) override
-        {
-            new (destination_buffer) Functor(move(m_functor));
-        }
+        virtual ReturnType invoke(ParameterTypes&&... parameters) override { return m_functor(forward<ParameterTypes>(parameters)...); }
+        virtual void copy_to(WriteonlyBytes destination_buffer) override { new (destination_buffer) Functor(m_functor); }
+        virtual void move_to(WriteonlyBytes destination_buffer) override { new (destination_buffer) Functor(move(m_functor)); }
 
     private:
         FunctorType m_functor;
@@ -60,7 +49,8 @@ public:
 
 public:
     ALWAYS_INLINE Function()
-        : m_functor_byte_count(0)
+        : m_inline_buffer {}
+        , m_functor_byte_count(0)
     {}
 
     ALWAYS_INLINE Function(const Function& other)
@@ -202,10 +192,7 @@ public:
     NODISCARD ALWAYS_INLINE bool has_value() const { return (m_functor_byte_count > 0); }
     NODISCARD ALWAYS_INLINE operator bool() const { return has_value(); }
 
-    ALWAYS_INLINE ReturnType operator()(ParameterTypes&&... parameters)
-    {
-        return functor().invoke(forward<ParameterTypes>(parameters)...);
-    }
+    ALWAYS_INLINE ReturnType operator()(ParameterTypes&&... parameters) { return functor().invoke(forward<ParameterTypes>(parameters)...); }
 
     ALWAYS_INLINE void clear()
     {
@@ -226,22 +213,16 @@ private:
     {
         void* memory_block = ::operator new(byte_count);
         AT_ASSERT(memory_block != nullptr);
-        return ReadWriteByteSpan(reinterpret_cast<ReadWriteBytes>(memory_block), byte_count);
+        return ReadWriteByteSpan(static_cast<ReadWriteBytes>(memory_block), byte_count);
     }
 
-    ALWAYS_INLINE static void release_memory(ReadWriteByteSpan heap_buffer)
-    {
-        ::operator delete(heap_buffer.elements());
-    }
+    ALWAYS_INLINE static void release_memory(ReadWriteByteSpan heap_buffer) { ::operator delete(heap_buffer.elements()); }
 
 private:
     NODISCARD ALWAYS_INLINE bool is_stored_inline() const { return (m_functor_byte_count <= inline_capacity); }
     NODISCARD ALWAYS_INLINE bool is_stored_on_heap() const { return (m_functor_byte_count > inline_capacity); }
 
-    NODISCARD ALWAYS_INLINE usize buffer_capacity() const
-    {
-        return is_stored_inline() ? inline_capacity : m_heap_buffer.count();
-    }
+    NODISCARD ALWAYS_INLINE usize buffer_capacity() const { return is_stored_inline() ? inline_capacity : m_heap_buffer.count(); }
 
     NODISCARD ALWAYS_INLINE FunctorBase& functor()
     {

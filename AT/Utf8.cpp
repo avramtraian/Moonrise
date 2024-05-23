@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #include "AT/Utf8.h"
 
@@ -16,7 +14,7 @@ UnicodeCodepoint UTF8::bytes_to_codepoint(ReadonlyByteSpan byte_span, usize& out
 
     if ((byte_span.elements()[0] & 0x80) == 0x00) {
         out_codepoint_width = 1;
-        return (UnicodeCodepoint)byte_span.elements()[0];
+        return static_cast<UnicodeCodepoint>(byte_span.elements()[0]);
     }
 
     if ((byte_span.elements()[0] & 0xE0) == 0xC0) {
@@ -108,7 +106,7 @@ usize UTF8::bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan d
         if (destination_byte_span.count() < 1) {
             return 0;
         }
-        destination_byte_span.elements()[0] = (u8)codepoint;
+        destination_byte_span.elements()[0] = static_cast<u8>(codepoint);
         return 1;
     }
 

@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #include "AT/StringView.h"
 #include "AT/Utf8.h"
@@ -35,18 +33,18 @@ usize StringView::find(char ascii_character) const
     return invalid_position;
 }
 
-usize StringView::find(UnicodeCodepoint codepoint_to_find) const
+usize StringView::find(UnicodeCodepoint codepoint) const
 {
     usize offset = 0;
     while (offset < m_byte_count) {
-        usize codepoint_width;
-        UnicodeCodepoint codepoint = UTF8::bytes_to_codepoint(byte_span().slice(offset), codepoint_width);
-        AT_ASSERT(codepoint != invalid_unicode_codepoint);
+        usize current_codepoint_width;
+        UnicodeCodepoint current_codepoint = UTF8::bytes_to_codepoint(byte_span().slice(offset), current_codepoint_width);
+        AT_ASSERT(current_codepoint != invalid_unicode_codepoint);
 
-        if (codepoint == codepoint_to_find) {
+        if (current_codepoint == codepoint) {
             return offset;
         }
-        offset += codepoint_width;
+        offset += current_codepoint_width;
     }
 
     return invalid_position;

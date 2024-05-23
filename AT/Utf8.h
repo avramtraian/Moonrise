@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -30,8 +28,7 @@ public:
     // If the codepoint is not valid Unicode, no memory will be written and zero will be returned.
     // If the destination buffer is not big enough, no memory will be written and zero will be returned.
     //
-    NODISCARD AT_API static usize
-    bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan destination_byte_span);
+    NODISCARD AT_API static usize bytes_from_codepoint(UnicodeCodepoint codepoint, WriteonlyByteSpan destination_byte_span);
 
     //
     // Computes the width (in bytes) of a Unicode codepoint, encoded as UTF-8.

@@ -1,14 +1,12 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
 #include "AT/Defines.h"
 
 // NOTE: std::initializer_list can't be implemented by us, so we include its header file here in
-//       order to have access to it throughout the entire codebase without including it.
+//       order to have access to it throughout the entire codebase.
 #include <initializer_list>
 #include <type_traits>
 
@@ -204,6 +202,8 @@ constexpr bool is_integral = is_unsigned_integral<T> || is_signed_integral<T>;
 
 //
 // The STL equivalent of the move function. Same signature and behaviour.
+// https://en.cppreference.com/w/cpp/utility/move
+//
 //
 template<typename T>
 NODISCARD ALWAYS_INLINE constexpr RemoveReference<T>&& move(T&& instance) noexcept
@@ -213,6 +213,7 @@ NODISCARD ALWAYS_INLINE constexpr RemoveReference<T>&& move(T&& instance) noexce
 
 //
 // The STL equivalent of the forward function. Same signature and behaviour.
+// https://en.cppreference.com/w/cpp/utility/forward
 //
 template<typename T>
 NODISCARD ALWAYS_INLINE constexpr T&& forward(RemoveReference<T>& instance) noexcept
@@ -222,6 +223,7 @@ NODISCARD ALWAYS_INLINE constexpr T&& forward(RemoveReference<T>& instance) noex
 
 //
 // The STL equivalent of the forward function. Same signature and behaviour.
+// https://en.cppreference.com/w/cpp/utility/forward
 //
 template<typename T>
 NODISCARD ALWAYS_INLINE constexpr T&& forward(RemoveReference<T>&& instance) noexcept

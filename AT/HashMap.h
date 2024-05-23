@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -31,14 +29,8 @@ public:
         : m_table_iterator(table_iterator)
     {}
 
-    NODISCARD ALWAYS_INLINE bool operator==(const HashMapIterator& other) const
-    {
-        return m_table_iterator == other.m_table_iterator;
-    }
-    NODISCARD ALWAYS_INLINE bool operator!=(const HashMapIterator& other) const
-    {
-        return m_table_iterator != other.m_table_iterator;
-    }
+    NODISCARD ALWAYS_INLINE bool operator==(const HashMapIterator& other) const { return m_table_iterator == other.m_table_iterator; }
+    NODISCARD ALWAYS_INLINE bool operator!=(const HashMapIterator& other) const { return m_table_iterator != other.m_table_iterator; }
 
     NODISCARD ALWAYS_INLINE KeyValuePair operator*()
     {
@@ -236,16 +228,14 @@ public:
         const u64 bucket_hash = InternalHashTable::get_element_hash(key_as_bucket);
         const u8 low_bucket_hash = InternalHashTable::get_low_hash(bucket_hash);
 
-        usize slot_index =
-            m_buckets.unchecked_find_element_or_first_available_slot(key_as_bucket, bucket_hash, low_bucket_hash);
+        usize slot_index = m_buckets.unchecked_find_element_or_first_available_slot(key_as_bucket, bucket_hash, low_bucket_hash);
 
         if (m_buckets.m_slots_metadata[slot_index] == low_bucket_hash) {
             // NOTE: The key already exists, so no more action is needed.
             return m_buckets.m_slots[slot_index].value();
         }
 
-        bool has_re_allocated = m_buckets.re_allocate_if_overloaded(m_buckets.m_occupied_slot_count + 1);
-        if (has_re_allocated) {
+        if (m_buckets.re_allocate_if_overloaded(m_buckets.m_occupied_slot_count + 1)) {
             // NOTE: We already know that the element doesn't exist in the table.
             slot_index = m_buckets.unchecked_find_first_available_slot(bucket_hash);
         }
@@ -275,11 +265,8 @@ private:
     //       Because we know the bucket layout, we can assume that the key is always the first
     //       field in the structure, and it is not padded. This allows us to "cast" the key
     //       variable to a bucket, as long as we don't access the value field.
-    // WARNING: Not using this API correctly *will* create annoying bugs.
-    NODISCARD ALWAYS_INLINE static const Bucket& unsafe_bucket_from_key(const KeyType& key)
-    {
-        return *reinterpret_cast<const Bucket*>(&key);
-    }
+    // WARNING: Not using this "API" correctly *will* create annoying bugs.
+    NODISCARD ALWAYS_INLINE static const Bucket& unsafe_bucket_from_key(const KeyType& key) { return *reinterpret_cast<const Bucket*>(&key); }
 
     ALWAYS_INLINE usize add_without_constructing_bucket(const KeyType& key)
     {
@@ -288,8 +275,7 @@ private:
         const Bucket& key_as_bucket = unsafe_bucket_from_key(key);
         const u64 bucket_hash = InternalHashTable::get_element_hash(key_as_bucket);
         const u8 low_bucket_hash = InternalHashTable::get_low_hash(bucket_hash);
-        const usize slot_index =
-            m_buckets.unchecked_find_element_or_first_available_slot(key_as_bucket, bucket_hash, low_bucket_hash);
+        const usize slot_index = m_buckets.unchecked_find_element_or_first_available_slot(key_as_bucket, bucket_hash, low_bucket_hash);
 
         if (m_buckets.m_slots_metadata[slot_index] == low_bucket_hash)
             return invalid_size;

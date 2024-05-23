@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -312,7 +310,7 @@ private:
         void* memory_block = ::operator new(capacity * sizeof(T));
         AT_ASSERT(memory_block);
 
-        return reinterpret_cast<T*>(memory_block);
+        return static_cast<T*>(memory_block);
     }
 
     ALWAYS_INLINE static void release_memory(T* elements, usize capacity)

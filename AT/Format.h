@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -53,8 +51,7 @@ template<typename T>
 struct Formatter {
     ALWAYS_INLINE static FormatErrorCode format(FormatBuilder&, const FormatBuilder::Specifier&, const T&)
     {
-        // TODO: Maybe we should signal that the Formatter<T> isn't specialized by
-        //       gracefully returning an error code?
+        // TODO: Maybe we should signal that the Formatter<T> isn't specialized by gracefully returning an error code?
         AT_ASSERT(false);
         return FormatErrorCode::Success;
     }
@@ -63,8 +60,7 @@ struct Formatter {
 template<typename T>
 requires (is_integral<T>)
 struct Formatter<T> {
-    ALWAYS_INLINE static FormatErrorCode
-    format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const T& value)
+    ALWAYS_INLINE static FormatErrorCode format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const T& value)
     {
         if constexpr (is_signed_integral<T>)
             return builder.push_signed_integer(specifier, static_cast<i64>(value));
@@ -75,8 +71,7 @@ struct Formatter<T> {
 
 template<>
 struct Formatter<bool> {
-    ALWAYS_INLINE static FormatErrorCode
-    format(FormatBuilder& builder, const FormatBuilder::Specifier&, const bool& value)
+    ALWAYS_INLINE static FormatErrorCode format(FormatBuilder& builder, const FormatBuilder::Specifier&, const bool& value)
     {
         return builder.push_string({}, value ? "true"sv : "false"sv);
     }
@@ -84,8 +79,7 @@ struct Formatter<bool> {
 
 template<>
 struct Formatter<StringView> {
-    ALWAYS_INLINE static FormatErrorCode
-    format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const StringView& value)
+    ALWAYS_INLINE static FormatErrorCode format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const StringView& value)
     {
         return builder.push_string(specifier, value);
     }
@@ -93,8 +87,7 @@ struct Formatter<StringView> {
 
 template<>
 struct Formatter<String> {
-    ALWAYS_INLINE static FormatErrorCode
-    format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const String& value)
+    ALWAYS_INLINE static FormatErrorCode format(FormatBuilder& builder, const FormatBuilder::Specifier& specifier, const String& value)
     {
         return builder.push_string(specifier, value.view());
     }

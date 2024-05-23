@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #include "AT/Format.h"
 
@@ -20,8 +18,7 @@ Optional<String> FormatBuilder::release_string()
     // TODO: Replace the Vector container to something else that minimizes unnecessary memory allocations.
     //       At the moment of writing this implementation, the concept of a StringBuilder doesn't exist.
 
-    auto formatted_view =
-        StringView::unsafe_create_from_utf8(m_formatted_string_buffer.elements(), m_formatted_string_buffer.count());
+    auto formatted_view = StringView::unsafe_create_from_utf8(m_formatted_string_buffer.elements(), m_formatted_string_buffer.count());
     String formatted_string = String(formatted_view);
     m_formatted_string_buffer.clear_and_shrink();
     return formatted_string;
@@ -32,12 +29,12 @@ FormatErrorCode FormatBuilder::consume_until_format_specifier()
     usize specifier_offset = m_string_format.find(AT_FORMAT_SPECIFIER_BEGIN_TOKEN);
     if (specifier_offset == StringView::invalid_position) {
         m_formatted_string_buffer.add_span(m_string_format.byte_span().as<const char>());
-        return {};
+        return FormatErrorCode::Success;
     }
 
     m_formatted_string_buffer.add_span(m_string_format.byte_span().slice(0, specifier_offset).as<const char>());
     m_string_format = m_string_format.slice(specifier_offset);
-    return {};
+    return FormatErrorCode::Success;
 }
 
 Optional<FormatBuilder::Specifier> FormatBuilder::parse_specifier()

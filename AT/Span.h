@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -135,18 +133,10 @@ public:
     }
 
     template<typename Q>
-    requires (Span<Q>::element_size() == element_size())
+    requires ((Span<Q>::element_size() % element_size()) == 0 || (element_size() % Span<Q>::element_size() == 0))
     NODISCARD ALWAYS_INLINE Span<Q> as() const
     {
         return Span<Q>(reinterpret_cast<Q*>(m_elements), m_count);
-    }
-
-    template<typename Q>
-    requires ((Span<Q>::element_size() % element_size()) == 0 || (element_size() % Span<Q>::element_size() == 0))
-    NODISCARD ALWAYS_INLINE Span<Q> as_different_size() const
-    {
-        const usize casted_count = (m_count * element_size()) / Span<Q>::element_size();
-        return Span<Q>(reinterpret_cast<Q*>(m_elements), casted_count);
     }
 
 public:

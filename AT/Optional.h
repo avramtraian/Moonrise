@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -15,7 +13,8 @@ template<typename T>
 class Optional {
 public:
     ALWAYS_INLINE Optional()
-        : m_has_value(false)
+        : m_value_storage {}
+        , m_has_value(false)
     {}
 
     ALWAYS_INLINE Optional(const Optional& other)
@@ -116,10 +115,7 @@ public:
     NODISCARD ALWAYS_INLINE operator const T() const { return value(); }
 
     NODISCARD ALWAYS_INLINE T& value_or(T& fallback_value) { return m_has_value ? unchecked_value() : fallback_value; }
-    NODISCARD ALWAYS_INLINE const T& value_or(const T& fallback_value) const
-    {
-        return m_has_value ? unchecked_value() : fallback_value;
-    }
+    NODISCARD ALWAYS_INLINE const T& value_or(const T& fallback_value) const { return m_has_value ? unchecked_value() : fallback_value; }
 
     // Moves the held value to a new variable and clears the Optional.
     NODISCARD ALWAYS_INLINE T release_value()
@@ -210,10 +206,7 @@ public:
     NODISCARD ALWAYS_INLINE operator const T() const { return value(); }
 
     NODISCARD ALWAYS_INLINE T& value_or(T& fallback_value) { return has_value() ? *m_value : fallback_value; }
-    NODISCARD ALWAYS_INLINE const T& value_or(const T& fallback_value) const
-    {
-        return has_value() ? *m_value : fallback_value;
-    }
+    NODISCARD ALWAYS_INLINE const T& value_or(const T& fallback_value) const { return has_value() ? *m_value : fallback_value; }
 
     // Moves the held value to a new variable and clears the Optional.
     NODISCARD ALWAYS_INLINE T& release_value()

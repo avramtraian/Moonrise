@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #pragma once
 
@@ -23,8 +21,7 @@ public:
     AT_API static StringView create_from_utf8(const char* characters, usize byte_count);
     AT_API static StringView create_from_utf8(const char* null_terminated_characters);
 
-    NODISCARD ALWAYS_INLINE static constexpr StringView
-    unsafe_create_from_utf8(const char* characters, usize byte_count)
+    NODISCARD ALWAYS_INLINE static constexpr StringView unsafe_create_from_utf8(const char* characters, usize byte_count)
     {
         StringView view;
         view.m_characters = characters;
@@ -96,7 +93,7 @@ private:
 #elif AT_COMPILER_GCC
     #pragma GCC diagnostic push
 // Disables the following compiler warning:
-// : literal operator suffixes not preceded by '_' are reserved for future standardization
+// - literal operator suffixes not preceded by '_' are reserved for future standardization
     #pragma GCC diagnostic ignored "-Wliteral-suffix"
 #endif // Compiler enumeration.
 

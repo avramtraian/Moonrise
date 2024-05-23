@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 Traian Avram. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause.
- */
+// Copyright (c) 2024 Traian Avram. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause.
 
 #include "AT/String.h"
 #include "AT/MemoryOperations.h"
@@ -116,7 +114,7 @@ char* String::allocate_memory(usize byte_count)
 {
     void* memory_block = ::operator new(byte_count);
     AT_ASSERT(memory_block);
-    return reinterpret_cast<char*>(memory_block);
+    return static_cast<char*>(memory_block);
 }
 
 void String::release_memory(char* heap_buffer, usize byte_count)
