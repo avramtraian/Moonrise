@@ -11,9 +11,9 @@
 
 namespace Core {
 
-MOONCORE_API void dbgln(StringView message);
-MOONCORE_API void warnln(StringView message);
-MOONCORE_API void errorln(StringView message);
+CORE_API void dbgln(StringView message);
+CORE_API void warnln(StringView message);
+CORE_API void errorln(StringView message);
 
 template<typename... Args>
 ALWAYS_INLINE void dbgln(StringView message, Args&&... args)

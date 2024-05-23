@@ -1,5 +1,7 @@
+#
 # Copyright (c) 2024 Traian Avram. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause.
+#
 
 cmake_minimum_required(VERSION 3.14)
 project(Moonrise CXX C)
@@ -33,6 +35,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(CMAKE_EXPORT_LIBRARY_PREFIX "")
 
 add_subdirectory(AT)
-add_subdirectory(MoonCore)
+add_subdirectory(Moons)
+
 add_subdirectory(MoonLight)
 add_subdirectory(MoonRise)
