@@ -1,5 +1,7 @@
-// Copyright (c) 2024 Traian Avram. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause.
+/*
+ * Copyright (c) 2024 Traian Avram. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause.
+ */
 
 #pragma once
 
@@ -80,7 +82,7 @@
     #define AT_FUNCTION   __FUNCSIG__
     #define AT_DEBUGBREAK __debugbreak()
 #elif AT_COMPILER_CLANG
-    #define ALWAYS_INLINE __attribute__((always_inline))
+    #define ALWAYS_INLINE __attribute__((always_inline)) inline
     #define AT_FUNCTION   __PRETTY_FUNCTION__
     #define AT_DEBUGBREAK __builtin_trap()
 #elif AT_COMPILER_GCC
