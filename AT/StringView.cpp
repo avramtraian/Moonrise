@@ -1,8 +1,10 @@
-// Copyright (c) 2024 Traian Avram. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause.
+/*
+ * Copyright (c) 2024 Traian Avram. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause.
+ */
 
-#include "AT/StringView.h"
-#include "AT/Utf8.h"
+#include <AT/StringView.h>
+#include <AT/Utf8.h>
 
 namespace AT {
 

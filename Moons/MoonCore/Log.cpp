@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: BSD-3-Clause.
  */
 
-#include "MoonCore/Log.h"
+#include <MoonCore/Log.h>
 #include <cstdio>
 
 namespace Core {

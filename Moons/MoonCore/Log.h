@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "AT/Format.h"
-#include "AT/StringView.h"
-#include "MoonCore/Core.h"
+#include <AT/Format.h>
+#include <AT/StringView.h>
+#include <MoonCore/Core.h>
 
 namespace Core {
 
@@ -29,6 +29,13 @@ ALWAYS_INLINE void dbgln(StringView message, Args&&... args)
 }
 
 template<typename... Args>
+ALWAYS_INLINE void dbgln(const char* null_terminated_message, Args&&... args)
+{
+    const StringView message = StringView::create_from_utf8(null_terminated_message);
+    dbgln(message, forward<Args>(args)...);
+}
+
+template<typename... Args>
 ALWAYS_INLINE void warnln(StringView message, Args&&... args)
 {
     auto formatted_message_or_error = format(message, forward<Args>(args)...);
@@ -42,6 +49,13 @@ ALWAYS_INLINE void warnln(StringView message, Args&&... args)
 }
 
 template<typename... Args>
+ALWAYS_INLINE void warnln(const char* null_terminated_message, Args&&... args)
+{
+    const StringView message = StringView::create_from_utf8(null_terminated_message);
+    warnln(message, forward<Args>(args)...);
+}
+
+template<typename... Args>
 ALWAYS_INLINE void errorln(StringView message, Args&&... args)
 {
     auto formatted_message_or_error = format(message, forward<Args>(args)...);
@@ -52,6 +66,13 @@ ALWAYS_INLINE void errorln(StringView message, Args&&... args)
 
     String formatted_message = formatted_message_or_error.release_value();
     errorln(formatted_message.view());
+}
+
+template<typename... Args>
+ALWAYS_INLINE void errorln(const char* null_terminated_message, Args&&... args)
+{
+    const StringView message = StringView::create_from_utf8(null_terminated_message);
+    errorln(message, forward<Args>(args)...);
 }
 
 } // namespace Core

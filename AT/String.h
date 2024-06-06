@@ -1,10 +1,12 @@
-// Copyright (c) 2024 Traian Avram. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause.
+/*
+ * Copyright (c) 2024 Traian Avram. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause.
+ */
 
 #pragma once
 
-#include "AT/Span.h"
-#include "AT/StringView.h"
+#include <AT/Span.h>
+#include <AT/StringView.h>
 
 namespace AT {
 
@@ -45,32 +47,11 @@ public:
         return StringView::unsafe_create_from_utf8(span.elements(), span.count() * span.element_size());
     }
 
-    NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span()
-    {
-        AT_ASSERT(m_byte_count > 0);
-        auto* bytes = reinterpret_cast<ReadWriteBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return ReadonlyByteSpan(bytes, m_byte_count - 1);
-    }
-
     NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span() const
     {
         AT_ASSERT(m_byte_count > 0);
         const auto* bytes = reinterpret_cast<ReadonlyBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
         return ReadonlyByteSpan(bytes, m_byte_count - 1);
-    }
-
-    NODISCARD ALWAYS_INLINE ReadonlyByteSpan readonly_byte_span()
-    {
-        AT_ASSERT(m_byte_count > 0);
-        const auto* bytes = reinterpret_cast<ReadonlyBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return ReadonlyByteSpan(bytes, m_byte_count - 1);
-    }
-
-    NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span_with_null_termination()
-    {
-        AT_ASSERT(m_byte_count > 0);
-        auto* bytes = reinterpret_cast<ReadWriteBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return ReadonlyByteSpan(bytes, m_byte_count);
     }
 
     NODISCARD ALWAYS_INLINE ReadonlyByteSpan byte_span_with_null_termination() const
@@ -80,12 +61,8 @@ public:
         return ReadonlyByteSpan(bytes, m_byte_count);
     }
 
-    NODISCARD ALWAYS_INLINE ReadonlyByteSpan readonly_byte_span_with_null_termination()
-    {
-        AT_ASSERT(m_byte_count > 0);
-        const auto* bytes = reinterpret_cast<ReadonlyBytes>(is_stored_inline() ? m_inline_buffer : m_heap_buffer);
-        return ReadonlyByteSpan(bytes, m_byte_count);
-    }
+    // For compatiblity with C-style APIs.
+    NODISCARD ALWAYS_INLINE const char* c_str() const { return byte_span_with_null_termination().as<const char>().elements(); }
 
     NODISCARD ALWAYS_INLINE bool is_stored_inline() const { return m_byte_count <= inline_capacity; }
     NODISCARD ALWAYS_INLINE bool is_stored_on_heap() const { return m_byte_count > inline_capacity; }

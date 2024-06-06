@@ -1,7 +1,9 @@
-// Copyright (c) 2024 Traian Avram. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause.
+/*
+ * Copyright (c) 2024 Traian Avram. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause.
+ */
 
-#include "AT/Format.h"
+#include <AT/Format.h>
 
 #define AT_FORMAT_SPECIFIER_BEGIN_TOKEN '{'
 #define AT_FORMAT_SPECIFIER_END_TOKEN   '}'

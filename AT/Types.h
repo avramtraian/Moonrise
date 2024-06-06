@@ -1,9 +1,11 @@
-// Copyright (c) 2024 Traian Avram. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause.
+/*
+ * Copyright (c) 2024 Traian Avram. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause.
+ */
 
 #pragma once
 
-#include "AT/Defines.h"
+#include <AT/Defines.h>
 
 // NOTE: std::initializer_list can't be implemented by us, so we include its header file here in
 //       order to have access to it throughout the entire codebase.

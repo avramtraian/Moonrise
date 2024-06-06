@@ -1,7 +1,9 @@
-// Copyright (c) 2024 Traian Avram. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause.
+/*
+ * Copyright (c) 2024 Traian Avram. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause.
+ */
 
-#include "AT/Error.h"
+#include <AT/Error.h>
 
 namespace AT {
 

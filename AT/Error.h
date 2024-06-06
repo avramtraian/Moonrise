@@ -1,12 +1,14 @@
-// Copyright (c) 2024 Traian Avram. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause.
+/*
+ * Copyright (c) 2024 Traian Avram. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause.
+ */
 
 #pragma once
 
-#include "AT/Assertion.h"
-#include "AT/Defines.h"
-#include "AT/MemoryOperations.h"
-#include "AT/Types.h"
+#include <AT/Assertion.h>
+#include <AT/Defines.h>
+#include <AT/MemoryOperations.h>
+#include <AT/Types.h>
 
 namespace AT {
 
@@ -20,6 +22,7 @@ public:
     enum Code : u32 {
         Unknown = 0,
 
+        AlreadyInitialized,
         BufferOverflow,
         IndexOutOfRange,
         InvalidEncoding,
