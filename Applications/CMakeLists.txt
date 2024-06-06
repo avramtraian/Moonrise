@@ -3,5 +3,5 @@
 # SPDX-License-Identifier: BSD-3-Clause.
 #
 
-add_subdirectory(MoonCore)
-add_subdirectory(MoonGUI)
+# add_subdirectory(MoonLight)
+add_subdirectory(MoonRise)

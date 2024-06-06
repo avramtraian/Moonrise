@@ -19,5 +19,5 @@ target_include_directories(Moon-Core PUBLIC
 )
 
 target_compile_definitions(Moon-Core PRIVATE
-    "MOON_CORE_EXPORT_API" #
+    "MOON_CORE_EXPORT_API"
 )

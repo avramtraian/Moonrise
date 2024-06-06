@@ -36,6 +36,4 @@ set(CMAKE_EXPORT_LIBRARY_PREFIX "")
 
 add_subdirectory(AT)
 add_subdirectory(Moons)
-
-add_subdirectory(MoonLight)
-add_subdirectory(MoonRise)
+add_subdirectory(Applications)
