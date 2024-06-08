@@ -239,6 +239,23 @@ public:
         shrink_to_fit();
     }
 
+    ALWAYS_INLINE void remove(usize offset, usize count = 1)
+    {
+        AT_ASSERT(offset + count <= m_count);
+
+        // Remove the elements.
+        for (usize index = offset; index < offset + count; ++index)
+            m_elements[index].~T();
+
+        // Shift the next remainging elements.
+        for (usize index = offset + count; index < m_count; ++index) {
+            new (m_elements + index - count) T(move(m_elements[index]));
+            m_elements[index].~T();
+        }
+
+        m_count -= count;
+    }
+
 public:
     ALWAYS_INLINE void clear()
     {
