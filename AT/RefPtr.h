@@ -10,18 +10,25 @@
 
 namespace AT {
 
+class RefCountedBase {
+    AT_MAKE_NONCOPYABLE(RefCountedBase);
+    AT_MAKE_NONMOVABLE(RefCountedBase);
+
+protected:
+    RefCountedBase() = default;
+    virtual ~RefCountedBase() = default;
+};
+
 template<typename T>
-class RefCounted {
+class RefCounted : public RefCountedBase {
 public:
-    RefCounted()
+    ALWAYS_INLINE RefCounted()
         : m_reference_count(0)
     {}
-    virtual ~RefCounted() = default;
+    virtual ~RefCounted() override = default;
 
     void increment_reference_count()
     {
-        AT_ASSERT_DEBUG(m_reference_count > 0);
-
         // TODO: Ensure that addition would not overflow.
         ++m_reference_count;
     }
@@ -50,7 +57,6 @@ private:
 };
 
 template<typename T>
-requires (is_derived_from<T, RefCounted<T>>)
 class RefPtr {
     template<typename Q>
     friend RefPtr<Q> adopt_ref(Q*);
@@ -131,8 +137,17 @@ private:
         }
     }
 
-    void increment_reference_count() { static_cast<RefCounted<T>*>(m_instance)->increment_reference_count(); }
-    void decrement_reference_count() { static_cast<RefCounted<T>*>(m_instance)->decrement_reference_count(); }
+    ALWAYS_INLINE void increment_reference_count()
+    {
+        static_assert(is_derived_from<T, RefCountedBase>, "Trying to use RefPtr<T> when T is not derived from RefCounted<T>!");
+        static_cast<RefCounted<T>*>(m_instance)->increment_reference_count();
+    }
+
+    ALWAYS_INLINE void decrement_reference_count()
+    {
+        static_assert(is_derived_from<T, RefCountedBase>, "Trying to use RefPtr<T> when T is not derived from RefCounted<T>!");
+        static_cast<RefCounted<T>*>(m_instance)->decrement_reference_count();
+    }
 
 private:
     T* m_instance;
