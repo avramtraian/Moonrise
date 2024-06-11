@@ -5,6 +5,7 @@ set(AT_SOURCE_FILES
     Array.h
     Assertion.cpp
     Assertion.h
+    Badge.h
     BooleanEnum.h
     Defines.h
     DistinctNumeric.h
