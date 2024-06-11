@@ -21,15 +21,18 @@ static void win32_register_default_window_class()
     RegisterClassA(&window_class);
 }
 
-OwnPtr<WindowsWindow> WindowsWindow::instantiate()
+WindowsWindow::WindowsWindow()
 {
     if (!s_is_default_window_class_registered) {
         win32_register_default_window_class();
         s_is_default_window_class_registered = true;
     }
+}
 
-    WindowsWindow* instance = new WindowsWindow();
-    return adopt_own(instance);
+WindowsWindow::~WindowsWindow()
+{
+    if (!m_native_handle)
+        return;
 }
 
 ErrorOr<void> WindowsWindow::initialize(const Info& info)
@@ -64,12 +67,6 @@ ErrorOr<void> WindowsWindow::initialize(const Info& info)
     }
 
     return {};
-}
-
-WindowsWindow::~WindowsWindow()
-{
-    if (!m_native_handle)
-        return;
 }
 
 void WindowsWindow::close()

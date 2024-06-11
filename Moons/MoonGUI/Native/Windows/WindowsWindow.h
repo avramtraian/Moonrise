@@ -6,7 +6,6 @@
 #pragma once
 
 #include <AT/Error.h>
-#include <AT/OwnPtr.h>
 #include <AT/String.h>
 #include <MoonGUI/GUI.h>
 #include <MoonGUI/Native/Windows/WindowsHeaders.h>
@@ -28,10 +27,10 @@ public:
     };
 
 public:
-    static OwnPtr<WindowsWindow> instantiate();
+    GUI_API WindowsWindow();
+    GUI_API ~WindowsWindow();
 
     GUI_API ErrorOr<void> initialize(const Info& info);
-    GUI_API ~WindowsWindow();
 
     static LRESULT window_procedure(HWND, UINT, WPARAM, LPARAM);
 
@@ -44,8 +43,6 @@ public:
     NODISCARD ALWAYS_INLINE i32 get_client_area_position_y() const { return m_client_area_position_y; }
 
 private:
-    WindowsWindow() = default;
-
     void close();
 
 private:
