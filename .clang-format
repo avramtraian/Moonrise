@@ -1,0 +1,26 @@
+# The coding style was heavily inspired by the Ladybird guidelines.
+# The Ladybird clang-format configuration file can be found here:
+# https://github.com/LadybirdBrowser/ladybird/blob/master/.clang-format
+
+AlignEscapedNewlines: Left
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
+BasedOnStyle: WebKit
+BraceWrapping:
+  AfterFunction: true
+BreakBeforeBraces: Custom
+BreakBeforeInheritanceComma: true
+BreakConstructorInitializers: BeforeComma
+FixNamespaceComments: true
+IndentPPDirectives: AfterHash
+IndentRequiresClause: false
+InsertNewlineAtEOF: true
+LineEnding: LF
+NamespaceIndentation: None
+QualifierAlignment: Right
+RemoveSemicolon: true
+RequiresClausePosition: WithFollowing
+RequiresExpressionIndentation: OuterScope
+SpaceAfterTemplateKeyword: false
+WrapNamespaceBodyWithEmptyLines: Always
