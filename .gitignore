@@ -1,0 +1,7 @@
+# IDE configuration folders.
+.idea/
+.vs/
+.vscode/
+
+# Compiled binaries/intermediates.
+Build/
