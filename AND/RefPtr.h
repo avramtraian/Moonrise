@@ -20,10 +20,10 @@ class RefPtr {
     friend class RefPtr;
 
     template<typename FriendT>
-    friend RefPtr<FriendT> adopt_ref(FriendT*);
+    friend RefPtr<FriendT> adopt(FriendT*);
 
     template<typename FriendT>
-    friend RefPtr<FriendT, RefIsNonnull::Yes> adopt_nonnull_ref(FriendT&);
+    friend RefPtr<FriendT, RefIsNonnull::Yes> adopt_nonnull(FriendT&);
 
 public:
     ALWAYS_INLINE constexpr RefPtr()
