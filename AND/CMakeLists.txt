@@ -7,6 +7,7 @@ set(AND_SOURCE_FILES
     ArrayIterator.h
     Assertions.cpp
     Assertions.h
+    Badge.h
     ByteBuffer.h
     CompareResult.h
     Defines.h
