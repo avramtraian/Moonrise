@@ -51,28 +51,35 @@ void errorln(char const* message, Args&&... args)
     errorln_impl(formatted.view());
 }
 
-#define dbgln_if(condition, ...) \
-    do {                         \
-        if constexpr (condition) \
-            dbgln(__VA_ARGS__);  \
+#define dbgln_if(condition, ...)       \
+    do {                               \
+        if constexpr (condition)       \
+            ::AND::dbgln(__VA_ARGS__); \
     } while (false)
 
-#define outln_if(condition, ...) \
-    do {                         \
-        if constexpr (condition) \
-            outln(__VA_ARGS__);  \
+#define outln_if(condition, ...)       \
+    do {                               \
+        if constexpr (condition)       \
+            ::AND::outln(__VA_ARGS__); \
     } while (false)
 
-#define warnln_if(condition, ...) \
-    do {                          \
-        if constexpr (condition)  \
-            warnln(__VA_ARGS__);  \
+#define warnln_if(condition, ...)       \
+    do {                                \
+        if constexpr (condition)        \
+            ::AND::warnln(__VA_ARGS__); \
     } while (false)
 
-#define errorln_if(condition, ...) \
-    do {                           \
-        if constexpr (condition)   \
-            errorln(__VA_ARGS__);  \
+#define errorln_if(condition, ...)       \
+    do {                                 \
+        if constexpr (condition)         \
+            ::AND::errorln(__VA_ARGS__); \
     } while (false)
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::dbgln;
+using AND::errorln;
+using AND::outln;
+using AND::warnln;
+#endif

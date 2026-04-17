@@ -181,3 +181,11 @@ using WOByteSpan = Span<WOByte>;
 using RWByteSpan = Span<RWByte>;
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::ConstSpan;
+using AND::ROByteSpan;
+using AND::RWByteSpan;
+using AND::Span;
+using AND::WOByteSpan;
+#endif

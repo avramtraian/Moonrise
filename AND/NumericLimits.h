@@ -52,3 +52,7 @@ public:
 #undef AND_DECLARE_NUMERIC_LIMITS_FOR_PRIMITIVE_TYPE
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::NumericLimits;
+#endif

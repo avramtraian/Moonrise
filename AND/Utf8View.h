@@ -143,3 +143,7 @@ private:
 void append_to_builder(StringBuilder&, Optional<Utf8View>, Utf8View const&);
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::Utf8View;
+#endif

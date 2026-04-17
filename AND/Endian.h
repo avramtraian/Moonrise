@@ -201,3 +201,15 @@ private:
 };
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::big_to_host;
+using AND::BigEndian;
+using AND::host_is_big_endian;
+using AND::host_is_little_endian;
+using AND::host_to_big;
+using AND::host_to_little;
+using AND::little_to_host;
+using AND::LittleEndian;
+using AND::reverse_byte_order;
+#endif

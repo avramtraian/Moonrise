@@ -236,3 +236,49 @@ NODISCARD ALWAYS_INLINE constexpr UnderlyingType<E> to_underlying(E value) noexc
 }
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::b32;
+using AND::b8;
+using AND::ConditionalType;
+using AND::f32;
+using AND::f64;
+using AND::forward;
+using AND::is_base_of;
+using AND::is_const;
+using AND::is_convertible;
+using AND::is_derived_from;
+using AND::is_floating_point;
+using AND::is_integer;
+using AND::is_lvalue_reference;
+using AND::is_number;
+using AND::is_reference;
+using AND::is_rvalue_reference;
+using AND::is_same;
+using AND::is_signed;
+using AND::is_signed_integer;
+using AND::is_unsigned;
+using AND::is_unsigned_integer;
+using AND::move;
+using AND::RemoveConst;
+using AND::RemoveReference;
+using AND::ROByte;
+using AND::ROBytes;
+using AND::RWByte;
+using AND::RWBytes;
+using AND::s16;
+using AND::s32;
+using AND::s64;
+using AND::s8;
+using AND::ssize;
+using AND::to_underlying;
+using AND::u16;
+using AND::u32;
+using AND::u64;
+using AND::u8;
+using AND::uintptr;
+using AND::UnderlyingType;
+using AND::usize;
+using AND::WOByte;
+using AND::WOBytes;
+#endif

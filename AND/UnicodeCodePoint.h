@@ -17,3 +17,10 @@ NODISCARD u32 to_ascii_lower(u32 code_point);
 NODISCARD u32 to_ascii_upper(u32 code_point);
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::compare_code_points;
+using AND::compare_code_points_ignoring_case;
+using AND::to_ascii_lower;
+using AND::to_ascii_upper;
+#endif

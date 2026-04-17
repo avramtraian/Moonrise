@@ -47,3 +47,8 @@ AND_DECLARE_GET_HASH_FOR_INTEGER(s64);
 #undef AND_DECLARE_GET_HASH_FOR_INTEGER
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::get_hash;
+using AND::Hash;
+#endif

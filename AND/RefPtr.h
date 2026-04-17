@@ -268,15 +268,12 @@ private:
 };
 
 template<typename T, RefIsNonnull is_nonnull = RefIsNonnull::No>
-requires(!is_reference<T> && is_derived_from<T, RefCounted>)
 using ConstRefPtr = RefPtr<T const, is_nonnull>;
 
 template<typename T>
-requires(!is_reference<T> && is_derived_from<T, RefCounted>)
 using NonnullRefPtr = RefPtr<T, RefIsNonnull::Yes>;
 
 template<typename T>
-requires(!is_reference<T> && is_derived_from<T, RefCounted>)
 using NonnullConstRefPtr = NonnullRefPtr<T const>;
 
 template<typename T>
@@ -300,3 +297,14 @@ NODISCARD ALWAYS_INLINE NonnullRefPtr<T> make_ref(Args&&... args)
 }
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::adopt;
+using AND::adopt_nonnull;
+using AND::ConstRefPtr;
+using AND::make_ref;
+using AND::NonnullConstRefPtr;
+using AND::NonnullRefPtr;
+using AND::RefIsNonnull;
+using AND::RefPtr;
+#endif

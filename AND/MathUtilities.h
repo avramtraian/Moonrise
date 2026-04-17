@@ -31,3 +31,9 @@ NODISCARD ALWAYS_INLINE constexpr T clamp(T value, T min_bound, T max_bound)
 }
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::clamp;
+using AND::max;
+using AND::min;
+#endif

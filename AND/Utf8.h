@@ -28,3 +28,9 @@ Optional<Utf8DecodeResult> utf8_decode_reversed(void const* data, usize size);
 Optional<Utf8EncodeResult> utf8_encode(u32 code_point);
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::utf8_decode;
+using AND::utf8_decode_reversed;
+using AND::utf8_encode;
+#endif

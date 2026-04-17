@@ -236,3 +236,12 @@ NODISCARD ALWAYS_INLINE NonnullOwnPtr<T> make(Args&&... args)
 }
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::adopt_nonnull_own;
+using AND::adopt_own;
+using AND::make;
+using AND::NonnullOwnPtr;
+using AND::OwnIsNonnull;
+using AND::OwnPtr;
+#endif

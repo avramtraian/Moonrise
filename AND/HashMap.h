@@ -562,3 +562,9 @@ private:
 };
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::HashMap;
+using AND::HashMapAdd;
+using AND::HashMapRemove;
+#endif

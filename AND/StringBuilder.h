@@ -222,3 +222,12 @@ private:
 };
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::append_to_builder;
+using AND::LineSeparator;
+using AND::PaddingCharacter;
+using AND::PlusSign;
+using AND::SignAlignment;
+using AND::StringBuilder;
+#endif

@@ -233,3 +233,9 @@
 // nonstandard extension used: zero-sized array in struct/union
 #    pragma warning(disable : 4200)
 #endif
+
+//==============================================================================
+// CONFIGURATION MACROS.
+//==============================================================================
+
+#define AND_INCLUDE_IN_GLOBAL_NAMESPACE 1

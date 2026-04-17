@@ -40,3 +40,15 @@ NODISCARD Optional<Utf16EncodeBytesResult> utf16_encode_le(u32 code_point);
 NODISCARD Optional<Utf16EncodeBytesResult> utf16_encode_be(u32 code_point);
 
 } // namespace AND
+
+#if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::utf16_decode;
+using AND::utf16_decode_be;
+using AND::utf16_decode_le;
+using AND::utf16_decode_reversed;
+using AND::utf16_decode_reversed_be;
+using AND::utf16_decode_reversed_le;
+using AND::utf16_encode;
+using AND::utf16_encode_be;
+using AND::utf16_encode_le;
+#endif
