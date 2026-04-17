@@ -46,27 +46,25 @@ public:
     }
 
     ALWAYS_INLINE OwnPtr(OwnPtr&& other) noexcept
-        : m_pointer(other.m_pointer)
+        : m_pointer(nullptr)
     {
-        other.m_pointer = nullptr;
-
-        if constexpr (is_nonnull == OwnIsNonnull::Yes) {
-            if (m_pointer == nullptr)
-                PANIC("Trying to construct a NonnullOwnPtr from another NonnullOwnPtr that was moved or leaked!");
-        }
+        move_from(move(other));
     }
 
     template<OwnIsNonnull other_is_nonnull>
     requires(is_nonnull != other_is_nonnull)
     /*implicit*/ ALWAYS_INLINE OwnPtr(OwnPtr<T, other_is_nonnull>&& other) noexcept
-        : m_pointer(other.m_pointer)
+        : m_pointer(nullptr)
     {
-        other.m_pointer = nullptr;
+        move_from(move(other));
+    }
 
-        if constexpr (is_nonnull == OwnIsNonnull::Yes) {
-            if (m_pointer == nullptr)
-                PANIC("Trying to construct a NonnullOwnPtr from a null OwnPtr!");
-        }
+    template<typename OtherT, OwnIsNonnull other_is_nonnull>
+    requires(is_convertible<OtherT*, T*> && !is_same<OtherT, T>)
+    /*implicit*/ ALWAYS_INLINE OwnPtr(OwnPtr<OtherT, other_is_nonnull>&& other) noexcept
+        : m_pointer(nullptr)
+    {
+        move_from(move(other));
     }
 
     ALWAYS_INLINE OwnPtr& operator=(OwnPtr&& other) noexcept
@@ -75,15 +73,7 @@ public:
         if (this == &other)
             return *this;
 
-        release_impl();
-        m_pointer = other.m_pointer;
-        other.m_pointer = nullptr;
-
-        if constexpr (is_nonnull == OwnIsNonnull::Yes) {
-            if (m_pointer == nullptr)
-                PANIC("Trying to assign a NonnullOwnPtr that was moved or leaked to another NonnullOwnPtr!");
-        }
-
+        move_from(move(other));
         return *this;
     }
 
@@ -91,15 +81,15 @@ public:
     requires(is_nonnull != other_is_nonnull)
     ALWAYS_INLINE OwnPtr& operator=(OwnPtr<T, other_is_nonnull>&& other) noexcept
     {
-        release_impl();
-        m_pointer = other.m_pointer;
-        other.m_pointer = nullptr;
+        move_from(move(other));
+        return *this;
+    }
 
-        if constexpr (is_nonnull == OwnIsNonnull::Yes) {
-            if (m_pointer == nullptr)
-                PANIC("Trying to assign a null OwnPtr to a NonnullOwnPtr!");
-        }
-
+    template<typename OtherT, OwnIsNonnull other_is_nonnull>
+    requires(is_convertible<OtherT*, T*> && !is_same<OtherT, T>)
+    ALWAYS_INLINE OwnPtr& operator=(OwnPtr<OtherT, other_is_nonnull>&& other) noexcept
+    {
+        move_from(move(other));
         return *this;
     }
 
@@ -167,18 +157,6 @@ public:
     }
 
 private:
-    ALWAYS_INLINE constexpr explicit OwnPtr(T* pointer)
-    requires(is_nonnull == OwnIsNonnull::No)
-        : m_pointer(pointer)
-    {
-    }
-
-    ALWAYS_INLINE constexpr explicit OwnPtr(T& instance)
-    requires(is_nonnull == OwnIsNonnull::Yes)
-        : m_pointer(&instance)
-    {
-    }
-
     ALWAYS_INLINE void release_impl()
     {
         T* pointer = leak_ptr();
@@ -193,7 +171,40 @@ private:
             PANIC("Re-entrant call stack caused by releasing an OwnPtr!");
     }
 
+    template<typename SourceT, OwnIsNonnull source_is_nonnull>
+    requires(is_convertible<SourceT*, T*>)
+    void move_from(OwnPtr<SourceT, source_is_nonnull>&& source) noexcept
+    {
+        release_impl();
+        m_pointer = source.m_pointer;
+        source.m_pointer = nullptr;
+
+        // Validate that the non-null semantics are satisfied.
+        if constexpr (is_nonnull == OwnIsNonnull::Yes) {
+            if (m_pointer == nullptr) {
+                if constexpr (source_is_nonnull == OwnIsNonnull::Yes)
+                    PANIC("Trying to move-construct a NonnullOwnPtr from another NonnullOwnPtr that was moved or leaked!");
+                else
+                    PANIC("Trying to move-construct a NonnullOwnPtr from a null OwnPtr!");
+            }
+        } else if (source_is_nonnull == OwnIsNonnull::Yes)
+            if (m_pointer == nullptr)
+                PANIC("Trying to move-construct a OwnPtr from a NonnullOwnPtr that was moved or leaked!");
+    }
+
 private:
+    ALWAYS_INLINE constexpr explicit OwnPtr(T* pointer)
+    requires(is_nonnull == OwnIsNonnull::No)
+        : m_pointer(pointer)
+    {
+    }
+
+    ALWAYS_INLINE constexpr explicit OwnPtr(T& instance)
+    requires(is_nonnull == OwnIsNonnull::Yes)
+        : m_pointer(&instance)
+    {
+    }
+
     T* m_pointer;
 };
 
