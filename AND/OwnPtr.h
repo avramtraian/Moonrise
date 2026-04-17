@@ -42,6 +42,7 @@ public:
 
     ALWAYS_INLINE ~OwnPtr()
     {
+        release_impl();
     }
 
     ALWAYS_INLINE OwnPtr(OwnPtr&& other) noexcept
