@@ -52,7 +52,7 @@ public:
     }
 
     template<typename OtherT, RefIsNonnull other_is_nonnull>
-    requires(is_convertible<OtherT*, T*>)
+    requires(is_convertible<OtherT*, T*> && !is_same<OtherT, T>)
     /*implicit*/ ALWAYS_INLINE RefPtr(RefPtr<OtherT, other_is_nonnull> const& other)
         : m_pointer(nullptr)
     {
@@ -74,7 +74,7 @@ public:
     }
 
     template<typename OtherT, RefIsNonnull other_is_nonnull>
-    requires(is_convertible<OtherT*, T*>)
+    requires(is_convertible<OtherT*, T*> && !is_same<OtherT, T>)
     /*implicit*/ ALWAYS_INLINE RefPtr(RefPtr<OtherT, other_is_nonnull>&& other) noexcept
         : m_pointer(nullptr)
     {
@@ -100,7 +100,7 @@ public:
     }
 
     template<typename OtherT, RefIsNonnull other_is_nonnull>
-    requires(is_convertible<OtherT*, T*>)
+    requires(is_convertible<OtherT*, T*> && !is_same<OtherT, T>)
     ALWAYS_INLINE RefPtr& operator=(RefPtr<OtherT, other_is_nonnull> const& other)
     {
         copy_from(other);
