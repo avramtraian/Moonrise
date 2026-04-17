@@ -8,6 +8,9 @@ set(TEXT_EDITOR_SOURCE_FILES
 )
 
 add_executable(TextEditor ${TEXT_EDITOR_SOURCE_FILES})
-target_include_directories(TextEditor PUBLIC ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-add_dependencies(TextEditor AND-Framework)
-target_link_libraries(TextEditor PUBLIC AND-Framework)
+target_include_directories(TextEditor PUBLIC ${CMAKE_SOURCE_DIR})
+target_include_directories(TextEditor PUBLIC ${CMAKE_SOURCE_DIR}/Modules)
+target_include_directories(TextEditor PUBLIC ${CMAKE_SOURCE_DIR}/Applications)
+
+add_dependencies(TextEditor AND-Framework Module-GUI)
+target_link_libraries(TextEditor PUBLIC AND-Framework Module-GUI)
