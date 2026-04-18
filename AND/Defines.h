@@ -206,6 +206,7 @@
 #    define AND_DEBUGBREAK __builtin_trap()
 #    define ALWAYS_INLINE __attribute__((always_inline)) inline
 #    define NEVER_INLINE __attribute__((noinline))
+#    define NORETURN __attribute__((noreturn))
 #endif
 
 #if AND_PLATFORM_COMPILER_MSVC
@@ -213,6 +214,7 @@
 #    define AND_DEBUGBREAK __debugbreak()
 #    define ALWAYS_INLINE __forceinline
 #    define NEVER_INLINE __declspec(noinline)
+#    define NORETURN __declspec(noreturn)
 #endif
 
 //==============================================================================
