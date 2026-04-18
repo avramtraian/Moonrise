@@ -16,6 +16,7 @@ enum class AssertionKind {
 };
 
 void on_assertion_failed(AssertionKind, char const* expression, char const* file, char const* function, int line, char const* message);
+NORETURN void noreturn_function();
 
 } // namespace AND
 
@@ -39,16 +40,19 @@ void on_assertion_failed(AssertionKind, char const* expression, char const* file
     do {                                                                                                                        \
         ::AND::on_assertion_failed(::AND::AssertionKind::AssertNotReached, nullptr, AND_FILE, AND_FUNCTION, AND_LINE, nullptr); \
         AND_DEBUGBREAK;                                                                                                         \
+        ::AND::noreturn_function();                                                                                             \
     } while (false)
 
 #define ASSERTF_NOT_REACHED(message)                                                                                            \
     do {                                                                                                                        \
         ::AND::on_assertion_failed(::AND::AssertionKind::AssertNotReached, nullptr, AND_FILE, AND_FUNCTION, AND_LINE, message); \
         AND_DEBUGBREAK;                                                                                                         \
+        ::AND::noreturn_function();                                                                                             \
     } while (false)
 
 #define PANIC(message)                                                                                               \
     do {                                                                                                             \
         ::AND::on_assertion_failed(::AND::AssertionKind::Panic, nullptr, AND_FILE, AND_FUNCTION, AND_LINE, message); \
         AND_DEBUGBREAK;                                                                                              \
+        ::AND::noreturn_function();                                                                                  \
     } while (false)

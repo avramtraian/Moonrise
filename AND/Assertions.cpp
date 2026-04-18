@@ -54,4 +54,9 @@ void on_assertion_failed(AssertionKind kind, char const* expression, char const*
     errorln("#====================================================================================================\n");
 }
 
+NORETURN void noreturn_function()
+{
+    while (true) { }
+}
+
 } // namespace AND
