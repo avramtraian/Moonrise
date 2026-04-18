@@ -73,7 +73,7 @@ struct ConstTraits {
 
 template<typename T>
 struct ConstTraits<T const> {
-    static constexpr bool is_const = false;
+    static constexpr bool is_const = true;
     using RemoveConstType = T;
 };
 
