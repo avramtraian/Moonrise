@@ -181,6 +181,17 @@ public:
         return pointer;
     }
 
+    template<typename Q>
+    requires((is_convertible<Q*, T*> || is_convertible<T*, Q*>) && !is_same<T, Q>)
+    NODISCARD ALWAYS_INLINE RefPtr<Q, is_nonnull> as() const
+    {
+        Q* casted_pointer = reinterpret_cast<Q*>(m_pointer);
+        if constexpr (is_nonnull == RefIsNonnull::Yes)
+            return RefPtr<Q, is_nonnull>(*casted_pointer);
+        else
+            return RefPtr<Q, is_nonnull>(casted_pointer);
+    }
+
 private:
     ALWAYS_INLINE static void try_increment_ref_count(T const* pointer)
     {
