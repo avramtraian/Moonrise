@@ -26,11 +26,9 @@ class OwnPtr {
     friend class OwnPtr;
 
     template<typename Q>
-    requires(!is_reference<Q> && !is_const<Q>)
     friend OwnPtr<Q> adopt_own(Q*);
 
     template<typename Q>
-    requires(!is_reference<Q> && !is_const<Q>)
     friend OwnPtr<Q, OwnIsNonnull::Yes> adopt_nonnull_own(Q&);
 
 public:
@@ -213,21 +211,18 @@ requires(!is_reference<T> && !is_const<T>)
 using NonnullOwnPtr = OwnPtr<T, OwnIsNonnull::Yes>;
 
 template<typename T>
-requires(!is_reference<T> && !is_const<T>)
 NODISCARD ALWAYS_INLINE OwnPtr<T> adopt_own(T* pointer)
 {
     return OwnPtr<T>(pointer);
 }
 
 template<typename T>
-requires(!is_reference<T> && !is_const<T>)
 NODISCARD ALWAYS_INLINE NonnullOwnPtr<T> adopt_nonnull_own(T& instance)
 {
     return NonnullOwnPtr<T>(instance);
 }
 
 template<typename T, typename... Args>
-requires(!is_reference<T> && !is_const<T>)
 NODISCARD ALWAYS_INLINE NonnullOwnPtr<T> make(Args&&... args)
 {
     T* pointer = new T(forward<Args>(args)...);
