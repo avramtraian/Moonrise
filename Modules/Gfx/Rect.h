@@ -15,6 +15,9 @@ template<typename T>
 requires(is_number<T>)
 struct Rect {
 public:
+    using SizeType = RemoveSign<T>;
+
+public:
     static Rect min_max(Point<T> min, Point<T> max)
     {
         if (min.x > max.x || min.y > max.y)
@@ -38,17 +41,17 @@ public:
 
     static Rect intersect(Rect a, Rect b)
     {
-        auto min_x = max(a.m_offset.x, b.m_offset.x);
-        auto min_y = max(a.m_offset.y, b.m_offset.y);
-        auto max_x = min(a.m_offset.x + a.m_size.x, b.m_offset.x + b.m_size.x);
-        auto max_y = min(a.m_offset.y + a.m_size.y, b.m_offset.y + b.m_size.y);
+        auto min_x = max<s32>(a.m_offset.x, b.m_offset.x);
+        auto min_y = max<s32>(a.m_offset.y, b.m_offset.y);
+        auto max_x = min<s32>(a.m_offset.x + a.m_size.x, b.m_offset.x + b.m_size.x);
+        auto max_y = min<s32>(a.m_offset.y + a.m_size.y, b.m_offset.y + b.m_size.y);
         return Rect::min_max({ min_x, min_y }, { max_x, max_y });
     }
 
 public:
     Rect() = default;
 
-    Rect(Point<T> offset, Size<T> size)
+    Rect(Point<T> offset, Size<SizeType> size)
         : m_offset(offset)
         , m_size(size)
     {
@@ -59,12 +62,12 @@ public:
     NODISCARD ALWAYS_INLINE T offset_x() const { return m_offset.x; }
     NODISCARD ALWAYS_INLINE T offset_y() const { return m_offset.y; }
 
-    NODISCARD ALWAYS_INLINE Size<T> size() const { return m_size; }
-    NODISCARD ALWAYS_INLINE T width() const { return m_size.x; }
-    NODISCARD ALWAYS_INLINE T height() const { return m_size.y; }
+    NODISCARD ALWAYS_INLINE Size<SizeType> size() const { return m_size; }
+    NODISCARD ALWAYS_INLINE SizeType width() const { return m_size.x; }
+    NODISCARD ALWAYS_INLINE SizeType height() const { return m_size.y; }
 
     NODISCARD ALWAYS_INLINE Point<T> min_point() const { return m_offset; }
-    NODISCARD ALWAYS_INLINE Point<T> max_point() const { return { offset_x() + width(), offset_y() + height() }; }
+    NODISCARD ALWAYS_INLINE Point<T> max_point() const { return Point<T>(offset_x() + width(), offset_y() + height()); }
 
 public:
     void set_offset(Point<T> offset) { m_offset = offset; }
@@ -77,11 +80,11 @@ public:
         m_offset.y = y;
     }
 
-    void set_size(Size<T> size) { m_size = size; }
-    void set_width(T width) { m_size.x = width; }
-    void set_height(T height) { m_size.y = height; }
+    void set_size(Size<SizeType> size) { m_size = size; }
+    void set_width(SizeType width) { m_size.x = width; }
+    void set_height(SizeType height) { m_size.y = height; }
 
-    void set_size(T width, T height)
+    void set_size(SizeType width, SizeType height)
     {
         m_size.x = width;
         m_size.y = height;
@@ -111,7 +114,7 @@ public:
 
 private:
     Point<T> m_offset;
-    Size<T> m_size;
+    Size<SizeType> m_size;
 };
 
 using IntRect = Rect<s32>;

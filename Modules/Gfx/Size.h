@@ -48,7 +48,7 @@ public:
     T y { T(0) };
 };
 
-using IntSize = Size<s32>;
+using IntSize = Size<u32>;
 using FloatSize = Size<f32>;
 
 } // namespace Gfx
