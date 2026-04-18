@@ -13,7 +13,7 @@ namespace GUI {
 class Object : public RefCounted {
 public:
     Object() = default;
-    virtual ~Object() override = default;
+    virtual ~Object() = default;
     virtual StringView class_name() const = 0;
 };
 

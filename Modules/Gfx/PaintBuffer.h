@@ -20,7 +20,7 @@ struct QuadDrawCommand {
 class PaintBuffer : public RefCounted {
 public:
     PaintBuffer() = default;
-    virtual ~PaintBuffer() override = default;
+    ~PaintBuffer() = default;
 
     void clear();
     void draw_quad(IntRect, Color);

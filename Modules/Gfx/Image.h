@@ -15,7 +15,7 @@ namespace Gfx {
 class Image : public RefCounted {
 public:
     Image() = default;
-    virtual ~Image() override = default;
+    virtual ~Image() = default;
     virtual StringView class_name() const = 0;
 
 public:

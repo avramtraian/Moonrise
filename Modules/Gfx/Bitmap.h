@@ -27,7 +27,7 @@ public:
     static RefPtr<Bitmap> allocate_aligned(BitmapFormat, IntSize, usize pitch, usize number_of_rows);
 
 public:
-    virtual ~Bitmap() override;
+    ~Bitmap();
 
     NODISCARD ALWAYS_INLINE ByteBuffer& buffer() { return m_buffer; }
     NODISCARD ALWAYS_INLINE ByteBuffer const& buffer() const { return m_buffer; }

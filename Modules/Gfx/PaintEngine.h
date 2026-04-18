@@ -20,7 +20,7 @@ enum class RenderDeviceType {
 class PaintEngine : public RefCounted {
 public:
     static RefPtr<PaintEngine> create(RenderDeviceType);
-    virtual ~PaintEngine() override = default;
+    virtual ~PaintEngine() = default;
 
 public:
     virtual void initialize() = 0;
