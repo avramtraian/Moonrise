@@ -195,18 +195,15 @@ public:
 private:
     ALWAYS_INLINE static void try_increment_ref_count(T const* pointer)
     {
-        if (pointer) {
-            auto const& ref_counted = *reinterpret_cast<RefCounted const*>(pointer);
-            ref_counted.increment_ref_count();
-        }
+        if (pointer)
+            pointer->increment_ref_count();
     }
 
     ALWAYS_INLINE void release_impl()
     {
         if (T* pointer = leak_ptr()) {
-            auto* ref_counted = reinterpret_cast<RefCounted*>(pointer);
-            if (ref_counted->decrement_ref_count())
-                ref_counted->~RefCounted();
+            if (pointer->decrement_ref_count())
+                delete pointer;
         }
 
         // NOTE: This happens when decrementing the reference count causes the destructor to be

@@ -17,9 +17,6 @@ class RefCounted {
     AND_MAKE_NONMOVABLE(RefCounted);
 
 public:
-    RefCounted() = default;
-    virtual ~RefCounted() = default;
-
     ALWAYS_INLINE void increment_ref_count() const
     {
         ASSERT(m_ref_count < AND::NumericLimits<u32>::max());
@@ -32,6 +29,10 @@ public:
         --m_ref_count;
         return (m_ref_count == 0);
     }
+
+protected:
+    RefCounted() = default;
+    ~RefCounted() = default;
 
 private:
     mutable u32 m_ref_count { 0 };
