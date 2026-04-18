@@ -8,12 +8,12 @@
 #include "AND/Assertions.h"
 #include "AND/Span.h"
 #include "AND/StringBuilder.h"
+#include "AND/StringView.h"
 #include "AND/Types.h"
-#include "AND/Utf8View.h"
 
 namespace AND {
 
-class Utf8String {
+class String {
 public:
     friend class StringBuilder;
 
@@ -26,14 +26,14 @@ public:
     static_assert(inline_capacity > 0);
 
 public:
-    NODISCARD static Utf8String from_utf16(Utf16View const&);
+    NODISCARD static String from_utf16(Utf16View const&);
 
-    NODISCARD static Utf8String number_unsigned(u64 value);
-    NODISCARD static Utf8String number_signed(s64 value);
-    NODISCARD static Utf8String number_float(f64 value);
+    NODISCARD static String number_unsigned(u64 value);
+    NODISCARD static String number_signed(s64 value);
+    NODISCARD static String number_float(f64 value);
 
     template<typename... Args>
-    NODISCARD ALWAYS_INLINE static Utf8String format(Utf8View format_string, Args&&... args)
+    NODISCARD ALWAYS_INLINE static String format(StringView format_string, Args&&... args)
     {
         StringBuilder builder;
         builder.set_encoding(StringBuilder::Encoding::UTF8);
@@ -42,16 +42,16 @@ public:
     }
 
 public:
-    Utf8String();
-    ~Utf8String();
+    String();
+    ~String();
 
-    Utf8String(Utf8String const&);
-    Utf8String(Utf8String&&) noexcept;
-    /*implicit*/ Utf8String(Utf8View);
+    String(String const&);
+    String(String&&) noexcept;
+    /*implicit*/ String(StringView);
 
-    Utf8String& operator=(Utf8String const&);
-    Utf8String& operator=(Utf8String&&) noexcept;
-    Utf8String& operator=(Utf8View);
+    String& operator=(String const&);
+    String& operator=(String&&) noexcept;
+    String& operator=(StringView);
 
 public:
     NODISCARD ALWAYS_INLINE ROBytes bytes() const { return is_stored_inline() ? m_inline_buffer : m_heap_block->buffer; }
@@ -67,8 +67,8 @@ public:
 
     NODISCARD ALWAYS_INLINE bool is_empty() const { return (m_byte_count <= sizeof('\0')); }
 
-    NODISCARD ALWAYS_INLINE Utf8View view() const { return Utf8View::from_unverified(bytes(), byte_count_without_null_terminator()); }
-    NODISCARD ALWAYS_INLINE Utf8View view_with_null_terminator() const { return Utf8View::from_unverified(bytes(), byte_count()); }
+    NODISCARD ALWAYS_INLINE StringView view() const { return StringView::from_unverified(bytes(), byte_count_without_null_terminator()); }
+    NODISCARD ALWAYS_INLINE StringView view_with_null_terminator() const { return StringView::from_unverified(bytes(), byte_count()); }
 
 public:
     void clear();
@@ -91,10 +91,10 @@ private:
     };
 };
 
-void append_to_builder(StringBuilder&, Optional<Utf8View>, Utf8String const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, String const&);
 
 } // namespace AND
 
 #if AND_INCLUDE_IN_GLOBAL_NAMESPACE
-using AND::Utf8String;
+using AND::String;
 #endif

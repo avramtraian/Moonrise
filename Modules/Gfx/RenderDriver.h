@@ -7,7 +7,7 @@
 
 #include <AND/OwnPtr.h>
 #include <AND/RefPtr.h>
-#include <AND/Utf8View.h>
+#include <AND/StringView.h>
 #include <Gfx/Forward.h>
 #include <Gfx/ImageFormat.h>
 #include <Gfx/Size.h>
@@ -30,7 +30,7 @@ public:
 
     RenderDriver() = default;
     virtual ~RenderDriver() = default;
-    virtual Utf8View class_name() const = 0;
+    virtual StringView class_name() const = 0;
 
 public:
     virtual void initialize_impl() = 0;
@@ -45,6 +45,6 @@ public:                                    \
     using Base = base_type;                \
     type() = default;                      \
     virtual ~type() override = default;    \
-    virtual ::AND::Utf8View class_name() const override { return VIEW(#type); }
+    virtual ::AND::StringView class_name() const override { return VIEW(#type); }
 
 } // namespace Gfx

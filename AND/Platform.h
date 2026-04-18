@@ -7,7 +7,7 @@
 
 #include "AND/Optional.h"
 #include "AND/Span.h"
-#include "AND/Utf8String.h"
+#include "AND/String.h"
 #include "AND/Vector.h"
 
 namespace AND::Platform {
@@ -49,7 +49,7 @@ enum class ConsoleColor {
     White,
 };
 
-Result write_text_to_std_stream(StdStream, Utf8View);
+Result write_text_to_std_stream(StdStream, StringView);
 Result write_binary_to_std_stream(StdStream, ROByteSpan);
 Result flush_std_stream(StdStream);
 Result set_std_stream_colors(StdStream, Optional<ConsoleColor> foreground, Optional<ConsoleColor> background);
@@ -60,9 +60,9 @@ Result set_std_stream_colors(StdStream, Optional<ConsoleColor> foreground, Optio
 
 struct CallStackFrame {
     uintptr return_address;
-    Optional<Utf8String> module;
-    Optional<Utf8String> function;
-    Optional<Utf8String> file;
+    Optional<String> module;
+    Optional<String> function;
+    Optional<String> file;
     Optional<u32> line;
 };
 
@@ -128,7 +128,7 @@ public:
     {
     }
 
-    FileErrorOr(FileError error_code, Utf8View error_message)
+    FileErrorOr(FileError error_code, StringView error_message)
         : m_error_code(error_code)
         , m_error_message(error_message)
     {
@@ -140,12 +140,12 @@ public:
     NODISCARD ALWAYS_INLINE T& value() { return m_value.value(); }
     NODISCARD ALWAYS_INLINE T const& value() const { return m_value.value(); }
     NODISCARD ALWAYS_INLINE FileError error_code() const { return m_error_code; }
-    NODISCARD ALWAYS_INLINE Utf8View error_message() const { return m_error_message; }
+    NODISCARD ALWAYS_INLINE StringView error_message() const { return m_error_message; }
 
 private:
     Optional<T> m_value;
     FileError m_error_code;
-    Utf8View m_error_message;
+    StringView m_error_message;
 };
 
 template<>
@@ -162,7 +162,7 @@ public:
     {
     }
 
-    FileErrorOr(FileError error_code, Utf8View error_message)
+    FileErrorOr(FileError error_code, StringView error_message)
         : m_is_error(true)
         , m_error_code(error_code)
         , m_error_message(error_message)
@@ -172,12 +172,12 @@ public:
     NODISCARD ALWAYS_INLINE bool is_valid() const { return !m_is_error; }
     NODISCARD ALWAYS_INLINE bool is_error() const { return m_is_error; }
     NODISCARD ALWAYS_INLINE FileError error_code() const { return m_error_code; }
-    NODISCARD ALWAYS_INLINE Utf8View error_message() const { return m_error_message; }
+    NODISCARD ALWAYS_INLINE StringView error_message() const { return m_error_message; }
 
 private:
     bool m_is_error;
     FileError m_error_code;
-    Utf8View m_error_message;
+    StringView m_error_message;
 };
 
 enum class FileMode {
@@ -193,15 +193,15 @@ using FileHandle = void*;
 //        the value at runtime!
 extern FileHandle invalid_file_handle;
 
-FileErrorOr<FileHandle> open_file(Utf8View const& filename, FileMode);
+FileErrorOr<FileHandle> open_file(StringView const& filename, FileMode);
 void close_file(FileHandle);
 
 FileErrorOr<usize> read_from_file(FileHandle, void* dst_buffer, usize size_in_bytes);
 FileErrorOr<void> write_to_file(FileHandle, void const* src_buffer, usize size_in_bytes);
 
 FileErrorOr<u64> file_size(FileHandle);
-FileErrorOr<u64> file_size(Utf8View const& filename);
+FileErrorOr<u64> file_size(StringView const& filename);
 
-FileErrorOr<bool> is_directory(Utf8View const& filepath);
+FileErrorOr<bool> is_directory(StringView const& filepath);
 
 } // namespace AND::Platform

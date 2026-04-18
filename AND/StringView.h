@@ -12,28 +12,28 @@
 
 namespace AND {
 
-class Utf8View {
+class StringView {
 public:
-    NODISCARD static Utf8View from_buffer(ROByteSpan buffer);
-    NODISCARD static Utf8View from_buffer(void const* data, usize size);
-    NODISCARD static Utf8View from_unverified(ROByteSpan buffer);
-    NODISCARD static Utf8View from_unverified(void const* data, usize size);
-    NODISCARD static Utf8View from_null_terminated(char const* characters);
+    NODISCARD static StringView from_buffer(ROByteSpan buffer);
+    NODISCARD static StringView from_buffer(void const* data, usize size);
+    NODISCARD static StringView from_unverified(ROByteSpan buffer);
+    NODISCARD static StringView from_unverified(void const* data, usize size);
+    NODISCARD static StringView from_null_terminated(char const* characters);
 
 public:
-    ALWAYS_INLINE constexpr Utf8View()
+    ALWAYS_INLINE constexpr StringView()
         : m_bytes(nullptr)
         , m_byte_count(0)
     {
     }
 
-    ALWAYS_INLINE constexpr Utf8View(Utf8View const& other)
+    ALWAYS_INLINE constexpr StringView(StringView const& other)
         : m_bytes(other.m_bytes)
         , m_byte_count(other.m_byte_count)
     {
     }
 
-    ALWAYS_INLINE constexpr Utf8View(Utf8View&& other) noexcept
+    ALWAYS_INLINE constexpr StringView(StringView&& other) noexcept
         : m_bytes(other.m_bytes)
         , m_byte_count(other.m_byte_count)
     {
@@ -41,7 +41,7 @@ public:
         other.m_byte_count = 0;
     }
 
-    ALWAYS_INLINE constexpr Utf8View& operator=(Utf8View const& other)
+    ALWAYS_INLINE constexpr StringView& operator=(StringView const& other)
     {
         // Handle the self-assignment case.
         if (this == &other)
@@ -52,7 +52,7 @@ public:
         return *this;
     }
 
-    ALWAYS_INLINE constexpr Utf8View& operator=(Utf8View&& other) noexcept
+    ALWAYS_INLINE constexpr StringView& operator=(StringView&& other) noexcept
     {
         // Handle the self-assignment case.
         if (this == &other)
@@ -84,27 +84,27 @@ public:
     NODISCARD usize calculate_length() const;
 
     NODISCARD Optional<usize> find(u32 code_point) const;
-    NODISCARD Optional<usize> find(Utf8View substring) const;
+    NODISCARD Optional<usize> find(StringView substring) const;
 
     NODISCARD Optional<usize> find_last_of(u32 code_point) const;
-    NODISCARD Optional<usize> find_last_of(Utf8View substring) const;
+    NODISCARD Optional<usize> find_last_of(StringView substring) const;
 
     NODISCARD bool contains(u32 code_point) const;
-    NODISCARD bool contains(Utf8View substring) const;
+    NODISCARD bool contains(StringView substring) const;
 
     NODISCARD bool starts_with(u32 code_point) const;
-    NODISCARD bool starts_with(Utf8View substring) const;
+    NODISCARD bool starts_with(StringView substring) const;
     NODISCARD bool ends_with(u32 code_point) const;
-    NODISCARD bool ends_with(Utf8View substring) const;
+    NODISCARD bool ends_with(StringView substring) const;
 
-    NODISCARD bool equals(Utf8View const& rhs) const;
-    NODISCARD bool equals_ignoring_case(Utf8View const& rhs) const;
+    NODISCARD bool equals(StringView const& rhs) const;
+    NODISCARD bool equals_ignoring_case(StringView const& rhs) const;
 
-    NODISCARD CompareResult compare(Utf8View rhs) const;
-    NODISCARD CompareResult compare_ignoring_case(Utf8View rhs) const;
+    NODISCARD CompareResult compare(StringView rhs) const;
+    NODISCARD CompareResult compare_ignoring_case(StringView rhs) const;
 
-    NODISCARD ALWAYS_INLINE bool operator==(Utf8View const& rhs) const { return equals(rhs); }
-    NODISCARD ALWAYS_INLINE bool operator!=(Utf8View const& rhs) const { return !equals(rhs); }
+    NODISCARD ALWAYS_INLINE bool operator==(StringView const& rhs) const { return equals(rhs); }
+    NODISCARD ALWAYS_INLINE bool operator!=(StringView const& rhs) const { return !equals(rhs); }
 
     // Base case for the templated version.
     NODISCARD ALWAYS_INLINE static constexpr bool is_one_of()
@@ -121,11 +121,11 @@ public:
     }
 
 public:
-    NODISCARD Utf8View slice(usize byte_offset) const;
-    NODISCARD Utf8View slice(usize start_byte_offset, usize end_byte_offset) const;
+    NODISCARD StringView slice(usize byte_offset) const;
+    NODISCARD StringView slice(usize start_byte_offset, usize end_byte_offset) const;
 
 private:
-    ALWAYS_INLINE constexpr Utf8View(ROBytes in_bytes, usize in_byte_count)
+    ALWAYS_INLINE constexpr StringView(ROBytes in_bytes, usize in_byte_count)
         : m_bytes(in_bytes)
         , m_byte_count(in_byte_count)
     {
@@ -136,14 +136,14 @@ private:
     usize m_byte_count;
 };
 
-// Constructs a Utf8View from a string literal. Note that it doesn't verify if the provided string literal is valid UTF-8.
+// Constructs a StringView from a string literal. Note that it doesn't verify if the provided string literal is valid UTF-8.
 #define VIEW(string_literal) \
-    ::AND::Utf8View::from_unverified(string_literal, sizeof(string_literal) - sizeof('\0'))
+    ::AND::StringView::from_unverified(string_literal, sizeof(string_literal) - sizeof('\0'))
 
-void append_to_builder(StringBuilder&, Optional<Utf8View>, Utf8View const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, StringView const&);
 
 } // namespace AND
 
 #if AND_INCLUDE_IN_GLOBAL_NAMESPACE
-using AND::Utf8View;
+using AND::StringView;
 #endif

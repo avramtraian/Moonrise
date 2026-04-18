@@ -82,7 +82,7 @@ static Result win32_write_console(HANDLE handle, wchar_t const* code_units, u64 
     return Result::Success;
 }
 
-Result write_text_to_std_stream(StdStream stream, Utf8View contents)
+Result write_text_to_std_stream(StdStream stream, StringView contents)
 {
     HANDLE stream_handle = win32_get_standard_stream_handle(stream);
     if (stream_handle == INVALID_HANDLE_VALUE)
@@ -223,11 +223,11 @@ Vector<CallStackFrame> get_call_stack(u32 frames_to_skip)
         auto& frame = call_stack.emplace_back();
         frame.return_address = return_address;
         if (has_module_info)
-            frame.module = Utf8View::from_null_terminated(module_info.ModuleName);
+            frame.module = StringView::from_null_terminated(module_info.ModuleName);
         if (has_symbol_info)
-            frame.function = Utf8View::from_null_terminated(symbol_info->Name);
+            frame.function = StringView::from_null_terminated(symbol_info->Name);
         if (has_line_info) {
-            frame.file = Utf8View::from_null_terminated(line_info.FileName);
+            frame.file = StringView::from_null_terminated(line_info.FileName);
             frame.line = line_info.LineNumber;
         }
     }
@@ -297,7 +297,7 @@ void sleep(TimeDuration duration)
 
 FileHandle invalid_file_handle = INVALID_HANDLE_VALUE;
 
-FileErrorOr<FileHandle> open_file(Utf8View const& filename, FileMode file_mode)
+FileErrorOr<FileHandle> open_file(StringView const& filename, FileMode file_mode)
 {
     DWORD desired_access = 0;
     DWORD share_mode = 0;
@@ -428,7 +428,7 @@ FileErrorOr<u64> file_size(FileHandle file_handle)
     return file_size.QuadPart;
 }
 
-static FileErrorOr<WIN32_FILE_ATTRIBUTE_DATA> win32_get_file_attributes(Utf8View const& filename)
+static FileErrorOr<WIN32_FILE_ATTRIBUTE_DATA> win32_get_file_attributes(StringView const& filename)
 {
     WIN32_FILE_ATTRIBUTE_DATA file_attributes;
     auto utf16_filename = Utf16String::from_utf8(filename);
@@ -450,7 +450,7 @@ static FileErrorOr<WIN32_FILE_ATTRIBUTE_DATA> win32_get_file_attributes(Utf8View
     return file_attributes;
 }
 
-FileErrorOr<u64> file_size(Utf8View const& filename)
+FileErrorOr<u64> file_size(StringView const& filename)
 {
     auto attributes_or_error = win32_get_file_attributes(filename);
     if (attributes_or_error.is_error())
@@ -465,7 +465,7 @@ FileErrorOr<u64> file_size(Utf8View const& filename)
     return (file_size_high << 32) | file_size_low;
 }
 
-FileErrorOr<bool> is_directory(Utf8View const& filepath)
+FileErrorOr<bool> is_directory(StringView const& filepath)
 {
     auto attributes_or_error = win32_get_file_attributes(filepath);
     if (attributes_or_error.is_error())

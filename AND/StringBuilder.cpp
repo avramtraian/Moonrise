@@ -7,8 +7,8 @@
 #include "AND/Assertions.h"
 #include "AND/MathUtilities.h"
 #include "AND/MemoryOperations.h"
+#include "AND/String.h"
 #include "AND/Utf16String.h"
-#include "AND/Utf8String.h"
 
 #include <new>
 
@@ -65,7 +65,7 @@ void StringBuilder::set_encoding(Encoding encoding)
     m_encoding = encoding;
 }
 
-Utf8String StringBuilder::build_utf8() const
+String StringBuilder::build_utf8() const
 {
     ASSERTF(is_encoded_in_utf8(), "Trying to construct a UTF-8 string from a StringBuilder that is encoded in something else!");
 
@@ -75,11 +75,11 @@ Utf8String StringBuilder::build_utf8() const
         byte_count += current_block->byte_offset;
 
     // Find the destination string buffer by allocating a heap block if necessary.
-    Utf8String string;
+    String string;
     string.m_byte_count = byte_count + sizeof('\0');
     WOBytes destination = string.m_inline_buffer;
     if (string.is_stored_on_heap()) {
-        string.m_heap_block = Utf8String::allocate_memory(string.m_byte_count);
+        string.m_heap_block = String::allocate_memory(string.m_byte_count);
         string.m_heap_block->reference_count = 1;
         destination = string.m_heap_block->buffer;
     }
@@ -148,7 +148,7 @@ void StringBuilder::append_code_point_repeated(u32 code_point, usize count)
         append_code_point(code_point);
 }
 
-void StringBuilder::append_utf8(Utf8View const& view)
+void StringBuilder::append_utf8(StringView const& view)
 {
     if (m_encoding == Encoding::UTF8) {
         push_bytes(view.bytes(), view.byte_count());
@@ -168,7 +168,7 @@ void StringBuilder::append_utf16(Utf16View const& view)
     }
 }
 
-void StringBuilder::append_repeated(Utf8View const& view, usize repeat_count)
+void StringBuilder::append_repeated(StringView const& view, usize repeat_count)
 {
     for (usize i = 0; i < repeat_count; i++)
         append_utf8(view);
@@ -399,67 +399,67 @@ void StringBuilder::push_bytes(ROBytes src_bytes, usize src_byte_count)
     }
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, u8 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, u8 const& value)
 {
     u64 unsigned_value = static_cast<u64>(value);
     builder.append_unsigned(unsigned_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, u16 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, u16 const& value)
 {
     u64 unsigned_value = static_cast<u64>(value);
     builder.append_unsigned(unsigned_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, u32 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, u32 const& value)
 {
     u64 unsigned_value = static_cast<u64>(value);
     builder.append_unsigned(unsigned_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, u64 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, u64 const& value)
 {
     u64 unsigned_value = static_cast<u64>(value);
     builder.append_unsigned(unsigned_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, s8 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, s8 const& value)
 {
     s64 signed_value = static_cast<s64>(value);
     builder.append_signed(signed_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, s16 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, s16 const& value)
 {
     s64 signed_value = static_cast<s64>(value);
     builder.append_signed(signed_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, s32 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, s32 const& value)
 {
     s64 signed_value = static_cast<s64>(value);
     builder.append_signed(signed_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, s64 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, s64 const& value)
 {
     s64 signed_value = static_cast<s64>(value);
     builder.append_signed(signed_value, NumberBase::Decimal);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, f32 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, f32 const& value)
 {
     f64 float_value = static_cast<f64>(value);
     builder.append_float(float_value);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, f64 const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, f64 const& value)
 {
     f64 float_value = static_cast<f64>(value);
     builder.append_float(float_value);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, bool const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, bool const& value)
 {
     if (value)
         builder.append_utf8(VIEW("true"));
@@ -467,7 +467,7 @@ void append_to_builder(StringBuilder& builder, Optional<Utf8View>, bool const& v
         builder.append_utf8(VIEW("false"));
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, void* const& value)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, void* const& value)
 {
     builder.append_utf8(VIEW("0x"));
     builder.append_unsigned(reinterpret_cast<uintptr>(value), NumberBase::Hexadecimal, 2 * sizeof(void*));

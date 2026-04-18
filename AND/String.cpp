@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: BSD-3-Clause.
  */
 
-#include "AND/Utf8String.h"
 #include "AND/MemoryOperations.h"
+#include "AND/String.h"
 
 #include <new>
 
 namespace AND {
 
-Utf8String Utf8String::from_utf16(Utf16View const& utf16_view)
+String String::from_utf16(Utf16View const& utf16_view)
 {
     StringBuilder builder;
     builder.set_encoding(StringBuilder::Encoding::UTF8);
@@ -18,7 +18,7 @@ Utf8String Utf8String::from_utf16(Utf16View const& utf16_view)
     return builder.build_utf8();
 }
 
-Utf8String Utf8String::number_unsigned(u64 value)
+String String::number_unsigned(u64 value)
 {
     StringBuilder builder;
     builder.set_encoding(StringBuilder::Encoding::UTF8);
@@ -26,7 +26,7 @@ Utf8String Utf8String::number_unsigned(u64 value)
     return builder.build_utf8();
 }
 
-Utf8String Utf8String::number_signed(s64 value)
+String String::number_signed(s64 value)
 {
     StringBuilder builder;
     builder.set_encoding(StringBuilder::Encoding::UTF8);
@@ -34,7 +34,7 @@ Utf8String Utf8String::number_signed(s64 value)
     return builder.build_utf8();
 }
 
-Utf8String Utf8String::number_float(f64 value)
+String String::number_float(f64 value)
 {
     StringBuilder builder;
     builder.set_encoding(StringBuilder::Encoding::UTF8);
@@ -42,18 +42,18 @@ Utf8String Utf8String::number_float(f64 value)
     return builder.build_utf8();
 }
 
-Utf8String::Utf8String()
+String::String()
     : m_byte_count(sizeof('\0'))
 {
     m_inline_buffer[0] = '\0';
 }
 
-Utf8String::~Utf8String()
+String::~String()
 {
     clear();
 }
 
-Utf8String::Utf8String(Utf8String const& other)
+String::String(String const& other)
     : m_byte_count(other.m_byte_count)
 {
     if (is_stored_inline()) {
@@ -64,7 +64,7 @@ Utf8String::Utf8String(Utf8String const& other)
     }
 }
 
-Utf8String::Utf8String(Utf8String&& other) noexcept
+String::String(String&& other) noexcept
     : m_byte_count(other.m_byte_count)
 {
     if (is_stored_inline()) {
@@ -78,12 +78,12 @@ Utf8String::Utf8String(Utf8String&& other) noexcept
     zero_memory(other.m_inline_buffer, inline_capacity);
 }
 
-Utf8String::Utf8String(Utf8View view)
+String::String(StringView view)
     : m_byte_count(view.byte_count() + sizeof('\0'))
 {
     WOBytes destination = m_inline_buffer;
     if (is_stored_on_heap()) {
-        m_heap_block = Utf8String::allocate_memory(m_byte_count);
+        m_heap_block = String::allocate_memory(m_byte_count);
         m_heap_block->reference_count = 1;
         destination = m_heap_block->buffer;
     }
@@ -92,7 +92,7 @@ Utf8String::Utf8String(Utf8View view)
     destination[view.byte_count()] = '\0';
 }
 
-Utf8String& Utf8String::operator=(Utf8String const& other)
+String& String::operator=(String const& other)
 {
     // Handle the self-assignment case.
     if (this == &other)
@@ -111,7 +111,7 @@ Utf8String& Utf8String::operator=(Utf8String const& other)
     return *this;
 }
 
-Utf8String& Utf8String::operator=(Utf8String&& other) noexcept
+String& String::operator=(String&& other) noexcept
 {
     // Handle the self-assignment case.
     if (this == &other)
@@ -133,14 +133,14 @@ Utf8String& Utf8String::operator=(Utf8String&& other) noexcept
     return *this;
 }
 
-Utf8String& Utf8String::operator=(Utf8View view)
+String& String::operator=(StringView view)
 {
     clear();
     m_byte_count = view.byte_count() + sizeof('\0');
 
     WOBytes destination = m_inline_buffer;
     if (is_stored_on_heap()) {
-        m_heap_block = Utf8String::allocate_memory(m_byte_count);
+        m_heap_block = String::allocate_memory(m_byte_count);
         m_heap_block->reference_count = 1;
         destination = m_heap_block->buffer;
     }
@@ -150,12 +150,12 @@ Utf8String& Utf8String::operator=(Utf8View view)
     return *this;
 }
 
-void Utf8String::clear()
+void String::clear()
 {
     if (is_stored_on_heap()) {
         m_heap_block->reference_count--;
         if (m_heap_block->reference_count == 0)
-            Utf8String::free_memory(m_heap_block, m_byte_count);
+            String::free_memory(m_heap_block, m_byte_count);
         m_heap_block = nullptr;
     }
 
@@ -163,7 +163,7 @@ void Utf8String::clear()
     zero_memory(m_inline_buffer, inline_capacity);
 }
 
-Utf8String::HeapBlock* Utf8String::allocate_memory(usize in_byte_count)
+String::HeapBlock* String::allocate_memory(usize in_byte_count)
 {
     ASSERT(in_byte_count > inline_capacity);
     usize allocation_size = sizeof(HeapBlock) + in_byte_count;
@@ -172,14 +172,14 @@ Utf8String::HeapBlock* Utf8String::allocate_memory(usize in_byte_count)
     return block;
 }
 
-void Utf8String::free_memory(HeapBlock* block, usize in_byte_count)
+void String::free_memory(HeapBlock* block, usize in_byte_count)
 {
     ASSERT(block->reference_count == 0);
     MAYBE_UNUSED usize allocation_size = sizeof(HeapBlock) + in_byte_count;
     ::operator delete(block);
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, Utf8String const& string)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, String const& string)
 {
     builder.append_utf8(string.view());
 }

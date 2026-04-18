@@ -9,7 +9,7 @@
 
 namespace AND {
 
-Utf16String Utf16String::from_utf8(Utf8View const& view)
+Utf16String Utf16String::from_utf8(StringView const& view)
 {
     StringBuilder builder;
     builder.set_encoding(StringBuilder::Encoding::UTF16);

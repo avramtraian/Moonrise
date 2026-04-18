@@ -15,10 +15,10 @@ void on_assertion_failed(AssertionKind kind, char const* expression, char const*
     //        about the failed assert. The string formatting in particular is really messy and should probably
     //        be strengthen by implementing a proper message layout system.
 
-    Utf8View expression_view = Utf8View::from_null_terminated(expression);
-    Utf8View file_view = Utf8View::from_null_terminated(file);
-    Utf8View function_view = Utf8View::from_null_terminated(function);
-    Utf8View message_view = Utf8View::from_null_terminated(message ? message : "<no message>");
+    StringView expression_view = StringView::from_null_terminated(expression);
+    StringView file_view = StringView::from_null_terminated(file);
+    StringView function_view = StringView::from_null_terminated(function);
+    StringView message_view = StringView::from_null_terminated(message ? message : "<no message>");
 
     errorln("\n#====================================================================================================");
     switch (kind) {
@@ -46,7 +46,7 @@ void on_assertion_failed(AssertionKind kind, char const* expression, char const*
             auto frame_module = frame.module.value_or(VIEW("<unavailable>"));
             auto frame_function = frame.function.value_or(VIEW("<unavailable>"));
             auto frame_file = frame.file.value_or(VIEW("<unavailable>"));
-            auto frame_line = frame.line.has_value() ? Utf8String::number_unsigned(*frame.line) : VIEW("<unavailable>");
+            auto frame_line = frame.line.has_value() ? String::number_unsigned(*frame.line) : VIEW("<unavailable>");
             errorln("#   - {} {}!{} <- {}:{}", frame_return_address, frame_module, frame_function, frame_file, frame_line);
         }
     }

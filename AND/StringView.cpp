@@ -3,37 +3,37 @@
  * SPDX-License-Identifier: BSD-3-Clause.
  */
 
-#include "AND/Utf8View.h"
+#include "AND/StringView.h"
 #include "AND/StringBuilder.h"
 #include "AND/UnicodeCodePoint.h"
 
 namespace AND {
 
-Utf8View Utf8View::from_buffer(ROByteSpan buffer)
+StringView StringView::from_buffer(ROByteSpan buffer)
 {
-    Utf8View view = Utf8View { buffer.bytes(), buffer.count() };
-    ASSERTF(view.validate(), "Trying to construct a Utf8View from a buffer that is not correctly encoded as UTF-8!");
+    StringView view = StringView { buffer.bytes(), buffer.count() };
+    ASSERTF(view.validate(), "Trying to construct a StringView from a buffer that is not correctly encoded as UTF-8!");
     return view;
 }
 
-Utf8View Utf8View::from_buffer(void const* data, usize size)
+StringView StringView::from_buffer(void const* data, usize size)
 {
     ROByteSpan buffer = ROByteSpan { static_cast<ROByte const*>(data), size };
-    return Utf8View::from_buffer(buffer);
+    return StringView::from_buffer(buffer);
 }
 
-Utf8View Utf8View::from_unverified(ROByteSpan buffer)
+StringView StringView::from_unverified(ROByteSpan buffer)
 {
-    return Utf8View { buffer.bytes(), buffer.count() };
+    return StringView { buffer.bytes(), buffer.count() };
 }
 
-Utf8View Utf8View::from_unverified(void const* data, usize size)
+StringView StringView::from_unverified(void const* data, usize size)
 {
     ROByteSpan buffer = ROByteSpan { static_cast<ROByte const*>(data), size };
-    return Utf8View::from_unverified(buffer);
+    return StringView::from_unverified(buffer);
 }
 
-Utf8View Utf8View::from_null_terminated(char const* characters)
+StringView StringView::from_null_terminated(char const* characters)
 {
     if (characters == nullptr)
         return {};
@@ -45,10 +45,10 @@ Utf8View Utf8View::from_null_terminated(char const* characters)
         characters++;
     }
 
-    return Utf8View::from_buffer(bytes, byte_count);
+    return StringView::from_buffer(bytes, byte_count);
 }
 
-bool Utf8View::validate() const
+bool StringView::validate() const
 {
     ROBytes bytes = m_bytes;
     usize byte_count = m_byte_count;
@@ -64,7 +64,7 @@ bool Utf8View::validate() const
     return true;
 }
 
-usize Utf8View::calculate_length() const
+usize StringView::calculate_length() const
 {
     usize length = 0;
     for (MAYBE_UNUSED u32 code_point : *this)
@@ -72,7 +72,7 @@ usize Utf8View::calculate_length() const
     return length;
 }
 
-Optional<usize> Utf8View::find(u32 code_point) const
+Optional<usize> StringView::find(u32 code_point) const
 {
     usize byte_offset = 0;
     for (auto it = begin(); it != end(); ++it) {
@@ -83,13 +83,13 @@ Optional<usize> Utf8View::find(u32 code_point) const
     return {};
 }
 
-Optional<usize> Utf8View::find(Utf8View substring) const
+Optional<usize> StringView::find(StringView substring) const
 {
     if (m_byte_count < substring.m_byte_count)
         return {};
 
     for (usize byte_offset = 0; byte_offset < m_byte_count; ++byte_offset) {
-        Utf8View source_slice = slice(byte_offset);
+        StringView source_slice = slice(byte_offset);
         if (source_slice.starts_with(substring))
             return byte_offset;
     }
@@ -97,7 +97,7 @@ Optional<usize> Utf8View::find(Utf8View substring) const
     return {};
 }
 
-Optional<usize> Utf8View::find_last_of(u32 code_point) const
+Optional<usize> StringView::find_last_of(u32 code_point) const
 {
     usize byte_offset = m_byte_count;
     for (auto it = rbegin(); it != rend(); ++it) {
@@ -108,13 +108,13 @@ Optional<usize> Utf8View::find_last_of(u32 code_point) const
     return {};
 }
 
-Optional<usize> Utf8View::find_last_of(Utf8View substring) const
+Optional<usize> StringView::find_last_of(StringView substring) const
 {
     if (m_byte_count < substring.m_byte_count)
         return {};
 
     for (ssize byte_offset = m_byte_count - substring.m_byte_count; byte_offset >= 0; --byte_offset) {
-        Utf8View source_slice = slice(byte_offset);
+        StringView source_slice = slice(byte_offset);
         if (source_slice.starts_with(substring))
             return byte_offset;
     }
@@ -122,19 +122,19 @@ Optional<usize> Utf8View::find_last_of(Utf8View substring) const
     return {};
 }
 
-bool Utf8View::contains(u32 code_point) const
+bool StringView::contains(u32 code_point) const
 {
     Optional<usize> byte_offset = find(code_point);
     return byte_offset.has_value();
 }
 
-bool Utf8View::contains(Utf8View substring) const
+bool StringView::contains(StringView substring) const
 {
     Optional<usize> byte_offset = find(substring);
     return byte_offset.has_value();
 }
 
-bool Utf8View::starts_with(u32 code_point) const
+bool StringView::starts_with(u32 code_point) const
 {
     if (is_empty())
         return false;
@@ -143,7 +143,7 @@ bool Utf8View::starts_with(u32 code_point) const
     return (*iterator == code_point);
 }
 
-bool Utf8View::starts_with(Utf8View substring) const
+bool StringView::starts_with(StringView substring) const
 {
     if (m_byte_count < substring.m_byte_count)
         return false;
@@ -152,7 +152,7 @@ bool Utf8View::starts_with(Utf8View substring) const
     return source_slice == substring;
 }
 
-bool Utf8View::ends_with(u32 code_point) const
+bool StringView::ends_with(u32 code_point) const
 {
     if (is_empty())
         return false;
@@ -161,7 +161,7 @@ bool Utf8View::ends_with(u32 code_point) const
     return (*iterator == code_point);
 }
 
-bool Utf8View::ends_with(Utf8View substring) const
+bool StringView::ends_with(StringView substring) const
 {
     if (m_byte_count < substring.m_byte_count)
         return false;
@@ -170,7 +170,7 @@ bool Utf8View::ends_with(Utf8View substring) const
     return source_slice == substring;
 }
 
-bool Utf8View::equals(Utf8View const& rhs) const
+bool StringView::equals(StringView const& rhs) const
 {
     auto lhs_iterator = begin();
     auto rhs_iterator = rhs.begin();
@@ -188,7 +188,7 @@ bool Utf8View::equals(Utf8View const& rhs) const
     return lhs_iterator.is_done() && rhs_iterator.is_done();
 }
 
-bool Utf8View::equals_ignoring_case(Utf8View const& rhs) const
+bool StringView::equals_ignoring_case(StringView const& rhs) const
 {
     auto lhs_iterator = begin();
     auto rhs_iterator = rhs.begin();
@@ -206,7 +206,7 @@ bool Utf8View::equals_ignoring_case(Utf8View const& rhs) const
     return lhs_iterator.is_done() && rhs_iterator.is_done();
 }
 
-CompareResult Utf8View::compare(Utf8View rhs) const
+CompareResult StringView::compare(StringView rhs) const
 {
     auto lhs_iterator = begin();
     auto rhs_iterator = rhs.begin();
@@ -225,7 +225,7 @@ CompareResult Utf8View::compare(Utf8View rhs) const
     return CompareResult::greater();
 }
 
-CompareResult Utf8View::compare_ignoring_case(Utf8View rhs) const
+CompareResult StringView::compare_ignoring_case(StringView rhs) const
 {
     auto lhs_iterator = begin();
     auto rhs_iterator = rhs.begin();
@@ -244,17 +244,17 @@ CompareResult Utf8View::compare_ignoring_case(Utf8View rhs) const
     return CompareResult::greater();
 }
 
-Utf8View Utf8View::slice(usize byte_offset) const
+StringView StringView::slice(usize byte_offset) const
 {
     if (byte_offset >= m_byte_count)
         return {};
 
     ROBytes bytes = m_bytes + byte_offset;
     usize byte_count = m_byte_count - byte_offset;
-    return Utf8View { bytes, byte_count };
+    return StringView { bytes, byte_count };
 }
 
-Utf8View Utf8View::slice(usize start_byte_offset, usize end_byte_offset) const
+StringView StringView::slice(usize start_byte_offset, usize end_byte_offset) const
 {
     ASSERTF(start_byte_offset <= end_byte_offset, "Invalid order of offsets provided to Utf8::slice()!");
     if (start_byte_offset >= m_byte_count)
@@ -265,10 +265,10 @@ Utf8View Utf8View::slice(usize start_byte_offset, usize end_byte_offset) const
 
     ROBytes bytes = m_bytes + start_byte_offset;
     usize byte_count = end_byte_offset - start_byte_offset;
-    return Utf8View { bytes, byte_count };
+    return StringView { bytes, byte_count };
 }
 
-void append_to_builder(StringBuilder& builder, Optional<Utf8View>, Utf8View const& view)
+void append_to_builder(StringBuilder& builder, Optional<StringView>, StringView const& view)
 {
     builder.append_utf8(view);
 }

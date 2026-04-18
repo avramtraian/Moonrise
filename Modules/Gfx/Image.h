@@ -6,7 +6,7 @@
 #pragma once
 
 #include <AND/RefCounted.h>
-#include <AND/Utf8View.h>
+#include <AND/StringView.h>
 #include <Gfx/ImageFormat.h>
 #include <Gfx/Rect.h>
 
@@ -16,7 +16,7 @@ class Image : public RefCounted {
 public:
     Image() = default;
     virtual ~Image() override = default;
-    virtual Utf8View class_name() const = 0;
+    virtual StringView class_name() const = 0;
 
 public:
     virtual void initialize(ImageFormat, IntSize) = 0;
@@ -31,6 +31,6 @@ public:                                 \
     using Base = base_type;             \
     type() = default;                   \
     virtual ~type() override = default; \
-    virtual ::AND::Utf8View class_name() const override { return VIEW(#type); }
+    virtual ::AND::StringView class_name() const override { return VIEW(#type); }
 
 } // namespace Gfx

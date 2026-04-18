@@ -9,8 +9,8 @@
 #include "AND/Noncopyable.h"
 #include "AND/NumberBase.h"
 #include "AND/Optional.h"
+#include "AND/StringView.h"
 #include "AND/Utf16View.h"
-#include "AND/Utf8View.h"
 
 namespace AND {
 
@@ -36,21 +36,21 @@ enum class LineSeparator {
     CR,
 };
 
-void append_to_builder(StringBuilder&, Optional<Utf8View>, u8 const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, u16 const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, u32 const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, u64 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, u8 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, u16 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, u32 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, u64 const&);
 
-void append_to_builder(StringBuilder&, Optional<Utf8View>, s8 const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, s16 const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, s32 const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, s64 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, s8 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, s16 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, s32 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, s64 const&);
 
-void append_to_builder(StringBuilder&, Optional<Utf8View>, f32 const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, f64 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, f32 const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, f64 const&);
 
-void append_to_builder(StringBuilder&, Optional<Utf8View>, bool const&);
-void append_to_builder(StringBuilder&, Optional<Utf8View>, void* const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, bool const&);
+void append_to_builder(StringBuilder&, Optional<StringView>, void* const&);
 
 class StringBuilder {
     AND_MAKE_NONCOPYABLE(StringBuilder);
@@ -89,7 +89,7 @@ public:
     NODISCARD ALWAYS_INLINE bool is_encoded_in_utf16() const { return m_encoding == Encoding::UTF16; }
     NODISCARD ALWAYS_INLINE bool is_encoded_in_ascii() const { return m_encoding == Encoding::ASCII; }
 
-    NODISCARD Utf8String build_utf8() const;
+    NODISCARD String build_utf8() const;
     NODISCARD Utf16String build_utf16() const;
 
     void clear();
@@ -98,10 +98,10 @@ public:
     void append_code_point(u32);
     void append_code_point_repeated(u32, usize);
 
-    void append_utf8(Utf8View const&);
+    void append_utf8(StringView const&);
     void append_utf16(Utf16View const&);
 
-    void append_repeated(Utf8View const&, usize);
+    void append_repeated(StringView const&, usize);
     void append_repeated(Utf16View const&, usize);
 
     void append_unsigned(
@@ -139,7 +139,7 @@ public:
     }
 
     template<typename... Args>
-    ALWAYS_INLINE void append_formatted(Utf8View format, Args&&... args)
+    ALWAYS_INLINE void append_formatted(StringView format, Args&&... args)
     {
         append_formatted_impl(format, forward<Args>(args)...);
     }
@@ -157,14 +157,14 @@ private:
     void append_block(usize min_byte_count);
     void push_bytes(ROBytes, usize);
 
-    ALWAYS_INLINE void append_formatted_impl(Utf8View format)
+    ALWAYS_INLINE void append_formatted_impl(StringView format)
     {
         // Append the rest of the format string to the builder. Any format arguments will be copied directly.
         append_utf8(format);
     }
 
     template<typename T, typename... Args>
-    ALWAYS_INLINE void append_formatted_impl(Utf8View format, T const& argument_value, Args&&... args)
+    ALWAYS_INLINE void append_formatted_impl(StringView format, T const& argument_value, Args&&... args)
     {
         // 1. Find the position of the format argument. If there is no valid format argument, we append
         // the entire of the format string directly.

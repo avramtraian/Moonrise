@@ -5,22 +5,22 @@
 
 #pragma once
 
+#include "AND/String.h"
 #include "AND/StringBuilder.h"
-#include "AND/Utf8String.h"
 
 namespace AND {
 
-void dbgln_impl(Utf8View);
-void outln_impl(Utf8View);
-void warnln_impl(Utf8View);
-void errorln_impl(Utf8View);
+void dbgln_impl(StringView);
+void outln_impl(StringView);
+void warnln_impl(StringView);
+void errorln_impl(StringView);
 
 template<typename... Args>
 void dbgln(char const* message, Args&&... args)
 {
     StringBuilder builder;
-    builder.append_formatted(Utf8View::from_null_terminated(message), forward<Args>(args)...);
-    Utf8String formatted = builder.build_utf8();
+    builder.append_formatted(StringView::from_null_terminated(message), forward<Args>(args)...);
+    String formatted = builder.build_utf8();
     dbgln_impl(formatted.view());
 }
 
@@ -28,8 +28,8 @@ template<typename... Args>
 void outln(char const* message, Args&&... args)
 {
     StringBuilder builder;
-    builder.append_formatted(Utf8View::from_null_terminated(message), forward<Args>(args)...);
-    Utf8String formatted = builder.build_utf8();
+    builder.append_formatted(StringView::from_null_terminated(message), forward<Args>(args)...);
+    String formatted = builder.build_utf8();
     outln_impl(formatted.view());
 }
 
@@ -37,8 +37,8 @@ template<typename... Args>
 void warnln(char const* message, Args&&... args)
 {
     StringBuilder builder;
-    builder.append_formatted(Utf8View::from_null_terminated(message), forward<Args>(args)...);
-    Utf8String formatted = builder.build_utf8();
+    builder.append_formatted(StringView::from_null_terminated(message), forward<Args>(args)...);
+    String formatted = builder.build_utf8();
     warnln_impl(formatted.view());
 }
 
@@ -46,8 +46,8 @@ template<typename... Args>
 void errorln(char const* message, Args&&... args)
 {
     StringBuilder builder;
-    builder.append_formatted(Utf8View::from_null_terminated(message), forward<Args>(args)...);
-    Utf8String formatted = builder.build_utf8();
+    builder.append_formatted(StringView::from_null_terminated(message), forward<Args>(args)...);
+    String formatted = builder.build_utf8();
     errorln_impl(formatted.view());
 }
 

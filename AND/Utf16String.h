@@ -24,7 +24,7 @@ public:
     static_assert(inline_capacity > 0);
 
 public:
-    NODISCARD static Utf16String from_utf8(Utf8View const&);
+    NODISCARD static Utf16String from_utf8(StringView const&);
 
 public:
     Utf16String();

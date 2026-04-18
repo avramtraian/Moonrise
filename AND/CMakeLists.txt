@@ -53,10 +53,10 @@ set(AND_SOURCE_FILES
     Utf8.h
     Utf8CodepointIterator.cpp
     Utf8CodepointIterator.h
-    Utf8String.cpp
-    Utf8String.h
-    Utf8View.cpp
-    Utf8View.h
+    String.cpp
+    String.h
+    StringView.cpp
+    StringView.h
     Vector.h
 )
 

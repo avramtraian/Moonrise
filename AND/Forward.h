@@ -14,7 +14,7 @@ class Utf16String;
 class Utf16View;
 class Utf8CodepointIterator;
 class Utf8ReverseCodePointIterator;
-class Utf8String;
-class Utf8View;
+class String;
+class StringView;
 
 } // namespace AND

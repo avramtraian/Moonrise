@@ -8,7 +8,7 @@
 
 namespace AND {
 
-void dbgln_impl(Utf8View message)
+void dbgln_impl(StringView message)
 {
     Platform::set_std_stream_colors(Platform::StdStream::Output, Platform::ConsoleColor::LightGray, Platform::ConsoleColor::Black);
     Platform::write_text_to_std_stream(Platform::StdStream::Output, message);
@@ -17,7 +17,7 @@ void dbgln_impl(Utf8View message)
     Platform::set_std_stream_colors(Platform::StdStream::Output, {}, {});
 }
 
-void outln_impl(Utf8View message)
+void outln_impl(StringView message)
 {
     Platform::set_std_stream_colors(Platform::StdStream::Output, Platform::ConsoleColor::LightGray, Platform::ConsoleColor::Black);
     Platform::write_text_to_std_stream(Platform::StdStream::Output, message);
@@ -26,7 +26,7 @@ void outln_impl(Utf8View message)
     Platform::set_std_stream_colors(Platform::StdStream::Output, {}, {});
 }
 
-void warnln_impl(Utf8View message)
+void warnln_impl(StringView message)
 {
     Platform::set_std_stream_colors(Platform::StdStream::Output, Platform::ConsoleColor::LightYellow, Platform::ConsoleColor::Black);
     Platform::write_text_to_std_stream(Platform::StdStream::Output, message);
@@ -35,7 +35,7 @@ void warnln_impl(Utf8View message)
     Platform::set_std_stream_colors(Platform::StdStream::Output, {}, {});
 }
 
-void errorln_impl(Utf8View message)
+void errorln_impl(StringView message)
 {
     Platform::set_std_stream_colors(Platform::StdStream::Error, Platform::ConsoleColor::Red, Platform::ConsoleColor::Black);
     Platform::write_text_to_std_stream(Platform::StdStream::Error, message);
