@@ -15,8 +15,10 @@ enum class RefIsNonnull {
 };
 
 template<typename T, RefIsNonnull is_nonnull = RefIsNonnull::No>
+requires(!is_reference<T>)
 class RefPtr {
     template<typename FriendT, RefIsNonnull friend_is_nonnull>
+    requires(!is_reference<FriendT>)
     friend class RefPtr;
 
     template<typename FriendT>
