@@ -12,6 +12,19 @@ namespace Gfx {
 template<typename T>
 requires(is_number<T>)
 struct Point {
+public:
+    static Point zero() { return { 0, 0 }; }
+
+public:
+    Point() = default;
+
+    Point(T in_x, T in_y)
+        : x(in_x)
+        , y(in_y)
+    {
+    }
+
+public:
     T x { T(0) };
     T y { T(0) };
 };

@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "AND/Types.h"
-
+#include <AND/MathUtilities.h>
 #include <Gfx/Point.h>
+#include <Gfx/Size.h>
 
 namespace Gfx {
 
@@ -15,15 +15,61 @@ template<typename T>
 requires(is_number<T>)
 struct Rect {
 public:
+    static Rect min_max(Point<T> min, Point<T> max)
+    {
+        if (min.x > max.x || min.y > max.y)
+            return Rect();
+
+        Rect result;
+        result.m_offset.x = min.x;
+        result.m_offset.y = min.y;
+        result.m_size.x = max.x - min.x;
+        result.m_size.y = max.y - min.y;
+        return result;
+    }
+
+    static Rect offset_size(Point<T> offset, Size<T> size)
+    {
+        Rect result;
+        result.m_offset = offset;
+        result.m_size = size;
+        return result;
+    }
+
+    static Rect intersect(Rect a, Rect b)
+    {
+        auto min_x = max(a.m_offset.x, b.m_offset.x);
+        auto min_y = max(a.m_offset.y, b.m_offset.y);
+        auto max_x = min(a.m_offset.x + a.m_size.x, b.m_offset.x + b.m_size.x);
+        auto max_y = min(a.m_offset.y + a.m_size.y, b.m_offset.y + b.m_size.y);
+        return Rect::min_max({ min_x, min_y }, { max_x, max_y });
+    }
+
+public:
+    Rect() = default;
+
+    Rect(Point<T> offset, Size<T> size)
+        : m_offset(offset)
+        , m_size(size)
+    {
+    }
+
+public:
     NODISCARD ALWAYS_INLINE Point<T> offset() const { return m_offset; }
     NODISCARD ALWAYS_INLINE T offset_x() const { return m_offset.x; }
     NODISCARD ALWAYS_INLINE T offset_y() const { return m_offset.y; }
 
-    NODISCARD ALWAYS_INLINE T size_x() const { return m_size_x; }
-    NODISCARD ALWAYS_INLINE T size_y() const { return m_size_y; }
+    NODISCARD ALWAYS_INLINE Size<T> size() const { return m_size; }
+    NODISCARD ALWAYS_INLINE T width() const { return m_size.x; }
+    NODISCARD ALWAYS_INLINE T height() const { return m_size.y; }
+
+    NODISCARD ALWAYS_INLINE Point<T> min_point() const { return m_offset; }
+    NODISCARD ALWAYS_INLINE Point<T> max_point() const { return { offset_x() + width(), offset_y() + height() }; }
 
 public:
     void set_offset(Point<T> offset) { m_offset = offset; }
+    void set_offset_x(T x) { m_offset.x = x; }
+    void set_offset_y(T y) { m_offset.y = y; }
 
     void set_offset(T x, T y)
     {
@@ -31,22 +77,41 @@ public:
         m_offset.y = y;
     }
 
-    void set_offset_x(T x) { m_offset.x = x; }
-    void set_offset_y(T y) { m_offset.y = y; }
+    void set_size(Size<T> size) { m_size = size; }
+    void set_width(T width) { m_size.x = width; }
+    void set_height(T height) { m_size.y = height; }
 
-    void set_size(T x, T y)
+    void set_size(T width, T height)
     {
-        m_size_x = x;
-        m_size_y = y;
+        m_size.x = width;
+        m_size.y = height;
     }
 
-    void set_size_x(T x) { m_size_x = x; }
-    void set_size_y(T y) { m_size_y = y; }
+public:
+    bool is_degenerated() const
+    {
+        return m_size.is_degenerated();
+    }
+
+    bool contains(Point<T> point) const
+    {
+        bool result_x = m_offset.x <= point.x && point.x < m_offset.x + m_size.width;
+        bool result_y = m_offset.y <= point.y && point.y < m_offset.y + m_size.height;
+        return result_x && result_y;
+    }
+
+    bool overlaps(Rect other) const
+    {
+        auto this_min = min_point();
+        auto this_max = max_point();
+        auto other_min = other.min_point();
+        auto other_max = other.max_point();
+        return contains(other_min) || contains(other_max) || other.contains(this_min) || other.contains(this_max);
+    }
 
 private:
     Point<T> m_offset;
-    T m_size_x { T(0) };
-    T m_size_y { T(0) };
+    Size<T> m_size;
 };
 
 using IntRect = Rect<s32>;
