@@ -19,8 +19,8 @@ namespace AND {
 
 template<typename StorageType, usize inline_capacity>
 union VectorStorage {
-    NODISCARD ALWAYS_INLINE constexpr StorageType* inlined() { return inline_storage; }
-    NODISCARD ALWAYS_INLINE constexpr const StorageType* inlined() const { return inline_storage; }
+    NODISCARD ALWAYS_INLINE constexpr StorageType* inlined() { return reinterpret_cast<StorageType*>(inline_storage); }
+    NODISCARD ALWAYS_INLINE constexpr StorageType const* inlined() const { return reinterpret_cast<StorageType const*>(inline_storage); }
 
     StorageType* heap_elements;
     alignas(StorageType) u8 inline_storage[inline_capacity * sizeof(StorageType)];
