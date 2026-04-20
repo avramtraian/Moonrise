@@ -84,6 +84,9 @@ public:
     ALWAYS_INLINE Function(Function const& other)
         : m_byte_count(other.m_byte_count)
     {
+        if (other.is_empty())
+            return;
+
         void* dst_functor_address = m_inline_buffer;
         if (is_stored_on_heap()) {
             m_heap_functor = Function::allocate_memory(m_byte_count);
@@ -96,6 +99,9 @@ public:
     ALWAYS_INLINE Function(Function&& other) noexcept
         : m_byte_count(other.m_byte_count)
     {
+        if (other.is_empty())
+            return;
+
         if (is_stored_inline()) {
             other.functor().move_to(m_inline_buffer);
             other.clear();
@@ -133,6 +139,9 @@ public:
         clear();
         m_byte_count = other.m_byte_count;
 
+        if (other.is_empty())
+            return *this;
+
         void* dst_functor_address = m_inline_buffer;
         if (is_stored_on_heap()) {
             m_heap_functor = Function::allocate_memory(m_byte_count);
@@ -151,6 +160,9 @@ public:
 
         clear();
         m_byte_count = other.m_byte_count;
+
+        if (other.is_empty())
+            return *this;
 
         if (is_stored_inline()) {
             other.functor().move_to(m_inline_buffer);
