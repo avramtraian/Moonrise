@@ -44,7 +44,7 @@ public:
 
     /*implicit*/ ALWAYS_INLINE constexpr Span(Span<RemoveConst<T>> const& other)
     requires(is_const<T>)
-        : m_elements(other.m_storage)
+        : m_elements(other.m_elements)
         , m_count(other.m_count)
     {
     }
@@ -59,10 +59,10 @@ public:
 
     /*implicit*/ ALWAYS_INLINE constexpr Span(Span<RemoveConst<T>>&& other) noexcept
     requires(is_const<T>)
-        : m_elements(other.m_storage)
+        : m_elements(other.m_elements)
         , m_count(other.m_count)
     {
-        other.m_storage = nullptr;
+        other.m_elements = nullptr;
         other.m_count = 0;
     }
 
@@ -80,7 +80,7 @@ public:
     ALWAYS_INLINE constexpr Span& operator=(Span<RemoveConst<T>> const& other)
     requires(is_const<T>)
     {
-        m_elements = other.m_storage;
+        m_elements = other.m_elements;
         m_count = other.m_count;
         return *this;
     }
@@ -101,9 +101,9 @@ public:
     ALWAYS_INLINE constexpr Span& operator=(Span<RemoveConst<T>>&& other) noexcept
     requires(is_const<T>)
     {
-        m_elements = other.m_storage;
+        m_elements = other.m_elements;
         m_count = other.m_count;
-        other.m_storage = nullptr;
+        other.m_elements = nullptr;
         other.m_count = 0;
         return *this;
     }
@@ -116,8 +116,18 @@ public:
     NODISCARD ALWAYS_INLINE constexpr bool has_elements() const { return (m_count > 0); }
 
     NODISCARD ALWAYS_INLINE constexpr const T* ro_elements() const { return m_elements; }
-    NODISCARD ALWAYS_INLINE constexpr T* wo_elements() const { return m_elements; }
-    NODISCARD ALWAYS_INLINE constexpr T* rw_elements() const { return m_elements; }
+
+    NODISCARD ALWAYS_INLINE constexpr T* wo_elements() const
+    requires(!is_const<T>)
+    {
+        return m_elements;
+    }
+
+    NODISCARD ALWAYS_INLINE constexpr T* rw_elements() const
+    requires(!is_const<T>)
+    {
+        return m_elements;
+    }
 
 public:
     // Utility constructors in the context of byte spans.
