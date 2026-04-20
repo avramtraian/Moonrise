@@ -11,11 +11,9 @@
 
 namespace AND {
 
-template<typename T>
-requires(!is_reference<T>)
+template<NonReferenceTypename T>
 class Span {
-    template<typename Q>
-    requires(!is_reference<Q>)
+    template<NonReferenceTypename Q>
     friend class Span;
 
     using Iterator = ArrayIterator<T>;
