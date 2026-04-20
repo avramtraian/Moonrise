@@ -13,6 +13,10 @@ set(MODULE_GUI_SOURCE_FILES
     Object.h
     Panel.cpp
     Panel.h
+    Platform/WindowManager.cpp
+    Platform/WindowManager.h
+    Platform/WindowsWindowManager.cpp
+    Platform/WindowsWindowManager.h
     Widget.cpp
     Widget.h
     Window.cpp
