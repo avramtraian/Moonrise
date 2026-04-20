@@ -35,21 +35,9 @@ void SoftwarePaintEngine::execute_paint_buffer(NonnullRefPtr<PaintBuffer> const&
         execute_quad_draw_command(bitmap, command);
 }
 
-void SoftwarePaintEngine::resize_images(IntSize new_size)
+void SoftwarePaintEngine::set_render_target(NonnullRefPtr<Image> const& new_render_target)
 {
-    if (m_render_target.is_valid() && new_size == m_render_target->size())
-        return;
-
-    // FIXME: The format should be specified at creation time!
-    ImageFormat current_format = m_render_target.is_valid() ? m_render_target->format() : ImageFormat::BGRA_8888;
-    m_render_target.release();
-    m_render_target = RenderDriver::the().create_image(current_format, new_size).as<SoftwareImage>();
-}
-
-NonnullRefPtr<Image> SoftwarePaintEngine::get_current_image()
-{
-    ASSERT(m_render_target.is_valid());
-    return m_render_target;
+    m_render_target = new_render_target.as<SoftwareImage>();
 }
 
 void SoftwarePaintEngine::execute_quad_draw_command(Bitmap& bitmap, QuadDrawCommand const& command)

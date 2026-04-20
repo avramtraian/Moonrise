@@ -23,8 +23,7 @@ public:
     virtual void end_frame() override;
     virtual void execute_paint_buffer(NonnullRefPtr<PaintBuffer> const&) override;
 
-    virtual void resize_images(IntSize) override;
-    virtual NonnullRefPtr<Image> get_current_image() override;
+    virtual void set_render_target(NonnullRefPtr<Image> const&) override;
 
 private:
     static void execute_quad_draw_command(Bitmap&, QuadDrawCommand const&);

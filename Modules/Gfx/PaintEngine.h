@@ -12,14 +12,9 @@
 
 namespace Gfx {
 
-enum class RenderDeviceType {
-    Unknown = 0,
-    Software,
-};
-
 class PaintEngine : public RefCounted {
 public:
-    static RefPtr<PaintEngine> create(RenderDeviceType);
+    PaintEngine() = default;
     virtual ~PaintEngine() = default;
 
 public:
@@ -30,8 +25,7 @@ public:
     virtual void end_frame() = 0;
     virtual void execute_paint_buffer(NonnullRefPtr<PaintBuffer> const&) = 0;
 
-    virtual void resize_images(IntSize) = 0;
-    virtual NonnullRefPtr<Image> get_current_image() = 0;
+    virtual void set_render_target(NonnullRefPtr<Image> const&) = 0;
 };
 
 } // namespace Gfx
