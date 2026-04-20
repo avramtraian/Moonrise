@@ -26,3 +26,6 @@ set(MODULE_GUI_SOURCE_FILES
 add_library(Module-GUI STATIC ${MODULE_GUI_SOURCE_FILES})
 target_include_directories(Module-GUI PUBLIC ${CMAKE_SOURCE_DIR})
 target_include_directories(Module-GUI PUBLIC "${CMAKE_SOURCE_DIR}/Modules")
+
+add_dependencies(Module-GUI Module-Gfx)
+target_link_libraries(Module-GUI PUBLIC Module-Gfx)

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <AND/Noncopyable.h>
+#include <AND/OwnPtr.h>
 #include <AND/RefPtr.h>
 #include <AND/Vector.h>
 #include <GUI/Panel.h>
@@ -18,30 +19,20 @@ class Application {
     AND_MAKE_NONMOVABLE(Application);
 
 public:
-    Application(int argument_count, char** arguments);
+    static NonnullOwnPtr<Application> construct(int argument_count, char** arguments);
+    ~Application();
+
+    static Application& the();
     int execute();
 
 public:
     void add_window(NonnullRefPtr<Window> const&);
     void add_panel(NonnullRefPtr<Panel> const&);
 
-    template<typename T, typename... Args>
-    requires(is_derived_from<T, Window>)
-    NonnullRefPtr<T> construct_window(Args&&... args)
-    {
-        auto window = make_ref<T>(forward<Args>(args)...);
-        add_window(window);
-        return window;
-    }
-
-    template<typename T, typename... Args>
-    requires(is_derived_from<T, Panel>)
-    NonnullRefPtr<T> construct_panel(Args&&... args)
-    {
-        auto panel = make_ref<T>(forward<Args>(args)...);
-        add_panel(panel);
-        return panel;
-    }
+private:
+    Application() = default;
+    void initialize(int argument_count, char** arguments);
+    void destroy();
 
 private:
     Vector<NonnullRefPtr<Window>> m_windows;

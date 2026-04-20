@@ -15,6 +15,9 @@ public:
     Object() = default;
     virtual ~Object() = default;
     virtual StringView class_name() const = 0;
+
+    virtual void initialize() { }
+    virtual void destroy() { }
 };
 
 #define GUI_OBJECT(type, base_type)                                        \
@@ -27,7 +30,10 @@ public:                                                                    \
     template<typename... Args>                                             \
     static NonnullRefPtr<type> construct(Args&&... args)                   \
     {                                                                      \
-        return make_ref<type>(std::forward<Args>(args)...);                \
+        auto* instance = new type();                                       \
+        ASSERT(instance);                                                  \
+        instance->initialize(forward<Args>(args)...);                      \
+        return adopt_nonnull(*instance);                                   \
     }
 
 } // namespace GUI
