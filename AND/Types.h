@@ -241,6 +241,15 @@ NODISCARD ALWAYS_INLINE constexpr UnderlyingType<E> to_underlying(E value) noexc
     return static_cast<UnderlyingType<E>>(value);
 }
 
+template<typename T>
+concept NonReferenceTypename = !is_reference<T>;
+
+template<typename T>
+concept NonConstTypename = !is_const<T>;
+
+template<typename T>
+concept NonConstNonReferenceTypename = NonReferenceTypename<T> && NonConstTypename<T>;
+
 } // namespace AND
 
 #if AND_INCLUDE_IN_GLOBAL_NAMESPACE
