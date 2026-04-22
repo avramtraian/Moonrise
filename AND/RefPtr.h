@@ -21,6 +21,9 @@ class RefPtr {
     requires(!is_reference<FriendT>)
     friend class RefPtr;
 
+    template<NonConstNonReferenceTypename FriendT>
+    friend class WeakRefPtr;
+
     template<typename FriendT>
     friend RefPtr<FriendT> adopt(FriendT*);
 
@@ -142,13 +145,7 @@ public:
         return (m_pointer != nullptr);
     }
 
-    NODISCARD ALWAYS_INLINE T* raw()
-    requires(is_nonnull == RefIsNonnull::No)
-    {
-        return m_pointer;
-    }
-
-    NODISCARD ALWAYS_INLINE T const* raw() const
+    NODISCARD ALWAYS_INLINE T* raw() const
     requires(is_nonnull == RefIsNonnull::No)
     {
         return m_pointer;
@@ -204,8 +201,27 @@ private:
     ALWAYS_INLINE void release_impl()
     {
         if (T* pointer = leak_ptr()) {
-            if (pointer->decrement_ref_count())
-                delete pointer;
+            if (pointer->decrement_ref_count()) {
+                if constexpr (is_derived_from<T, WeakRefCounted>) {
+                    u32 current_weak_ref_count = pointer->weak_ref_count();
+                    if (current_weak_ref_count == 0) {
+                        // The type does allow weak references, but no such reference is currently alive, so
+                        // we can delete the object and release the memory block immediately.
+                        delete pointer;
+                    } else {
+                        // Destroy the object of type T stored in the given memory block.
+                        pointer->~T();
+
+                        // Construct a new final WeakRefCounted object in its place.
+                        WeakRefCounted* weak_ref_counted = new (pointer) WeakRefCounted();
+                        weak_ref_counted->m_weak_ref_count = current_weak_ref_count;
+                    }
+                } else {
+                    // The type does not allow weak references, so we can just delete the object and
+                    // release the memory block immediately.
+                    delete pointer;
+                }
+            }
         }
 
         // NOTE: This happens when decrementing the reference count causes the destructor to be

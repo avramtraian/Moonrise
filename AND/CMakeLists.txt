@@ -60,6 +60,7 @@ set(AND_SOURCE_FILES
     StringView.cpp
     StringView.h
     Vector.h
+    WeakRefPtr.h
 )
 
 add_library(AND-Framework STATIC ${AND_SOURCE_FILES})
