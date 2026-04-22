@@ -49,9 +49,13 @@ public:
     }
 
 public:
-    Rect() = default;
+    ALWAYS_INLINE Rect()
+        : m_offset({ 0, 0 })
+        , m_size({ 0, 0 })
+    {
+    }
 
-    Rect(Point<T> offset, Size<SizeType> size)
+    ALWAYS_INLINE Rect(Point<T> offset, Size<SizeType> size)
         : m_offset(offset)
         , m_size(size)
     {
