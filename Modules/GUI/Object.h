@@ -24,8 +24,12 @@ public:
 public:                                                                    \
     using Base = base_type;                                                \
     type() = default;                                                      \
-    virtual ~type() override = default;                                    \
     virtual StringView class_name() const override { return VIEW(#type); } \
+                                                                           \
+    virtual ~type() override                                               \
+    {                                                                      \
+        destroy();                                                         \
+    }                                                                      \
                                                                            \
     template<typename... Args>                                             \
     static NonnullRefPtr<type> construct(Args&&... args)                   \

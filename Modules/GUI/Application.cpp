@@ -38,30 +38,60 @@ void Application::initialize(int, char**)
 {
     GUI::WindowManager::initialize();
     Gfx::RenderDriver::initialize(Gfx::RenderDriverType::Software);
+    m_event_loop = EventLoop::construct();
 }
 
 void Application::destroy()
 {
+    m_event_loop.release();
     Gfx::RenderDriver::shutdown();
     GUI::WindowManager::shutdown();
 }
 
 int Application::execute()
 {
-    while (!m_windows.is_empty()) {
-        WindowManager::the().process_event_queue();
+    //
+    // Redirect the events received by the window manager to the application event loop.
+    //
+    WindowManager::the().on_window_requested_close = [this](NativeWindowHandle window) {
+        on_window_requested_close(window);
+    };
+    WindowManager::the().on_window_resized = [this](NativeWindowHandle window, Gfx::IntSize new_size) {
+        on_window_resized(window, new_size);
+    };
 
-        Vector<usize, 8> window_indices_to_remove;
-        for (usize index = 0; index < m_windows.count(); ++index) {
-            if (m_windows[index]->should_close())
-                window_indices_to_remove.push_back(index);
-        }
+    //
+    // Redirect the events received by the event loop to the application.
+    //
+    m_event_loop->on_timer_timeout = [this](NativeTimerHandle timer_id) {
+        on_timer_timeout(timer_id);
+    };
+    m_event_loop->on_window_requested_close = [this](NativeWindowHandle window) {
+        on_window_requested_close(window);
+    };
+    m_event_loop->on_window_resized = [this](NativeWindowHandle window, Gfx::IntSize new_size) {
+        on_window_resized(window, new_size);
+    };
 
-        for (usize index : window_indices_to_remove)
-            m_windows.remove_at(index);
-    }
-
+    m_event_loop->execute();
+    m_event_loop.release();
     return 0;
+}
+
+void Application::register_timer(NativeTimerHandle timer, Function<void()> callback)
+{
+    if (timer == invalid_native_timer_handle)
+        return;
+    ASSERT(!m_timer_dispatch_map.contains(timer));
+    m_timer_dispatch_map.add(timer, move(callback));
+}
+
+void Application::unregister_timer(NativeTimerHandle timer)
+{
+    if (timer == invalid_native_timer_handle)
+        return;
+    ASSERT(m_timer_dispatch_map.contains(timer));
+    m_timer_dispatch_map.remove(timer);
 }
 
 void Application::add_window(NonnullRefPtr<Window> const& window)
@@ -72,6 +102,42 @@ void Application::add_window(NonnullRefPtr<Window> const& window)
 void Application::add_panel(NonnullRefPtr<Panel> const& panel)
 {
     m_panels.push_back(panel);
+}
+
+void Application::on_timer_timeout(NativeTimerHandle timer)
+{
+    if (timer == invalid_native_timer_handle || !m_timer_dispatch_map.contains(timer))
+        return;
+
+    auto& callback = m_timer_dispatch_map.get(timer).value();
+    if (callback.is_valid())
+        callback();
+}
+
+void Application::on_window_requested_close(NativeWindowHandle window_handle)
+{
+    if (window_handle == invalid_native_window_handle)
+        return;
+
+    m_windows.remove_all_matching([&](auto const& window) {
+        if (window->native_handle() == window_handle)
+            return MatchResult::Yes;
+        return MatchResult::No;
+    });
+
+    if (m_windows.is_empty())
+        m_event_loop->quit();
+}
+
+void Application::on_window_resized(NativeWindowHandle window_handle, Gfx::IntSize new_size)
+{
+    m_windows.for_each([&](auto& window) {
+        if (window->native_handle() == window_handle) {
+            window->on_resize_event(new_size);
+            return IterationDecision::Break;
+        }
+        return IterationDecision::Continue;
+    });
 }
 
 } // namespace GUI

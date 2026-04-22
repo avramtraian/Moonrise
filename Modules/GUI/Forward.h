@@ -9,7 +9,12 @@ namespace GUI {
 
 class Application;
 class DockTree;
+class EventLoop;
+class LayoutEvent;
+class Object;
+class PaintEvent;
 class Panel;
+class Timer;
 class Widget;
 class Window;
 

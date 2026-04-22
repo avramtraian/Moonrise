@@ -8,6 +8,8 @@
 
 #    include <GUI/Platform/WindowsWindowManager.h>
 
+#    include "Gfx/Bitmap.h"
+
 namespace GUI {
 
 void WindowsWindowManager::initialize_impl()
@@ -27,7 +29,7 @@ void WindowsWindowManager::process_event_queue()
     }
 }
 
-WindowID WindowsWindowManager::create_window()
+NativeWindowHandle WindowsWindowManager::create_window()
 {
     win32_register_class();
     HWND window_handle = CreateWindowW(
@@ -36,51 +38,51 @@ WindowID WindowsWindowManager::create_window()
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
     if (!window_handle)
-        return invalid_window_id;
+        return invalid_native_window_handle;
 
-    WindowID window_id = ++m_last_generated_window_id;
-    WindowStorage& window_storage = m_windows[window_id];
+    NativeWindowHandle window = ++m_last_generated_window;
+    WindowStorage& window_storage = m_windows[window];
     window_storage.handle = window_handle;
-    return window_id;
+    return window;
 }
 
-void WindowsWindowManager::destroy_window(WindowID window_id)
+void WindowsWindowManager::destroy_window(NativeWindowHandle window)
 {
-    if (window_id == invalid_window_id || !m_windows.contains(window_id))
+    if (window == invalid_native_window_handle || !m_windows.contains(window))
         return;
 
-    HWND handle = m_windows.get(window_id).value().handle;
-    m_windows.remove(window_id);
+    HWND handle = m_windows.get(window).value().handle;
+    m_windows.remove(window);
 
     // It is important to call this function after we removed the window ID from the
     // internal map to avoid receiving further messages from it.
     DestroyWindow(handle);
 }
 
-void WindowsWindowManager::show_window(WindowID window_id)
+void WindowsWindowManager::show_window(NativeWindowHandle window)
 {
-    if (window_id == invalid_window_id)
+    if (window == invalid_native_window_handle)
         return;
 
-    ASSERT(m_windows.contains(window_id));
-    auto& window_storage = m_windows[window_id];
+    ASSERT(m_windows.contains(window));
+    auto& window_storage = m_windows[window];
 
     ShowWindow(window_storage.handle, SW_SHOW);
 }
 
-bool WindowsWindowManager::window_should_close(WindowID window_id)
+bool WindowsWindowManager::window_should_close(NativeWindowHandle window)
 {
-    if (window_id == invalid_window_id || !m_windows.contains(window_id))
+    if (window == invalid_native_window_handle || !m_windows.contains(window))
         return false;
-    return m_windows.get(window_id).value().should_close;
+    return m_windows.get(window).value().should_close;
 }
 
-Optional<Gfx::IntSize> WindowsWindowManager::get_window_size(WindowID window_id)
+Optional<Gfx::IntSize> WindowsWindowManager::get_window_size(NativeWindowHandle window)
 {
-    if (window_id == invalid_window_id || !m_windows.contains(window_id))
+    if (window == invalid_native_window_handle || !m_windows.contains(window))
         return {};
 
-    auto const& window_storage = m_windows.get(window_id);
+    auto const& window_storage = m_windows.get(window);
     HWND window_handle = window_storage.value().handle;
 
     RECT client_rect = {};
@@ -95,45 +97,63 @@ Optional<Gfx::IntSize> WindowsWindowManager::get_window_size(WindowID window_id)
     return Gfx::IntSize(width, height);
 }
 
-void WindowsWindowManager::set_window_title(WindowID, String)
+void WindowsWindowManager::set_window_title(NativeWindowHandle, String)
 {
     ASSERT_NOT_REACHED;
 }
 
-void WindowsWindowManager::set_window_mode(WindowID, WindowMode)
+void WindowsWindowManager::set_window_mode(NativeWindowHandle, WindowMode)
 {
     ASSERT_NOT_REACHED;
 }
 
-void WindowsWindowManager::set_window_size(WindowID, Gfx::IntSize)
+void WindowsWindowManager::set_window_size(NativeWindowHandle, Gfx::IntSize)
 {
     ASSERT_NOT_REACHED;
 }
 
-void WindowsWindowManager::set_on_window_requested_close_callback(WindowID window_id, OnWindowRequestedCloseCallback callback)
+void WindowsWindowManager::present_back_buffer(NativeWindowHandle window, NonnullRefPtr<Gfx::Bitmap> const& back_buffer)
 {
-    if (window_id == invalid_window_id || !m_windows.contains(window_id))
+    if (window == invalid_native_window_handle || !m_windows.contains(window))
         return;
 
-    auto& window_storage = m_windows[window_id];
-    window_storage.on_requested_close = move(callback);
-}
+    auto& window_storage = m_windows.get(window).value();
+    if (window_storage.device_context == nullptr) {
+        window_storage.device_context = GetDC(window_storage.handle);
+    }
 
-void WindowsWindowManager::set_on_window_resized_callback(WindowID window_id, OnWindowResizedCallback callback)
-{
-    if (window_id == invalid_window_id || !m_windows.contains(window_id))
+    HDC device_context = window_storage.device_context;
+    if (device_context == nullptr)
         return;
 
-    auto& window_storage = m_windows.get(window_id).value();
-    window_storage.on_resized = move(callback);
+    RECT client_rect = {};
+    if (!GetClientRect(window_storage.handle, &client_rect))
+        return;
+    LONG client_width = client_rect.right - client_rect.left;
+    LONG client_height = client_rect.bottom - client_rect.top;
+
+    BITMAPINFO bitmap_info = {};
+    bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmap_info.bmiHeader.biWidth = back_buffer->size().width();
+    bitmap_info.bmiHeader.biHeight = -static_cast<LONG>(back_buffer->size().height());
+    bitmap_info.bmiHeader.biPlanes = 1;
+    bitmap_info.bmiHeader.biBitCount = static_cast<WORD>(back_buffer->bytes_per_pixel() * 8);
+    bitmap_info.bmiHeader.biCompression = BI_RGB;
+
+    StretchDIBits(
+        device_context,
+        0, 0, client_width, client_height,
+        0, 0, back_buffer->size().width(), back_buffer->size().height(),
+        back_buffer->ro_byte_span().bytes(), &bitmap_info,
+        DIB_RGB_COLORS, SRCCOPY);
 }
 
-WindowID WindowsWindowManager::find_window_id_from_handle(HWND handle)
+NativeWindowHandle WindowsWindowManager::find_window_from_handle(HWND handle)
 {
-    WindowID result = invalid_window_id;
-    m_windows.for_each([&](WindowID window_id, WindowStorage const& window_storage) {
+    NativeWindowHandle result = invalid_native_window_handle;
+    m_windows.for_each([&](NativeWindowHandle window, WindowStorage const& window_storage) {
         if (window_storage.handle == handle) {
-            result = window_id;
+            result = window;
             return IterationDecision::Break;
         }
         return IterationDecision::Continue;
@@ -144,26 +164,26 @@ WindowID WindowsWindowManager::find_window_id_from_handle(HWND handle)
 LRESULT CALLBACK WindowsWindowManager::win32_window_proc(HWND handle, UINT message, WPARAM w_param, LPARAM l_param)
 {
     auto& manager = WindowsWindowManager::the();
-
     switch (message) {
     case WM_CLOSE:
     case WM_QUIT: {
-        WindowID window_id = manager.find_window_id_from_handle(handle);
-        auto& window_storage = manager.m_windows.get(window_id).value();
-        window_storage.should_close = true;
-        if (!window_storage.on_requested_close.is_empty())
-            window_storage.on_requested_close(window_id);
+        NativeWindowHandle window = manager.find_window_from_handle(handle);
+        if (window != invalid_native_window_handle && manager.m_windows.contains(window)) {
+            if (manager.on_window_requested_close.is_valid())
+                manager.on_window_requested_close(window);
+        }
         return 0;
     }
 
     case WM_SIZE: {
-        WORD new_width = LOWORD(l_param);
-        WORD new_height = HIWORD(l_param);
+        NativeWindowHandle window = manager.find_window_from_handle(handle);
+        if (window != invalid_native_window_handle && manager.m_windows.contains(window)) {
+            WORD new_width = LOWORD(l_param);
+            WORD new_height = HIWORD(l_param);
 
-        WindowID window_id = manager.find_window_id_from_handle(handle);
-        auto& window_storage = manager.m_windows.get(window_id).value();
-        if (!window_storage.on_resized.is_empty())
-            window_storage.on_resized(window_id, { new_width, new_height });
+            if (manager.on_window_resized.is_valid())
+                manager.on_window_resized(window, Gfx::IntSize { new_width, new_height });
+        }
         return 0;
     }
 

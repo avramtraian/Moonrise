@@ -8,15 +8,24 @@ set(MODULE_GUI_SOURCE_FILES
     Application.h
     DockTree.cpp
     DockTree.h
+    Events/LayoutEvent.h
+    Events/PaintEvent.h
     Forward.h
     Object.cpp
     Object.h
     Panel.cpp
     Panel.h
+    Platform/EventLoop.cpp
+    Platform/EventLoop.h
+    Platform/NativeHandles.h
     Platform/WindowManager.cpp
     Platform/WindowManager.h
+    Platform/WindowsEventLoop.cpp
+    Platform/WindowsEventLoop.h
     Platform/WindowsWindowManager.cpp
     Platform/WindowsWindowManager.h
+    Timer.cpp
+    Timer.h
     Widget.cpp
     Widget.h
     Window.cpp
