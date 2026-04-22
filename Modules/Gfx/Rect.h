@@ -90,6 +90,21 @@ public:
         m_size.y = height;
     }
 
+    void move_by(Point<T> delta)
+    {
+        m_offset.x += delta.x;
+        m_offset.y += delta.y;
+    }
+
+    void move_by(T dx, T dy)
+    {
+        m_offset.x += dx;
+        m_offset.y += dy;
+    }
+
+    void move_x_by(T dx) { m_offset.x += dx; }
+    void move_y_by(T dy) { m_offset.y += dy; }
+
 public:
     bool is_degenerated() const
     {
