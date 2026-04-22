@@ -198,10 +198,8 @@ public:
     }
 
 public:
-    NODISCARD ALWAYS_INLINE bool is_empty() const
-    {
-        return (m_byte_count == 0);
-    }
+    NODISCARD ALWAYS_INLINE bool is_valid() const { return (m_byte_count > 0); }
+    NODISCARD ALWAYS_INLINE bool is_empty() const { return (m_byte_count == 0); }
 
     ReturnType operator()(Arguments... arguments) const
     {
