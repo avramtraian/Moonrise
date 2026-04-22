@@ -9,6 +9,7 @@
 #include "AND/Span.h"
 #include "AND/String.h"
 #include "AND/Vector.h"
+#include <AND/Time.h>
 
 namespace AND::Platform {
 
@@ -72,32 +73,8 @@ Vector<CallStackFrame> get_call_stack(u32 frames_to_skip);
 // TIMING UTILITIES.
 //=================================================================================================
 
-class TimeDuration {
-public:
-    NODISCARD static TimeDuration from_milliseconds(f32 milliseconds);
-    NODISCARD static TimeDuration from_seconds(f32 seconds);
-
-public:
-    ALWAYS_INLINE constexpr TimeDuration()
-        : m_ticks(0)
-    {
-    }
-
-    TimeDuration(TimeDuration const&) = default;
-    TimeDuration& operator=(TimeDuration const&) = default;
-
-    NODISCARD f32 milliseconds() const;
-    NODISCARD f32 seconds() const;
-
-private:
-    ALWAYS_INLINE constexpr explicit TimeDuration(u64 ticks)
-        : m_ticks(ticks)
-    {
-    }
-
-private:
-    u64 m_ticks;
-};
+u64 current_time_in_ticks();
+u64 ticks_per_second();
 
 void sleep(TimeDuration duration);
 

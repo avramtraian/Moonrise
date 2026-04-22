@@ -240,15 +240,15 @@ Vector<CallStackFrame> get_call_stack(u32 frames_to_skip)
 // TIMING UTILITIES.
 //=================================================================================================
 
-// static u64 win32_get_performance_counter()
-// {
-//     LARGE_INTEGER counter;
-//     if (!QueryPerformanceCounter(&counter))
-//         PANIC("Failed to query 'QueryPerformanceCounter'!");
-//     return counter.QuadPart;
-// }
+u64 current_time_in_ticks()
+{
+    LARGE_INTEGER counter;
+    if (!QueryPerformanceCounter(&counter))
+        PANIC("Failed to query 'QueryPerformanceCounter'!");
+    return counter.QuadPart;
+}
 
-static u64 win32_get_performance_frequency()
+u64 ticks_per_second()
 {
     static u64 s_performance_frequency = 0;
     if (s_performance_frequency == 0) {
@@ -258,31 +258,6 @@ static u64 win32_get_performance_frequency()
         s_performance_frequency = frequency.QuadPart;
     }
     return s_performance_frequency;
-}
-
-TimeDuration TimeDuration::from_milliseconds(f32 milliseconds)
-{
-    f32 duration_in_seconds = milliseconds / 1000.0F;
-    return TimeDuration::from_seconds(duration_in_seconds);
-}
-
-TimeDuration TimeDuration::from_seconds(f32 seconds)
-{
-    u64 ticks = static_cast<u64>(seconds * win32_get_performance_frequency());
-    return TimeDuration { ticks };
-}
-
-f32 TimeDuration::milliseconds() const
-{
-    f32 duration_in_seconds = seconds();
-    return duration_in_seconds * 1000.0F;
-}
-
-f32 TimeDuration::seconds() const
-{
-    f64 ticks = static_cast<f64>(m_ticks);
-    f64 ticks_per_second = static_cast<f64>(win32_get_performance_frequency());
-    return static_cast<f32>(ticks / ticks_per_second);
 }
 
 void sleep(TimeDuration duration)

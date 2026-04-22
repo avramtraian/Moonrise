@@ -38,6 +38,8 @@ set(AND_SOURCE_FILES
     Span.h
     StringBuilder.cpp
     StringBuilder.h
+    Time.cpp
+    Time.h
     Types.h
     UnicodeCodePoint.cpp
     UnicodeCodePoint.h
