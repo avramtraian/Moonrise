@@ -8,6 +8,7 @@
 #include <AND/Function.h>
 #include <AND/RefPtr.h>
 #include <AND/String.h>
+#include <GUI/Events/MouseEvent.h>
 #include <GUI/Platform/NativeHandles.h>
 #include <Gfx/Forward.h>
 #include <Gfx/Size.h>
@@ -41,6 +42,10 @@ public:
     virtual void set_window_mode(NativeWindowHandle, WindowMode) = 0;
     virtual void set_window_size(NativeWindowHandle, Gfx::IntSize) = 0;
 
+    // Returns the coordinates of the given point relative to the window's client region, which is
+    // always (even though the native layer might disagree) the bottom-left corner.
+    virtual Optional<Gfx::IntPoint> calculate_relative_position(NativeWindowHandle, Gfx::IntPoint) = 0;
+
     // FIXME: This function is really specific to the Software render drivee and the window manager
     //        is probably not the right place for it. However, since GPU rendering will be implemented
     //        probably very far in the future, it is really convenient to have it here... for now.
@@ -49,6 +54,8 @@ public:
 public:
     Function<void(NativeWindowHandle)> on_window_requested_close;
     Function<void(NativeWindowHandle, Gfx::IntSize)> on_window_resized;
+
+    Function<void(Gfx::IntPoint)> on_mouse_moved;
 
 protected:
     WindowManager() = default;

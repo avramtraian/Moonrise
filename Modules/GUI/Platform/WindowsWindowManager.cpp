@@ -77,6 +77,17 @@ bool WindowsWindowManager::window_should_close(NativeWindowHandle window)
     return m_windows.get(window).value().should_close;
 }
 
+Optional<Gfx::IntSize> WindowsWindowManager::win32_get_client_size(HWND window_handle)
+{
+    RECT client_rect = {};
+    if (!GetClientRect(window_handle, &client_rect))
+        return {};
+
+    LONG width = client_rect.right - client_rect.left;
+    LONG height = client_rect.bottom - client_rect.top;
+    return Gfx::IntSize(width, height);
+}
+
 Optional<Gfx::IntSize> WindowsWindowManager::get_window_size(NativeWindowHandle window)
 {
     if (window == invalid_native_window_handle || !m_windows.contains(window))
@@ -84,17 +95,41 @@ Optional<Gfx::IntSize> WindowsWindowManager::get_window_size(NativeWindowHandle 
 
     auto const& window_storage = m_windows.get(window);
     HWND window_handle = window_storage.value().handle;
+    return win32_get_client_size(window_handle);
+}
 
-    RECT client_rect = {};
-    if (!GetClientRect(window_handle, &client_rect))
+Optional<Gfx::IntPoint> WindowsWindowManager::calculate_relative_position(NativeWindowHandle window, Gfx::IntPoint absolute_position)
+{
+    // Query the native handle.
+    if (window == invalid_native_window_handle || !m_windows.contains(window))
+        return {};
+    auto const& window_storage = m_windows.get(window);
+    HWND window_handle = window_storage.value().handle;
+
+    // Convert the absolute position to the position relative to the client region origin, which
+    // Windows considers to be the top-left corner of the client region.
+    POINT relative_cursor = { absolute_position.x, absolute_position.y };
+    if (!ScreenToClient(window_handle, &relative_cursor))
         return {};
 
-    LONG width = client_rect.right - client_rect.left;
-    LONG height = client_rect.bottom - client_rect.top;
-    if (width == 0 || height == 0)
+    // Query the window client area height.
+    auto maybe_size = win32_get_client_size(window_handle);
+    if (!maybe_size.has_value())
+        return {};
+    Gfx::IntSize client_size = maybe_size.value();
+
+    // Adjust the relative position to be relative to the bottom-left corner of the client region,
+    // which is what the GUI library considers to be the origin.
+    Gfx::IntPoint relative_position;
+    relative_position.x = relative_cursor.x;
+    relative_position.y = client_size.height() - relative_cursor.y;
+
+    // Check that the mouse cursor is inside the window client region.
+    Gfx::IntRect client_rect { Gfx::IntPoint::zero(), client_size };
+    if (!client_rect.contains(relative_position))
         return {};
 
-    return Gfx::IntSize(width, height);
+    return relative_position;
 }
 
 void WindowsWindowManager::set_window_title(NativeWindowHandle, String)
@@ -177,13 +212,31 @@ LRESULT CALLBACK WindowsWindowManager::win32_window_proc(HWND handle, UINT messa
 
     case WM_SIZE: {
         NativeWindowHandle window = manager.find_window_from_handle(handle);
-        if (window != invalid_native_window_handle && manager.m_windows.contains(window)) {
-            WORD new_width = LOWORD(l_param);
-            WORD new_height = HIWORD(l_param);
+        if (window == invalid_native_timer_handle)
+            break;
 
-            if (manager.on_window_resized.is_valid())
-                manager.on_window_resized(window, Gfx::IntSize { new_width, new_height });
-        }
+        WORD new_width = LOWORD(l_param);
+        WORD new_height = HIWORD(l_param);
+
+        if (manager.on_window_resized.is_valid())
+            manager.on_window_resized(window, Gfx::IntSize { new_width, new_height });
+        return 0;
+    }
+
+    case WM_MOUSEMOVE: {
+        NativeWindowHandle window = manager.find_window_from_handle(handle);
+        if (window == invalid_native_timer_handle)
+            break;
+
+        // NOTE: The window manager propagates mouse-moved events with absolute coordinates, so the arguments passed
+        //       to the window procedure are not useful.
+        POINT cursor_position;
+        if (!GetCursorPos(&cursor_position))
+            break;
+
+        Gfx::IntPoint absolute_mouse_position { cursor_position.x, cursor_position.y };
+        if (manager.on_mouse_moved.is_valid())
+            manager.on_mouse_moved(absolute_mouse_position);
         return 0;
     }
 

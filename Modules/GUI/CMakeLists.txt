@@ -8,6 +8,7 @@ set(MODULE_GUI_SOURCE_FILES
     Application.h
     DockTree.cpp
     DockTree.h
+    Events/MouseEvent.h
     Events/LayoutEvent.h
     Events/PaintEvent.h
     Forward.h

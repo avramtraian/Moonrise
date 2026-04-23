@@ -41,6 +41,8 @@ public:
     virtual bool window_should_close(NativeWindowHandle) override;
     virtual Optional<Gfx::IntSize> get_window_size(NativeWindowHandle) override;
 
+    virtual Optional<Gfx::IntPoint> calculate_relative_position(NativeWindowHandle, Gfx::IntPoint) override;
+
     virtual void set_window_title(NativeWindowHandle, String) override;
     virtual void set_window_mode(NativeWindowHandle, WindowMode) override;
     virtual void set_window_size(NativeWindowHandle, Gfx::IntSize) override;
@@ -52,6 +54,8 @@ private:
     virtual void shutdown_impl() override;
 
     NativeWindowHandle find_window_from_handle(HWND);
+
+    static Optional<Gfx::IntSize> win32_get_client_size(HWND);
     static LRESULT CALLBACK win32_window_proc(HWND, UINT, WPARAM, LPARAM);
     void win32_register_class();
 
