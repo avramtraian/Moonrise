@@ -5,6 +5,7 @@
 
 #include <AND/Log.h>
 #include <GUI/Application.h>
+#include <GUI/Events/MouseEvent.h>
 #include <GUI/Events/PaintEvent.h>
 #include <GUI/Timer.h>
 #include <GUI/Window.h>
@@ -21,10 +22,12 @@ public:
             [&] {
                 dbgln("Hello from the timer callback!");
             });
+        m_mouse_position = { 500, 500 };
     }
 
     virtual void on_paint_event(GUI::PaintEvent const& event) override
     {
+        Base::on_paint_event(event);
         Gfx::Painter painter { event.paint_buffer(), event.region() };
 
         auto left = event.region();
@@ -38,16 +41,29 @@ public:
         percentage = clamp(percentage, 0.0F, 1.0F);
 
         auto top = left;
-        top.set_height(top.height() * percentage);
+        top.set_height(static_cast<u32>(top.height() * percentage));
         top.move_y_by(left.height() - top.height());
 
         painter.fill_rect(left, Gfx::Color::from_rgb(0.1F, 0.2F, 0.8F));
         painter.fill_rect(right, Gfx::Color::from_rgb(0.8F, 0.3F, 0.2F));
         painter.fill_rect(top, Gfx::Color::from_rgb(0.3F, 0.9F, 0.2F));
+
+        Gfx::IntRect cursor;
+        cursor.set_size(20, 20);
+        cursor.center_in(m_mouse_position);
+        painter.fill_rect(cursor, Gfx::Color::from_rgb(0.9F, 0.9F, 0.9F));
+    }
+
+    virtual void on_mouse_moved_event(GUI::MouseEvent const& event) override
+    {
+        Base::on_mouse_moved_event(event);
+        m_mouse_position = event.position();
+        schedule_paint_event();
     }
 
 private:
     GUI::Timer m_message_timer;
+    Gfx::IntPoint m_mouse_position;
 };
 
 int main(int argument_count, char** arguments)
