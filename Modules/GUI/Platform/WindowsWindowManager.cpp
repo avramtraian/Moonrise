@@ -7,8 +7,7 @@
 #if AND_PLATFORM_OS_WINDOWS
 
 #    include <GUI/Platform/WindowsWindowManager.h>
-
-#    include "Gfx/Bitmap.h"
+#    include <Gfx/Bitmap.h>
 
 namespace GUI {
 
@@ -170,7 +169,7 @@ void WindowsWindowManager::present_back_buffer(NativeWindowHandle window, Nonnul
     BITMAPINFO bitmap_info = {};
     bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bitmap_info.bmiHeader.biWidth = back_buffer->size().width();
-    bitmap_info.bmiHeader.biHeight = -static_cast<LONG>(back_buffer->size().height());
+    bitmap_info.bmiHeader.biHeight = static_cast<LONG>(back_buffer->size().height());
     bitmap_info.bmiHeader.biPlanes = 1;
     bitmap_info.bmiHeader.biBitCount = static_cast<WORD>(back_buffer->bytes_per_pixel() * 8);
     bitmap_info.bmiHeader.biCompression = BI_RGB;
