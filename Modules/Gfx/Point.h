@@ -25,6 +25,22 @@ public:
     }
 
 public:
+    void move_by(Point delta)
+    {
+        x += delta.x;
+        y += delta.y;
+    }
+
+    void move_by(T dx, T dy)
+    {
+        x += dx;
+        y += dy;
+    }
+
+    void move_x_by(T dx) { x += dx; }
+    void move_y_by(T dy) { y += dy; }
+
+public:
     T x { T(0) };
     T y { T(0) };
 };
