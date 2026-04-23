@@ -57,6 +57,14 @@ void Window::on_close_event()
 
 void Window::on_resize_event(Gfx::IntSize new_size)
 {
+    // Don't propagate the event if the new window size is invalid.
+    if (new_size.width() == 0 || new_size.height() == 0)
+        return;
+
+    // Don't propagate the event if the current back buffer size already matches the new window size.
+    if (m_back_buffer.is_valid() && m_back_buffer->size() == new_size)
+        return;
+
     if (m_main_widget.is_valid()) {
         LayoutEvent layout_event { Gfx::IntRect { Gfx::IntPoint::zero(), new_size } };
         m_main_widget->on_layout_event(layout_event);
