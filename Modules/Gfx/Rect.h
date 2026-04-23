@@ -109,6 +109,28 @@ public:
     void move_x_by(T dx) { m_offset.x += dx; }
     void move_y_by(T dy) { m_offset.y += dy; }
 
+    void center_in(Point<T> center_offset)
+    {
+        m_offset.x = center_offset.x - width() / 2;
+        m_offset.y = center_offset.y - height() / 2;
+    }
+
+    void center_in(T center_x, T center_y)
+    {
+        m_offset.x = center_x - width() / 2;
+        m_offset.y = center_y - height() / 2;
+    }
+
+    void center_x_in(T center_x)
+    {
+        m_offset.x = center_x - width() / 2;
+    }
+
+    void center_y_in(T center_y)
+    {
+        m_offset.y = center_y - height() / 2;
+    }
+
 public:
     bool is_degenerated() const
     {
