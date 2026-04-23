@@ -117,8 +117,8 @@ public:
 
     bool contains(Point<T> point) const
     {
-        bool result_x = m_offset.x <= point.x && point.x < m_offset.x + m_size.width;
-        bool result_y = m_offset.y <= point.y && point.y < m_offset.y + m_size.height;
+        bool result_x = m_offset.x <= point.x && point.x < m_offset.x + m_size.width();
+        bool result_y = m_offset.y <= point.y && point.y < m_offset.y + m_size.height();
         return result_x && result_y;
     }
 
