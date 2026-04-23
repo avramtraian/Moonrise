@@ -35,6 +35,7 @@ private:
     virtual void initialize() override;
     virtual void destroy() override;
 
+    void on_layout_event();
     void on_paint_event();
     void on_back_buffer_resized_event(Gfx::IntSize);
 

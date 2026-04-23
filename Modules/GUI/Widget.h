@@ -21,14 +21,23 @@ public:
     virtual void on_mouse_moved_event(MouseEvent const&);
 
 public:
+    void schedule_layout_event() { m_needs_layout_update = true; }
+    void schedule_paint_event() { m_needs_paint_update = true; }
+
+    virtual bool needs_layout_update() const { return m_needs_layout_update; }
+    virtual bool needs_paint_update() const { return m_needs_paint_update; }
+
     virtual Optional<u32> calculate_min_size_x() const { return {}; }
     virtual Optional<u32> calculate_max_size_x() const { return {}; }
 
     virtual Optional<u32> calculate_min_size_y() const { return {}; }
     virtual Optional<u32> calculate_max_size_y() const { return {}; }
 
-private:
+protected:
     Gfx::IntRect m_layout_region;
+
+    bool m_needs_layout_update { false };
+    bool m_needs_paint_update { false };
 };
 
 } // namespace GUI

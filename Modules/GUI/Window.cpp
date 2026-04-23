@@ -66,11 +66,7 @@ void Window::on_resize_event(Gfx::IntSize new_size)
     if (m_back_buffer.is_valid() && m_back_buffer->size() == new_size)
         return;
 
-    if (m_main_widget.is_valid()) {
-        LayoutEvent layout_event { Gfx::IntRect { Gfx::IntPoint::zero(), new_size } };
-        m_main_widget->on_layout_event(layout_event);
-    }
-
+    on_layout_event();
     on_back_buffer_resized_event(new_size);
     on_paint_event();
 }
@@ -83,6 +79,21 @@ void Window::on_mouse_moved_event(Gfx::IntPoint relative_position)
     MouseEvent mouse_event;
     mouse_event.set_relative_position(relative_position, {});
     m_main_widget->on_mouse_moved_event(mouse_event);
+
+    if (m_main_widget->needs_layout_update())
+        on_layout_event();
+
+    if (m_main_widget->needs_paint_update())
+        on_paint_event();
+}
+
+void Window::on_layout_event()
+{
+    if (!m_main_widget.is_valid() || !m_back_buffer.is_valid())
+        return;
+
+    LayoutEvent layout_event { Gfx::IntRect { Gfx::IntPoint::zero(), m_back_buffer->size() } };
+    m_main_widget->on_layout_event(layout_event);
 }
 
 void Window::on_paint_event()
