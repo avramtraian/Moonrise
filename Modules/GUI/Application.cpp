@@ -59,6 +59,9 @@ int Application::execute()
     WindowManager::the().on_window_resized = [this](NativeWindowHandle window, Gfx::IntSize new_size) {
         on_window_resized(window, new_size);
     };
+    WindowManager::the().on_mouse_moved = [this](Gfx::IntPoint absolute_position) {
+        on_mouse_moved(absolute_position);
+    };
 
     //
     // Redirect the events received by the event loop to the application.
@@ -136,6 +139,21 @@ void Application::on_window_resized(NativeWindowHandle window_handle, Gfx::IntSi
             window->on_resize_event(new_size);
             return IterationDecision::Break;
         }
+        return IterationDecision::Continue;
+    });
+}
+
+void Application::on_mouse_moved(Gfx::IntPoint absolute_position)
+{
+    m_windows.for_each([&](auto const& window) {
+        auto relative_position = WindowManager::the().calculate_relative_position(window->native_handle(), absolute_position);
+        if (!relative_position.has_value())
+            return IterationDecision::Continue;
+
+        // FIXME: We should consider the Z-order when deciding which window receives the mouse-moved event.
+        //        For now, we send the events to all windows which happen to contain the mouse cursor.
+
+        window->on_mouse_moved_event(relative_position.value());
         return IterationDecision::Continue;
     });
 }

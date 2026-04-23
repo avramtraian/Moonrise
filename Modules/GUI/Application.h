@@ -44,6 +44,7 @@ private:
 
     void on_window_requested_close(NativeWindowHandle);
     void on_window_resized(NativeWindowHandle, Gfx::IntSize);
+    void on_mouse_moved(Gfx::IntPoint);
 
 private:
     OwnPtr<EventLoop> m_event_loop;

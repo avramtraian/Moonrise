@@ -29,6 +29,7 @@ public:
     void on_close_requested_event();
     void on_close_event();
     void on_resize_event(Gfx::IntSize);
+    void on_mouse_moved_event(Gfx::IntPoint);
 
 private:
     virtual void initialize() override;

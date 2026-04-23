@@ -18,6 +18,8 @@ public:
     virtual void on_layout_event(LayoutEvent const&);
     virtual void on_paint_event(PaintEvent const&);
 
+    virtual void on_mouse_moved_event(MouseEvent const&);
+
 public:
     virtual Optional<u32> calculate_min_size_x() const { return {}; }
     virtual Optional<u32> calculate_max_size_x() const { return {}; }

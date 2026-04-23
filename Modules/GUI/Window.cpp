@@ -4,6 +4,7 @@
  */
 
 #include <GUI/Events/LayoutEvent.h>
+#include <GUI/Events/MouseEvent.h>
 #include <GUI/Events/PaintEvent.h>
 #include <GUI/Platform/WindowManager.h>
 #include <GUI/Window.h>
@@ -72,6 +73,16 @@ void Window::on_resize_event(Gfx::IntSize new_size)
 
     on_back_buffer_resized_event(new_size);
     on_paint_event();
+}
+
+void Window::on_mouse_moved_event(Gfx::IntPoint relative_position)
+{
+    if (!m_main_widget.is_valid())
+        return;
+
+    MouseEvent mouse_event;
+    mouse_event.set_relative_position(relative_position, {});
+    m_main_widget->on_mouse_moved_event(mouse_event);
 }
 
 void Window::on_paint_event()

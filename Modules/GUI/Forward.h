@@ -11,6 +11,7 @@ class Application;
 class DockTree;
 class EventLoop;
 class LayoutEvent;
+class MouseEvent;
 class Object;
 class PaintEvent;
 class Panel;
