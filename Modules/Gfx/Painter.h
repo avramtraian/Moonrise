@@ -6,6 +6,7 @@
 #pragma once
 
 #include <AND/RefPtr.h>
+#include <Gfx/Border.h>
 #include <Gfx/Color.h>
 #include <Gfx/PaintBuffer.h>
 #include <Gfx/Rect.h>
@@ -17,7 +18,7 @@ public:
     Painter(NonnullRefPtr<PaintBuffer> const&, IntRect clip_region);
 
     void fill_rect(IntRect, Color);
-    void outline_rect(IntRect, Color, u32 border_thickness);
+    void outline_rect(IntRect, Color, IntBorder);
 
 private:
     NonnullRefPtr<PaintBuffer> m_paint_buffer;
