@@ -12,6 +12,8 @@ set(MODULE_GUI_SOURCE_FILES
     Events/LayoutEvent.h
     Events/PaintEvent.h
     Forward.h
+    Length.cpp
+    Length.h
     Object.cpp
     Object.h
     Panel.cpp
