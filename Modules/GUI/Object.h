@@ -20,7 +20,7 @@ public:
     virtual void destroy() { }
 };
 
-#define GUI_OBJECT(type, base_type)                                        \
+#define GUI_ABSTRACT_OBJECT(type, base_type)                               \
 public:                                                                    \
     using Base = base_type;                                                \
     type() = default;                                                      \
@@ -29,15 +29,19 @@ public:                                                                    \
     virtual ~type() override                                               \
     {                                                                      \
         destroy();                                                         \
-    }                                                                      \
-                                                                           \
-    template<typename... Args>                                             \
-    static NonnullRefPtr<type> construct(Args&&... args)                   \
-    {                                                                      \
-        auto* instance = new type();                                       \
-        ASSERT(instance);                                                  \
-        instance->initialize(forward<Args>(args)...);                      \
-        return adopt_nonnull(*instance);                                   \
+    }
+
+#define GUI_OBJECT(type, base_type)                      \
+    GUI_ABSTRACT_OBJECT(type, base_type);                \
+                                                         \
+public:                                                  \
+    template<typename... Args>                           \
+    static NonnullRefPtr<type> construct(Args&&... args) \
+    {                                                    \
+        auto* instance = new type();                     \
+        ASSERT(instance);                                \
+        instance->initialize(forward<Args>(args)...);    \
+        return adopt_nonnull(*instance);                 \
     }
 
 } // namespace GUI
