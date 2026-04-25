@@ -84,7 +84,7 @@ void Bitmap::set_pixel(u32 x, u32 y, Color color)
 
 void Bitmap::set_pixels_in_row(u32 x, u32 y, u32 number_of_pixels, Color color)
 {
-    ASSERT(x < m_size.width());
+    ASSERT(x <= m_size.width());
     ASSERT(y < m_size.height());
     ASSERT(x + number_of_pixels <= m_size.width());
 
