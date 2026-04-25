@@ -10,6 +10,8 @@ set(MODULE_GUI_SOURCE_FILES
     Containers/AlignBox.h
     Containers/BorderBox.cpp
     Containers/BorderBox.h
+    Containers/HorizontalGroup.cpp
+    Containers/HorizontalGroup.h
     DockTree.cpp
     DockTree.h
     Events/MouseEvent.h
