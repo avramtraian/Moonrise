@@ -6,6 +6,8 @@
 set(MODULE_GUI_SOURCE_FILES
     Application.cpp
     Application.h
+    Containers/AlignBox.cpp
+    Containers/AlignBox.h
     Containers/BorderBox.cpp
     Containers/BorderBox.h
     DockTree.cpp
