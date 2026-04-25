@@ -137,7 +137,7 @@ void AlignBox::set_width_policy(SizePolicy policy)
         return;
 
     m_width_policy = policy;
-    if (m_width_policy == SizePolicy::Preferred)
+    if (m_width_policy == SizePolicy::ExplicitLength)
         m_fixed_width = Length::from_percentage(0.5F);
     else
         m_fixed_width.release();
@@ -151,7 +151,7 @@ void AlignBox::set_height_policy(SizePolicy policy)
         return;
 
     m_height_policy = policy;
-    if (m_height_policy == SizePolicy::Preferred)
+    if (m_height_policy == SizePolicy::ExplicitLength)
         m_fixed_height = Length::from_percentage(0.5F);
     else
         m_fixed_height.release();
@@ -161,26 +161,26 @@ void AlignBox::set_height_policy(SizePolicy policy)
 
 void AlignBox::set_preferred_width(Length width)
 {
-    if (m_width_policy == SizePolicy::Preferred) {
+    if (m_width_policy == SizePolicy::ExplicitLength) {
         ASSERT(m_fixed_width.has_value());
         if (m_fixed_width.value() == width)
             return;
     }
 
-    m_width_policy = SizePolicy::Preferred;
+    m_width_policy = SizePolicy::ExplicitLength;
     m_fixed_width = width;
     schedule_layout_event();
 }
 
 void AlignBox::set_preferred_height(Length height)
 {
-    if (m_height_policy == SizePolicy::Preferred) {
+    if (m_height_policy == SizePolicy::ExplicitLength) {
         ASSERT(m_fixed_height.has_value());
         if (m_fixed_height.value() == height)
             return;
     }
 
-    m_height_policy = SizePolicy::Preferred;
+    m_height_policy = SizePolicy::ExplicitLength;
     m_fixed_height = height;
     schedule_layout_event();
 }
@@ -229,8 +229,6 @@ void AlignBox::on_paint_event(PaintEvent const& event)
     Base::on_paint_event(event);
     if (!m_widget.is_valid())
         return;
-
-    PaintEvent paint_event { event.paint_buffer() };
     m_widget->on_paint_event(event);
 }
 
@@ -247,11 +245,11 @@ u32 AlignBox::calculate_preferred_widget_width() const
     u32 widget_width = 0;
 
     switch (m_width_policy) {
-    case SizePolicy::Preferred:
+    case SizePolicy::ExplicitLength:
         ASSERT(m_fixed_width.has_value());
         widget_width = m_fixed_width.value().to_pixels(box_width);
         break;
-    case SizePolicy::Expanding:
+    case SizePolicy::Fill:
         widget_width = box_width;
         break;
     case SizePolicy::Minimum:
@@ -283,11 +281,11 @@ u32 AlignBox::calculate_preferred_widget_height() const
     u32 widget_height = 0;
 
     switch (m_height_policy) {
-    case SizePolicy::Preferred:
+    case SizePolicy::ExplicitLength:
         ASSERT(m_fixed_height.has_value());
         widget_height = m_fixed_height.value().to_pixels(box_height);
         break;
-    case SizePolicy::Expanding:
+    case SizePolicy::Fill:
         widget_height = box_height;
         break;
     case SizePolicy::Minimum:

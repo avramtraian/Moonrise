@@ -7,15 +7,10 @@
 
 #include <GUI/Forward.h>
 #include <GUI/Length.h>
+#include <GUI/SizePolicy.h>
 #include <GUI/Widget.h>
 
 namespace GUI {
-
-enum class SizePolicy : u8 {
-    Preferred,
-    Expanding,
-    Minimum,
-};
 
 enum class HAlignment {
     Left,
@@ -84,8 +79,8 @@ protected:
 protected:
     RefPtr<Widget> m_widget;
 
-    SizePolicy m_width_policy { SizePolicy::Expanding };
-    SizePolicy m_height_policy { SizePolicy::Expanding };
+    SizePolicy m_width_policy { SizePolicy::Fill };
+    SizePolicy m_height_policy { SizePolicy::Fill };
     Optional<Length> m_fixed_width;
     Optional<Length> m_fixed_height;
 

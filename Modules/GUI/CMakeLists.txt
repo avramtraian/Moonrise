@@ -31,6 +31,7 @@ set(MODULE_GUI_SOURCE_FILES
     Platform/WindowsEventLoop.h
     Platform/WindowsWindowManager.cpp
     Platform/WindowsWindowManager.h
+    SizePolicy.h
     Timer.cpp
     Timer.h
     Widget.cpp
