@@ -17,10 +17,13 @@ set(MODULE_GFX_SOURCE_FILES
     PaintEngine.h
     Painter.cpp
     Painter.h
+    Point.cpp
     Point.h
+    Rect.cpp
     Rect.h
     RenderDriver.cpp
     RenderDriver.h
+    Size.cpp
     Size.h
     SoftwareImage.cpp
     SoftwareImage.h

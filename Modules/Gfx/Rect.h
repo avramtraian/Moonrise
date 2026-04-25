@@ -259,4 +259,7 @@ private:
 using IntRect = Rect<s32>;
 using FloatRect = Rect<f32>;
 
+void append_to_builder(StringBuilder&, Optional<StringView> const&, IntRect const&);
+void append_to_builder(StringBuilder&, Optional<StringView> const&, FloatRect const&);
+
 } // namespace Gfx

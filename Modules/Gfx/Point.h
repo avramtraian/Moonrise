@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <AND/Forward.h>
 #include <AND/Types.h>
 
 namespace Gfx {
@@ -41,11 +42,18 @@ public:
     void move_y_by(T dy) { y += dy; }
 
 public:
+    bool operator==(Point const& other) const { return (x == other.x) && (y == other.y); }
+    bool operator!=(Point const& other) const { return !(*this == other); }
+
+public:
     T x { T(0) };
     T y { T(0) };
 };
 
 using IntPoint = Point<s32>;
 using FloatPoint = Point<f32>;
+
+void append_to_builder(StringBuilder&, Optional<StringView> const&, IntPoint const&);
+void append_to_builder(StringBuilder&, Optional<StringView> const&, FloatPoint const&);
 
 } // namespace Gfx

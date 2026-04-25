@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <AND/Forward.h>
 #include <AND/Types.h>
 
 namespace Gfx {
@@ -50,5 +51,8 @@ public:
 
 using IntSize = Size<u32>;
 using FloatSize = Size<f32>;
+
+void append_to_builder(StringBuilder&, Optional<StringView> const&, IntSize const&);
+void append_to_builder(StringBuilder&, Optional<StringView> const&, FloatSize const&);
 
 } // namespace Gfx
