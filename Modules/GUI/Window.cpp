@@ -66,8 +66,8 @@ void Window::on_resize_event(Gfx::IntSize new_size)
     if (m_back_buffer.is_valid() && m_back_buffer->size() == new_size)
         return;
 
-    on_layout_event();
     on_back_buffer_resized_event(new_size);
+    on_layout_event();
     on_paint_event();
 }
 
