@@ -49,13 +49,13 @@ void BorderBox::on_layout_event(LayoutEvent const& event)
 void BorderBox::on_paint_event(PaintEvent const& event)
 {
     Base::on_paint_event(event);
-    if (!m_widget.is_valid())
-        return;
 
     Gfx::Painter painter { event.paint_buffer(), m_layout_region };
     paint_border(painter);
     paint_background(painter);
-    m_widget->on_paint_event(event);
+
+    if (m_widget.is_valid())
+        m_widget->on_paint_event(event);
 }
 
 Gfx::IntSize BorderBox::calculate_preferred_size() const
