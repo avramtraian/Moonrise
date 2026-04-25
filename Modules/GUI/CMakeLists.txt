@@ -6,6 +6,8 @@
 set(MODULE_GUI_SOURCE_FILES
     Application.cpp
     Application.h
+    Containers/BorderBox.cpp
+    Containers/BorderBox.h
     DockTree.cpp
     DockTree.h
     Events/MouseEvent.h
