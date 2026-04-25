@@ -5,6 +5,8 @@
 
 #include <AND/Log.h>
 #include <GUI/Application.h>
+#include <GUI/Containers/AlignBox.h>
+#include <GUI/Containers/BorderBox.h>
 #include <GUI/Events/MouseEvent.h>
 #include <GUI/Events/PaintEvent.h>
 #include <GUI/Timer.h>
@@ -17,17 +19,18 @@ class TextEditorWidget : public GUI::Widget {
 public:
     virtual void initialize() override
     {
-        m_message_timer.initialize(
-            TimeDuration::from_seconds(1),
-            [&] {
-                dbgln("Hello from the timer callback!");
-            });
+        // m_message_timer.initialize(
+        //     TimeDuration::from_seconds(1),
+        //     [&] {
+        //         dbgln("Hello from the timer callback!");
+        //     });
         m_mouse_position = { 500, 500 };
     }
 
     virtual void on_paint_event(GUI::PaintEvent const& event) override
     {
         Base::on_paint_event(event);
+        return;
         Gfx::Painter painter { event.paint_buffer(), m_layout_region };
 
         auto left = m_layout_region;
@@ -62,6 +65,12 @@ public:
     }
 
 private:
+    virtual Gfx::IntSize calculate_preferred_size() const override
+    {
+        return { 400, 300 };
+    }
+
+private:
     GUI::Timer m_message_timer;
     Gfx::IntPoint m_mouse_position;
 };
@@ -69,11 +78,24 @@ private:
 int main(int argument_count, char** arguments)
 {
     auto application = GUI::Application::construct(argument_count, arguments);
-    auto window = GUI::Window::construct();
-    application->add_window(window);
+    auto window = application->add_window<GUI::Window>();
+    auto outer_border = window->set_main_widget<GUI::BorderBox>();
+    auto align_box = outer_border->set_widget<GUI::AlignBox>();
+    auto inner_border = align_box->set_widget<GUI::BorderBox>();
+    auto widget = inner_border->set_widget<TextEditorWidget>();
 
-    auto widget = TextEditorWidget::construct();
-    window->set_main_widget(widget);
+    outer_border->set_color(Gfx::Color::from_rgb(0.12F, 0.12F, 0.12F));
+    outer_border->set_background(Gfx::Color::from_rgb(0.20F, 0.20F, 0.20F));
+    outer_border->set_border(Gfx::IntBorder::uniform(4));
+
+    inner_border->set_color(Gfx::Color::from_rgb(0.12F, 0.12F, 0.12F));
+    inner_border->set_background(Gfx::Color::from_rgb(0.20F, 0.20F, 0.20F));
+    inner_border->set_border(Gfx::IntBorder::uniform(4));
+
+    align_box->set_preferred_width(GUI::Length::from_pixels(500));
+    align_box->set_preferred_height(GUI::Length::from_percentage(0.5F));
+    align_box->set_alignment(GUI::Alignment::BottomLeft);
+    align_box->set_offset(100, 100);
 
     window->show();
     return application->execute();
