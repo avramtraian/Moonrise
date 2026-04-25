@@ -28,16 +28,16 @@ public:
     virtual void on_paint_event(GUI::PaintEvent const& event) override
     {
         Base::on_paint_event(event);
-        Gfx::Painter painter { event.paint_buffer(), event.region() };
+        Gfx::Painter painter { event.paint_buffer(), m_layout_region };
 
-        auto left = event.region();
+        auto left = m_layout_region;
         left.set_width(left.width() / 2);
 
-        auto right = event.region();
+        auto right = m_layout_region;
         right.move_x_by(left.width());
-        right.set_width(event.region().width() - left.width());
+        right.set_width(m_layout_region.width() - left.width());
 
-        auto percentage = static_cast<float>(event.region().height()) / static_cast<float>(event.region().width());
+        auto percentage = static_cast<float>(m_layout_region.height()) / static_cast<float>(m_layout_region.width());
         percentage = clamp(percentage, 0.0F, 1.0F);
 
         auto top = left;

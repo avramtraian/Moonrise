@@ -102,7 +102,7 @@ void Window::on_paint_event()
     m_paint_engine->begin_frame();
 
     if (m_main_widget.is_valid()) {
-        PaintEvent paint_event { m_paint_buffer, m_back_buffer->rect() };
+        PaintEvent paint_event { m_paint_buffer };
         m_main_widget->on_paint_event(paint_event);
     }
 
