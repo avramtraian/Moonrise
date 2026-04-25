@@ -6,6 +6,7 @@
 #pragma once
 
 #include <AND/MathUtilities.h>
+#include <Gfx/Border.h>
 #include <Gfx/Point.h>
 #include <Gfx/Size.h>
 
@@ -46,6 +47,29 @@ public:
         auto max_x = min<s32>(a.m_offset.x + a.m_size.x, b.m_offset.x + b.m_size.x);
         auto max_y = min<s32>(a.m_offset.y + a.m_size.y, b.m_offset.y + b.m_size.y);
         return Rect::min_max({ min_x, min_y }, { max_x, max_y });
+    }
+
+    static Rect without_border(Rect rect, Border<SizeType> border)
+    {
+        border.clamp_horizontal(rect.width());
+        border.clamp_vertical(rect.height());
+
+        Rect result;
+        result.m_offset.x = rect.m_offset.x + border.left();
+        result.m_offset.y = rect.m_offset.y + border.bottom();
+        result.m_size.x = rect.m_size.x - border.horizontal();
+        result.m_size.y = rect.m_size.y - border.vertical();
+        return result;
+    }
+
+    static Rect with_border(Rect rect, Border<SizeType> border)
+    {
+        Rect result;
+        result.m_offset.x = rect.m_offset.x - border.left();
+        result.m_offset.y = rect.m_offset.y - border.bottom();
+        result.m_size.x = rect.m_size.x + border.horizontal();
+        result.m_size.y = rect.m_size.y + border.vertical();
+        return result;
     }
 
 public:
@@ -131,6 +155,77 @@ public:
         m_offset.y = center_y - height() / 2;
     }
 
+    void push_left_edge_by(T dx)
+    {
+        dx = min<T>(dx, width());
+        m_offset.x += dx;
+        m_size.x -= dx;
+    }
+
+    void push_right_edge_by(T dx)
+    {
+        dx = max<T>(dx, -width());
+        m_size.x += dx;
+    }
+
+    void push_bottom_edge_by(T dy)
+    {
+        dy = min<T>(dy, height());
+        m_offset.y += dy;
+        m_size.y -= dy;
+    }
+
+    void push_top_edge_by(T dy)
+    {
+        dy = max<T>(dy, -height());
+        m_size.y += dy;
+    }
+
+public:
+    Rect left_border(Border<SizeType> border) const
+    {
+        border.clamp_horizontal(width());
+        border.clamp_vertical(height());
+
+        Rect result;
+        result.set_offset(m_offset.x, m_offset.y + border.bottom());
+        result.set_size(border.left(), height() - border.vertical());
+        return result;
+    }
+
+    Rect right_border(Border<SizeType> border) const
+    {
+        border.clamp_horizontal(width());
+        border.clamp_vertical(height());
+
+        Rect result;
+        result.set_offset(m_offset.x + width() - border.right(), m_offset.y + border.bottom());
+        result.set_size(border.right(), height() - border.vertical());
+        return result;
+    }
+
+    Rect bottom_border(Border<SizeType> border) const
+    {
+        border.clamp_horizontal(width());
+        border.clamp_vertical(height());
+
+        Rect result;
+        result.set_offset(m_offset.x, m_offset.y);
+        result.set_size(width(), border.bottom());
+        return result;
+    }
+
+    Rect top_border(Border<SizeType> border) const
+    {
+        border.clamp_horizontal(width());
+        border.clamp_vertical(height());
+
+        Rect result;
+        result.set_offset(m_offset.x, m_offset.y + height() - border.top());
+        result.set_size(width(), border.top());
+        return result;
+    }
+
 public:
     bool is_degenerated() const
     {
@@ -152,6 +247,9 @@ public:
         auto other_max = other.max_point();
         return contains(other_min) || contains(other_max) || other.contains(this_min) || other.contains(this_max);
     }
+
+    Rect without_border(Border<SizeType> border) const { return without_border(*this, border); }
+    Rect with_border(Border<SizeType> border) const { return with_border(*this, border); }
 
 private:
     Point<T> m_offset;

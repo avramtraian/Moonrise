@@ -6,6 +6,7 @@
 set(MODULE_GFX_SOURCE_FILES
     Bitmap.cpp
     Bitmap.h
+    Border.h
     Color.cpp
     Color.h
     Forward.h
