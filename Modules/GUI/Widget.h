@@ -12,7 +12,7 @@
 namespace GUI {
 
 class Widget : public Object {
-    GUI_OBJECT(Widget, Object);
+    GUI_ABSTRACT_OBJECT(Widget, Object);
 
 public:
     virtual void on_layout_event(LayoutEvent const&);
@@ -27,9 +27,9 @@ public:
     virtual bool needs_layout_update() const { return m_needs_layout_update; }
     virtual bool needs_paint_update() const { return m_needs_paint_update; }
 
+    virtual Gfx::IntSize calculate_preferred_size() const = 0;
     virtual Optional<u32> calculate_min_size_x() const { return {}; }
     virtual Optional<u32> calculate_max_size_x() const { return {}; }
-
     virtual Optional<u32> calculate_min_size_y() const { return {}; }
     virtual Optional<u32> calculate_max_size_y() const { return {}; }
 

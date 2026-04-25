@@ -54,6 +54,10 @@ public:
     DockTree& dock_tree() const { return *m_dock_tree; }
     void set_dock_tree(DockTree& dock_tree) { m_dock_tree = &dock_tree; }
 
+public:
+    // FIXME: Correctly implement this method!
+    virtual Gfx::IntSize calculate_preferred_size() const override { return { 0, 0 }; }
+
 protected:
     DockNode* m_parent_node;
     DockTree* m_dock_tree;
@@ -154,6 +158,10 @@ public:
 
     DockNode& root_node() const { return *m_root_node; }
     void set_root_node(NonnullRefPtr<DockNode> const&);
+
+public:
+    // FIXME: Correctly implement this method!
+    virtual Gfx::IntSize calculate_preferred_size() const override { return { 0, 0 }; }
 
 private:
     RefPtr<DockNode> m_root_node;
