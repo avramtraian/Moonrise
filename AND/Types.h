@@ -104,29 +104,35 @@ struct NumberTraits {
     static constexpr bool is_signed_integer = false;
     static constexpr bool is_floating_point = false;
     using RemoveSignType = T;
+    using AddSignType = T;
 };
 
-#define AND_DECLARE_NUMBER_TRAITS(type, unsigned_type, unsigned_value, signed_value, float_value) \
-    template<>                                                                                    \
-    struct NumberTraits<type> {                                                                   \
-        static constexpr bool is_unsigned_integer = unsigned_value;                               \
-        static constexpr bool is_signed_integer = signed_value;                                   \
-        static constexpr bool is_floating_point = float_value;                                    \
-        using RemoveSignType = unsigned_type;                                                     \
+#define AND_DECLARE_NUMBER_TRAITS(type, unsigned_type, signed_type, is_unsigned, is_signed, is_floating) \
+    template<>                                                                                           \
+    struct NumberTraits<type> {                                                                          \
+        static constexpr bool is_unsigned_integer = is_unsigned;                                         \
+        static constexpr bool is_signed_integer = is_signed;                                             \
+        static constexpr bool is_floating_point = is_floating;                                           \
+        using RemoveSignType = unsigned_type;                                                            \
+        using AddSignType = signed_type;                                                                 \
     }
 
-AND_DECLARE_NUMBER_TRAITS(unsigned char, unsigned char, true, false, false);
-AND_DECLARE_NUMBER_TRAITS(unsigned short, unsigned short, true, false, false);
-AND_DECLARE_NUMBER_TRAITS(unsigned int, unsigned int, true, false, false);
-AND_DECLARE_NUMBER_TRAITS(unsigned long, unsigned long, true, false, false);
-AND_DECLARE_NUMBER_TRAITS(unsigned long long, unsigned long long, true, false, false);
-AND_DECLARE_NUMBER_TRAITS(signed char, unsigned char, false, true, false);
-AND_DECLARE_NUMBER_TRAITS(signed short, unsigned short, false, true, false);
-AND_DECLARE_NUMBER_TRAITS(signed int, unsigned int, false, true, false);
-AND_DECLARE_NUMBER_TRAITS(signed long, unsigned long, false, true, false);
-AND_DECLARE_NUMBER_TRAITS(signed long long, unsigned long long, false, true, false);
-AND_DECLARE_NUMBER_TRAITS(float, float, false, false, true);
-AND_DECLARE_NUMBER_TRAITS(double, double, false, false, true);
+// clang-format off
+AND_DECLARE_NUMBER_TRAITS(unsigned char,      unsigned char,      signed char,      true, false, false);
+AND_DECLARE_NUMBER_TRAITS(unsigned short,     unsigned short,     signed short,     true, false, false);
+AND_DECLARE_NUMBER_TRAITS(unsigned int,       unsigned int,       signed int,       true, false, false);
+AND_DECLARE_NUMBER_TRAITS(unsigned long,      unsigned long,      signed long,      true, false, false);
+AND_DECLARE_NUMBER_TRAITS(unsigned long long, unsigned long long, signed long long, true, false, false);
+
+AND_DECLARE_NUMBER_TRAITS(signed char,        unsigned char,      signed char,      false, true, false);
+AND_DECLARE_NUMBER_TRAITS(signed short,       unsigned short,     signed short,     false, true, false);
+AND_DECLARE_NUMBER_TRAITS(signed int,         unsigned int,       signed int,       false, true, false);
+AND_DECLARE_NUMBER_TRAITS(signed long,        unsigned long,      signed long,      false, true, false);
+AND_DECLARE_NUMBER_TRAITS(signed long long,   unsigned long long, signed long long, false, true, false);
+
+AND_DECLARE_NUMBER_TRAITS(float,              float,              float,            false, false, true);
+AND_DECLARE_NUMBER_TRAITS(double,             double,             double,           false, false, true);
+// clang-format on
 
 #undef AND_DECLARE_NUMBER_TRAITS
 
@@ -214,6 +220,10 @@ template<typename T>
 requires(is_number<T>)
 using RemoveSign = Internal::NumberTraits<T>::RemoveSignType;
 
+template<typename T>
+requires(is_number<T>)
+using AddSign = Internal::NumberTraits<T>::AddSignType;
+
 template<typename E>
 using UnderlyingType = __underlying_type(E);
 
@@ -253,6 +263,7 @@ concept NonConstNonReferenceTypename = NonReferenceTypename<T> && NonConstTypena
 } // namespace AND
 
 #if AND_INCLUDE_IN_GLOBAL_NAMESPACE
+using AND::AddSign;
 using AND::b32;
 using AND::b8;
 using AND::ConditionalType;
