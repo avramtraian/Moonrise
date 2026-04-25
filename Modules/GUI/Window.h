@@ -20,6 +20,16 @@ class Window : public Object {
 
 public:
     void set_main_widget(NonnullRefPtr<Widget> const&);
+
+    template<typename WidgetType, typename... Arguments>
+    requires(is_derived_from<WidgetType, Widget>)
+    NonnullRefPtr<WidgetType> set_main_widget(Arguments&&... arguments)
+    {
+        auto widget = WidgetType::construct(forward<Arguments>(arguments)...);
+        set_main_widget(widget);
+        return widget;
+    }
+
     void show();
 
     bool should_close() const;

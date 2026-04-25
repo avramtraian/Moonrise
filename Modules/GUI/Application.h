@@ -35,6 +35,15 @@ public:
     void add_window(NonnullRefPtr<Window> const&);
     void add_panel(NonnullRefPtr<Panel> const&);
 
+    template<typename WindowType, typename... Args>
+    requires(is_derived_from<WindowType, Window>)
+    NonnullRefPtr<WindowType> add_window(Args&&... args)
+    {
+        auto window = WindowType::construct(forward<Args>(args)...);
+        add_window(window);
+        return window;
+    }
+
 private:
     Application() = default;
     void initialize(int argument_count, char** arguments);
