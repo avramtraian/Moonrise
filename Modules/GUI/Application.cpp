@@ -53,16 +53,19 @@ void Application::destroy()
 int Application::execute()
 {
     //
-    // Redirect the events received by the window manager to the application event loop.
+    // Redirect the events processed by the window manager to the event loop.
     //
     WindowManager::the().on_window_requested_close = [this](NativeWindowHandle window) {
-        on_window_requested_close(window);
+        if (m_event_loop->on_window_requested_close.is_valid())
+            m_event_loop->on_window_requested_close(window);
     };
     WindowManager::the().on_window_resized = [this](NativeWindowHandle window, Gfx::IntSize new_size) {
-        on_window_resized(window, new_size);
+        if (m_event_loop->on_window_resized.is_valid())
+            m_event_loop->on_window_resized(window, new_size);
     };
     WindowManager::the().on_mouse_moved = [this](Gfx::IntPoint absolute_position) {
-        on_mouse_moved(absolute_position);
+        if (m_event_loop->on_mouse_moved.is_valid())
+            m_event_loop->on_mouse_moved(absolute_position);
     };
 
     //

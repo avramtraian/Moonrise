@@ -9,6 +9,7 @@
 #include <AND/OwnPtr.h>
 #include <AND/Platform.h>
 #include <GUI/Platform/NativeHandles.h>
+#include <Gfx/Point.h>
 #include <Gfx/Size.h>
 
 namespace GUI {
@@ -33,6 +34,8 @@ public:
 
     Function<void(NativeWindowHandle, Gfx::IntSize)> on_window_resized;
     Function<void(NativeWindowHandle)> on_window_requested_close;
+
+    Function<void(Gfx::IntPoint)> on_mouse_moved;
 
 protected:
     EventLoop() = default;
