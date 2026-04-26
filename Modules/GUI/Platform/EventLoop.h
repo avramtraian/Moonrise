@@ -8,6 +8,7 @@
 #include <AND/Function.h>
 #include <AND/OwnPtr.h>
 #include <AND/Platform.h>
+#include <GUI/Events/MouseEvent.h>
 #include <GUI/Platform/NativeHandles.h>
 #include <Gfx/Point.h>
 #include <Gfx/Size.h>
@@ -36,6 +37,9 @@ public:
     Function<void(NativeWindowHandle)> on_window_requested_close;
 
     Function<void(Gfx::IntPoint)> on_mouse_moved;
+    Function<void(NativeWindowHandle, MouseButton)> on_mouse_button_pressed;
+    Function<void(NativeWindowHandle, MouseButton)> on_mouse_button_released;
+    Function<void(NativeWindowHandle, float, float)> on_mouse_wheel_scrolled;
 
 protected:
     EventLoop() = default;

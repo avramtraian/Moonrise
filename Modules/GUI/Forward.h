@@ -8,6 +8,7 @@
 namespace GUI {
 
 class Application;
+class Cursor;
 class DockTree;
 class EventLoop;
 class LayoutEvent;

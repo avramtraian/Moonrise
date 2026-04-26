@@ -71,14 +71,57 @@ void Window::on_resize_event(Gfx::IntSize new_size)
     on_paint_event();
 }
 
-void Window::on_mouse_moved_event(Gfx::IntPoint relative_position)
+void Window::on_mouse_moved_event(NonnullRefPtr<Cursor> const& cursor)
 {
     if (!m_main_widget.is_valid())
         return;
 
-    MouseEvent mouse_event;
-    mouse_event.set_relative_position(relative_position, {});
+    MouseEvent mouse_event { cursor, adopt(this) };
+    auto cursor_position = mouse_event.position();
+    if (!m_main_widget->layout_region().contains(cursor_position))
+        return;
+
     m_main_widget->on_mouse_moved_event(mouse_event);
+    update();
+}
+
+void Window::on_mouse_button_pressed_event(NonnullRefPtr<Cursor> const& cursor, MouseButton button)
+{
+    if (!m_main_widget.is_valid())
+        return;
+
+    MouseEvent mouse_event { cursor, adopt(this) };
+    mouse_event.set_pressed_button(button, {});
+    m_main_widget->on_mouse_button_pressed_event(mouse_event);
+    update();
+}
+
+void Window::on_mouse_button_released_event(NonnullRefPtr<Cursor> const& cursor, MouseButton button)
+{
+    if (!m_main_widget.is_valid())
+        return;
+
+    MouseEvent mouse_event { cursor, adopt(this) };
+    mouse_event.set_released_button(button, {});
+    m_main_widget->on_mouse_button_released_event(mouse_event);
+    update();
+}
+
+void Window::on_mouse_wheel_scrolled_event(NonnullRefPtr<Cursor> const& cursor, float delta_x, float delta_y)
+{
+    if (!m_main_widget.is_valid())
+        return;
+
+    MouseEvent mouse_event { cursor, adopt(this) };
+    mouse_event.set_scroll_delta(delta_x, delta_y, {});
+    m_main_widget->on_mouse_wheel_scrolled_event(mouse_event);
+    update();
+}
+
+void Window::update()
+{
+    if (!m_main_widget.is_valid())
+        return;
 
     if (m_main_widget->needs_layout_update())
         on_layout_event();

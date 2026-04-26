@@ -56,6 +56,9 @@ public:
     Function<void(NativeWindowHandle, Gfx::IntSize)> on_window_resized;
 
     Function<void(Gfx::IntPoint)> on_mouse_moved;
+    Function<void(NativeWindowHandle, MouseButton)> on_mouse_button_pressed;
+    Function<void(NativeWindowHandle, MouseButton)> on_mouse_button_released;
+    Function<void(NativeWindowHandle, float, float)> on_mouse_wheel_scrolled;
 
 protected:
     WindowManager() = default;

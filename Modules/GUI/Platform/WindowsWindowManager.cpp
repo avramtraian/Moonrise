@@ -234,6 +234,75 @@ LRESULT CALLBACK WindowsWindowManager::win32_window_proc(HWND handle, UINT messa
         return 0;
     }
 
+    case WM_LBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN: {
+        NativeWindowHandle window = manager.find_window_from_handle(handle);
+        if (window == invalid_native_timer_handle)
+            break;
+
+        MouseButton button;
+        switch (message) {
+        case WM_LBUTTONDOWN:
+            button = MouseButton::Left;
+            break;
+        case WM_RBUTTONDOWN:
+            button = MouseButton::Right;
+            break;
+        case WM_MBUTTONDOWN:
+            button = MouseButton::Middle;
+            break;
+        default:
+            ASSERT_NOT_REACHED;
+        }
+
+        if (manager.on_mouse_button_pressed.is_valid())
+            manager.on_mouse_button_pressed(window, button);
+        return 0;
+    }
+
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP: {
+        NativeWindowHandle window = manager.find_window_from_handle(handle);
+        if (window == invalid_native_timer_handle)
+            break;
+
+        MouseButton button;
+        switch (message) {
+        case WM_LBUTTONUP:
+            button = MouseButton::Left;
+            break;
+        case WM_RBUTTONUP:
+            button = MouseButton::Right;
+            break;
+        case WM_MBUTTONUP:
+            button = MouseButton::Middle;
+            break;
+        default:
+            ASSERT_NOT_REACHED;
+        }
+
+        if (manager.on_mouse_button_released.is_valid())
+            manager.on_mouse_button_released(window, button);
+        return 0;
+    }
+
+    case WM_MOUSEWHEEL:
+    case WM_MOUSEHWHEEL: {
+        NativeWindowHandle window = manager.find_window_from_handle(handle);
+        if (window == invalid_native_timer_handle)
+            break;
+
+        float wheel_delta = static_cast<short>(HIWORD(w_param)) / static_cast<float>(WHEEL_DELTA);
+        float delta_x = message == WM_MOUSEHWHEEL ? wheel_delta : 0.0F;
+        float delta_y = message == WM_MOUSEWHEEL ? wheel_delta : 0.0F;
+
+        if (manager.on_mouse_wheel_scrolled.is_valid())
+            manager.on_mouse_wheel_scrolled(window, delta_x, delta_y);
+        return 0;
+    }
+
     default:
         break;
     }

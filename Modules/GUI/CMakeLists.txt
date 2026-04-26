@@ -12,8 +12,11 @@ set(MODULE_GUI_SOURCE_FILES
     Containers/BorderBox.h
     Containers/HorizontalGroup.cpp
     Containers/HorizontalGroup.h
+    Cursor.cpp
+    Cursor.h
     DockTree.cpp
     DockTree.h
+    Events/MouseEvent.cpp
     Events/MouseEvent.h
     Events/LayoutEvent.h
     Events/PaintEvent.h

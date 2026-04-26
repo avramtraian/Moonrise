@@ -6,54 +6,43 @@
 #pragma once
 
 #include <AND/Badge.h>
+#include <AND/RefPtr.h>
+#include <GUI/Cursor.h>
 #include <GUI/Forward.h>
-#include <Gfx/Rect.h>
 
 namespace GUI {
 
-enum class MouseButton : u8 {
-    Unknown = 0,
-    Left,
-    Right,
-    Middle,
-    MaxEnumCount,
-};
-
-enum class MouseButtonAction {
-    Pressed,
-    Released,
-};
-
-struct MouseButtonState {
-    bool is_down { false };
-    bool was_pressed_this_frame { false };
-    bool was_released_this_frame { false };
-};
-
 class MouseEvent {
 public:
-    static MouseEvent clone(MouseEvent const& source, Gfx::IntRect parent_region, Gfx::IntRect widget_region)
-    {
-        MouseEvent cloned = source;
-        auto offset_x = widget_region.offset_x() - parent_region.offset_x();
-        auto offset_y = widget_region.offset_y() - parent_region.offset_y();
-        cloned.m_relative_position.move_by(-offset_x, -offset_y);
-        return cloned;
-    }
+    MouseEvent(NonnullRefPtr<Cursor> const&, NonnullRefPtr<Window> const&);
+    ~MouseEvent();
+
+    Cursor& cursor() const { return *m_cursor; }
+    Window& window() const { return *m_window; }
+
+    Gfx::IntPoint position() const { return m_position; }
+    MouseButton pressed_button() const { return m_pressed_button.value_or(MouseButton::Unknown); }
+    MouseButton released_button() const { return m_released_button.value_or(MouseButton::Unknown); }
+    float scroll_delta_x() const { return m_scroll_delta_x.value_or(0.0F); }
+    float scroll_delta_y() const { return m_scroll_delta_y.value_or(0.0F); }
 
 public:
-    bool is_down(MouseButton button) const { return m_button_states[to_underlying(button)].is_down; }
-    bool is_up(MouseButton button) const { return !is_down(button); }
-    bool was_pressed_this_frame(MouseButton button) const { return m_button_states[to_underlying(button)].was_pressed_this_frame; }
-    bool was_released_this_frame(MouseButton button) const { return m_button_states[to_underlying(button)].was_released_this_frame; }
-    Gfx::IntPoint position() const { return m_relative_position; }
-
-    void set_relative_position(Gfx::IntPoint position, Badge<Window>) { m_relative_position = position; }
-    MouseButtonState& button_state(MouseButton button, Badge<Window>) { return m_button_states[to_underlying(button)]; }
+    void set_pressed_button(MouseButton button, Badge<Window>) { m_pressed_button = button; }
+    void set_released_button(MouseButton button, Badge<Window>) { m_released_button = button; }
+    void set_scroll_delta(float delta_x, float delta_y, Badge<Window>)
+    {
+        m_scroll_delta_x = delta_x;
+        m_scroll_delta_y = delta_y;
+    }
 
 private:
-    MouseButtonState m_button_states[to_underlying(MouseButton::MaxEnumCount)];
-    Gfx::IntPoint m_relative_position;
+    NonnullRefPtr<Cursor> m_cursor;
+    NonnullRefPtr<Window> m_window;
+    Gfx::IntPoint m_position;
+    Optional<MouseButton> m_pressed_button;
+    Optional<MouseButton> m_released_button;
+    Optional<float> m_scroll_delta_x;
+    Optional<float> m_scroll_delta_y;
 };
 
 } // namespace GUI

@@ -39,12 +39,17 @@ public:
     void on_close_requested_event();
     void on_close_event();
     void on_resize_event(Gfx::IntSize);
-    void on_mouse_moved_event(Gfx::IntPoint);
+
+    void on_mouse_moved_event(NonnullRefPtr<Cursor> const&);
+    void on_mouse_button_pressed_event(NonnullRefPtr<Cursor> const&, MouseButton);
+    void on_mouse_button_released_event(NonnullRefPtr<Cursor> const&, MouseButton);
+    void on_mouse_wheel_scrolled_event(NonnullRefPtr<Cursor> const&, float delta_x, float delta_y);
 
 private:
     virtual void initialize() override;
     virtual void destroy() override;
 
+    void update();
     void on_layout_event();
     void on_paint_event();
     void on_back_buffer_resized_event(Gfx::IntSize);

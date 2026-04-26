@@ -24,4 +24,16 @@ void Widget::on_mouse_moved_event(MouseEvent const&)
 {
 }
 
+void Widget::on_mouse_button_pressed_event(MouseEvent const&)
+{
+}
+
+void Widget::on_mouse_button_released_event(MouseEvent const&)
+{
+}
+
+void Widget::on_mouse_wheel_scrolled_event(MouseEvent const&)
+{
+}
+
 } // namespace GUI

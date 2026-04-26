@@ -9,6 +9,7 @@
 #include <AND/OwnPtr.h>
 #include <AND/RefPtr.h>
 #include <AND/Vector.h>
+#include <GUI/Cursor.h>
 #include <GUI/Forward.h>
 #include <GUI/Platform/EventLoop.h>
 #include <Gfx/Point.h>
@@ -25,7 +26,9 @@ public:
 
     static Application& the();
     int execute();
+
     EventLoop& event_loop() { return *m_event_loop; }
+    Cursor& cursor() { return *m_cursor; }
 
 public:
     void register_timer(NativeTimerHandle, Function<void()>);
@@ -52,13 +55,18 @@ private:
 
     void on_window_requested_close(NativeWindowHandle);
     void on_window_resized(NativeWindowHandle, Gfx::IntSize);
+
     void on_mouse_moved(Gfx::IntPoint);
+    void on_mouse_button_pressed_event(NativeWindowHandle, MouseButton);
+    void on_mouse_button_released_event(NativeWindowHandle, MouseButton);
+    void on_mouse_wheel_scrolled_event(NativeWindowHandle, float delta_x, float delta_y);
 
 private:
     OwnPtr<EventLoop> m_event_loop;
     HashMap<NativeTimerHandle, Function<void()>> m_timer_dispatch_map;
     Vector<NonnullRefPtr<Window>> m_windows;
     Vector<NonnullRefPtr<Panel>> m_panels;
+    RefPtr<Cursor> m_cursor;
 };
 
 } // namespace GUI

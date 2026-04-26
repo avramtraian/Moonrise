@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <GUI/Events/MouseEvent.h>
 #include <GUI/Forward.h>
 #include <GUI/Object.h>
 #include <Gfx/Rect.h>
@@ -19,11 +20,15 @@ public:
     virtual void on_paint_event(PaintEvent const&);
 
     virtual void on_mouse_moved_event(MouseEvent const&);
+    virtual void on_mouse_button_pressed_event(MouseEvent const&);
+    virtual void on_mouse_button_released_event(MouseEvent const&);
+    virtual void on_mouse_wheel_scrolled_event(MouseEvent const&);
 
 public:
     void schedule_layout_event() { m_needs_layout_update = true; }
     void schedule_paint_event() { m_needs_paint_update = true; }
 
+    Gfx::IntRect layout_region() const { return m_layout_region; }
     virtual bool needs_layout_update() const { return m_needs_layout_update; }
     virtual bool needs_paint_update() const { return m_needs_paint_update; }
 
