@@ -13,7 +13,7 @@
 
 namespace GUI {
 
-enum class MouseButton {
+enum class MouseButton : u8 {
     Unknown = 0,
     Left,
     Right,
