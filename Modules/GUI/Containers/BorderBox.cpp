@@ -36,6 +36,19 @@ void BorderBox::set_border(Gfx::IntBorder border)
     schedule_paint_event();
 }
 
+void BorderBox::notify(Event const& event)
+{
+    if (!m_widget.is_valid())
+        return Base::notify(event);
+
+    // If the widget is valid and the event is not a layout or paint event, we should forward
+    // the event handling to the widget.
+    if (!event.is_layout_event() && !event.is_paint_event())
+        return m_widget->notify(event);
+
+    Base::notify(event);
+}
+
 void BorderBox::on_layout_event(LayoutEvent const& event)
 {
     Base::on_layout_event(event);

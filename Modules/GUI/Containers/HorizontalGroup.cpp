@@ -69,6 +69,33 @@ void HorizontalGroup::set_widget_preferred_width(NonnullRefPtr<Widget> const& wi
     element.preferred_width = preferred_width;
 }
 
+void HorizontalGroup::notify(Event const& event)
+{
+    if (m_elements.is_empty())
+        return Base::notify(event);
+
+    // If the event is not a paint or layout event, we should forward the event handling to the child widgets.
+    if (!event.is_layout_event() && !event.is_paint_event() && !event.is_mouse_event()) {
+        for (auto& element : m_elements)
+            element.widget->notify(event);
+        return;
+    }
+
+    if (event.is_mouse_event()) {
+        // Forward the event to the child widget that contains the mouse position in its layout region.
+        auto const& mouse_event = event.as_mouse_event();
+        for (auto& element : m_elements) {
+            if (element.widget->layout_region().contains(mouse_event.position())) {
+                element.widget->notify(mouse_event);
+                break;
+            }
+        }
+        return;
+    }
+
+    Base::notify(event);
+}
+
 void HorizontalGroup::on_layout_event(LayoutEvent const& event)
 {
     Base::on_layout_event(event);

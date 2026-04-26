@@ -69,6 +69,7 @@ public:
     void set_offset(s32, s32);
 
 protected:
+    virtual void notify(Event const&) override;
     virtual void on_layout_event(LayoutEvent const&) override;
     virtual void on_paint_event(PaintEvent const&) override;
 

@@ -34,6 +34,7 @@ public:
 public:
     virtual bool needs_layout_update() const override { return m_widget->needs_layout_update(); }
 
+    virtual void notify(Event const& event) override;
     virtual void on_layout_event(LayoutEvent const&) override;
     virtual void on_paint_event(PaintEvent const&) override;
 

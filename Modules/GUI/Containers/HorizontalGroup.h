@@ -54,7 +54,8 @@ public:
     void set_widget_size_policy(NonnullRefPtr<Widget> const&, SizePolicy);
     void set_widget_preferred_width(NonnullRefPtr<Widget> const&, Length);
 
-private:
+protected:
+    virtual void notify(Event const& event) override;
     virtual void on_layout_event(LayoutEvent const&) override;
     virtual void on_paint_event(PaintEvent const&) override;
 

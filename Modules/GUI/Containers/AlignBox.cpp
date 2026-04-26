@@ -185,6 +185,25 @@ void AlignBox::set_preferred_height(Length height)
     schedule_layout_event();
 }
 
+void AlignBox::notify(Event const& event)
+{
+    if (!m_widget.is_valid())
+        return Base::notify(event);
+
+    // If the widget is valid and the event is not a layout, paint, or mouse event, we should forward the event handling to the widget.
+    if (!event.is_layout_event() && !event.is_paint_event() && !event.is_mouse_event())
+        return m_widget->notify(event);
+
+    if (event.is_mouse_event()) {
+        // Forward the event to the child widget if the mouse position is within the widget's layout region.
+        auto const& mouse_event = event.as_mouse_event();
+        if (m_widget->layout_region().contains(mouse_event.position()))
+            return m_widget->notify(mouse_event);
+    }
+
+    Base::notify(event);
+}
+
 void AlignBox::on_layout_event(LayoutEvent const& event)
 {
     Base::on_layout_event(event);
