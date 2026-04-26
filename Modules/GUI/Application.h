@@ -6,13 +6,12 @@
 #pragma once
 
 #include <AND/HashMap.h>
-#include <AND/Noncopyable.h>
 #include <AND/OwnPtr.h>
 #include <AND/RefPtr.h>
 #include <AND/Vector.h>
-#include <GUI/Panel.h>
+#include <GUI/Forward.h>
 #include <GUI/Platform/EventLoop.h>
-#include <GUI/Window.h>
+#include <Gfx/Point.h>
 
 namespace GUI {
 

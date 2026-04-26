@@ -4,7 +4,9 @@
  */
 
 #include <GUI/Application.h>
+#include <GUI/Panel.h>
 #include <GUI/Platform/WindowManager.h>
+#include <GUI/Window.h>
 #include <Gfx/RenderDriver.h>
 
 namespace GUI {
