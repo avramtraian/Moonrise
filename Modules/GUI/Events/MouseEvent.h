@@ -8,15 +8,25 @@
 #include <AND/Badge.h>
 #include <AND/RefPtr.h>
 #include <GUI/Cursor.h>
+#include <GUI/Events/Event.h>
 #include <GUI/Forward.h>
 
 namespace GUI {
 
-class MouseEvent {
-public:
-    MouseEvent(NonnullRefPtr<Cursor> const&, NonnullRefPtr<Window> const&);
-    ~MouseEvent();
+class MouseEvent : public Event {
+    GUI_EVENT(MouseEvent, mouse, Event);
 
+public:
+    enum Type : u8 {
+        Moved,
+        ButtonPressed,
+        ButtonReleased,
+        WheelScrolled,
+    };
+
+    MouseEvent(Type type, NonnullRefPtr<Cursor> const&, NonnullRefPtr<Window> const&);
+
+    Type type() const { return m_type; }
     Cursor& cursor() const { return *m_cursor; }
     Window& window() const { return *m_window; }
 
@@ -39,6 +49,7 @@ private:
     NonnullRefPtr<Cursor> m_cursor;
     NonnullRefPtr<Window> m_window;
     Gfx::IntPoint m_position;
+    Type m_type;
     Optional<MouseButton> m_pressed_button;
     Optional<MouseButton> m_released_button;
     Optional<float> m_scroll_delta_x;

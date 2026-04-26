@@ -43,7 +43,7 @@ void BorderBox::on_layout_event(LayoutEvent const& event)
         return;
 
     LayoutEvent layout_event { event.region().without_border(m_border) };
-    m_widget->on_layout_event(layout_event);
+    m_widget->notify(layout_event);
 }
 
 void BorderBox::on_paint_event(PaintEvent const& event)
@@ -55,7 +55,7 @@ void BorderBox::on_paint_event(PaintEvent const& event)
     paint_background(painter);
 
     if (m_widget.is_valid())
-        m_widget->on_paint_event(event);
+        m_widget->notify(event);
 }
 
 Gfx::IntSize BorderBox::calculate_preferred_size() const

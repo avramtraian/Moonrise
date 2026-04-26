@@ -10,18 +10,15 @@
 
 namespace GUI {
 
-MouseEvent::MouseEvent(NonnullRefPtr<Cursor> const& cursor, NonnullRefPtr<Window> const& window)
+MouseEvent::MouseEvent(Type type, NonnullRefPtr<Cursor> const& cursor, NonnullRefPtr<Window> const& window)
     : m_cursor(cursor)
     , m_window(window)
+    , m_type(type)
 {
     // Find the cursor position relative to the source window.
     auto maybe_position = WindowManager::the().calculate_relative_position(window->native_handle(), cursor->absolute_position());
     ASSERT(maybe_position.has_value());
     m_position = maybe_position.value();
-}
-
-MouseEvent::~MouseEvent()
-{
 }
 
 } // namespace GUI

@@ -16,13 +16,7 @@ class Widget : public Object {
     GUI_ABSTRACT_OBJECT(Widget, Object);
 
 public:
-    virtual void on_layout_event(LayoutEvent const&);
-    virtual void on_paint_event(PaintEvent const&);
-
-    virtual void on_mouse_moved_event(MouseEvent const&);
-    virtual void on_mouse_button_pressed_event(MouseEvent const&);
-    virtual void on_mouse_button_released_event(MouseEvent const&);
-    virtual void on_mouse_wheel_scrolled_event(MouseEvent const&);
+    virtual void notify(Event const& event);
 
 public:
     void schedule_layout_event() { m_needs_layout_update = true; }
@@ -37,6 +31,16 @@ public:
     virtual Optional<u32> calculate_max_size_x() const { return {}; }
     virtual Optional<u32> calculate_min_size_y() const { return {}; }
     virtual Optional<u32> calculate_max_size_y() const { return {}; }
+
+protected:
+    virtual void on_unhandled_event(Event const&);
+    virtual void on_layout_event(LayoutEvent const&);
+    virtual void on_paint_event(PaintEvent const&);
+    virtual void on_mouse_event(MouseEvent const&);
+    virtual void on_mouse_moved_event(MouseEvent const&);
+    virtual void on_mouse_button_pressed_event(MouseEvent const&);
+    virtual void on_mouse_button_released_event(MouseEvent const&);
+    virtual void on_mouse_wheel_scrolled_event(MouseEvent const&);
 
 protected:
     Gfx::IntRect m_layout_region;

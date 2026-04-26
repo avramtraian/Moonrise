@@ -5,6 +5,7 @@
 
 #include <GUI/Containers/HorizontalGroup.h>
 #include <GUI/Events/LayoutEvent.h>
+#include <GUI/Events/PaintEvent.h>
 
 namespace GUI {
 
@@ -140,7 +141,7 @@ void HorizontalGroup::on_layout_event(LayoutEvent const& event)
         auto& element = m_elements[index];
         auto& widget_region = widget_regions[index];
         LayoutEvent layout_event { widget_region };
-        element.widget->on_layout_event(layout_event);
+        element.widget->notify(layout_event);
     }
 }
 
@@ -148,7 +149,7 @@ void HorizontalGroup::on_paint_event(PaintEvent const& event)
 {
     Base::on_paint_event(event);
     for (auto& element : m_elements)
-        element.widget->on_paint_event(event);
+        element.widget->notify(event);
 }
 
 Gfx::IntSize HorizontalGroup::calculate_preferred_size() const

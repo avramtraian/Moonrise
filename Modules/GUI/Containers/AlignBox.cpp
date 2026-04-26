@@ -221,7 +221,7 @@ void AlignBox::on_layout_event(LayoutEvent const& event)
     widget_region = Gfx::IntRect::intersect(widget_region, m_layout_region);
 
     LayoutEvent layout_event { widget_region };
-    m_widget->on_layout_event(layout_event);
+    m_widget->notify(layout_event);
 }
 
 void AlignBox::on_paint_event(PaintEvent const& event)
@@ -229,7 +229,7 @@ void AlignBox::on_paint_event(PaintEvent const& event)
     Base::on_paint_event(event);
     if (!m_widget.is_valid())
         return;
-    m_widget->on_paint_event(event);
+    m_widget->notify(event);
 }
 
 Gfx::IntSize AlignBox::calculate_preferred_size() const

@@ -76,12 +76,12 @@ void Window::on_mouse_moved_event(NonnullRefPtr<Cursor> const& cursor)
     if (!m_main_widget.is_valid())
         return;
 
-    MouseEvent mouse_event { cursor, adopt(this) };
+    MouseEvent mouse_event { MouseEvent::Moved, cursor, adopt(this) };
     auto cursor_position = mouse_event.position();
     if (!m_main_widget->layout_region().contains(cursor_position))
         return;
 
-    m_main_widget->on_mouse_moved_event(mouse_event);
+    m_main_widget->notify(mouse_event);
     update();
 }
 
@@ -90,9 +90,9 @@ void Window::on_mouse_button_pressed_event(NonnullRefPtr<Cursor> const& cursor, 
     if (!m_main_widget.is_valid())
         return;
 
-    MouseEvent mouse_event { cursor, adopt(this) };
+    MouseEvent mouse_event { MouseEvent::ButtonPressed, cursor, adopt(this) };
     mouse_event.set_pressed_button(button, {});
-    m_main_widget->on_mouse_button_pressed_event(mouse_event);
+    m_main_widget->notify(mouse_event);
     update();
 }
 
@@ -101,9 +101,9 @@ void Window::on_mouse_button_released_event(NonnullRefPtr<Cursor> const& cursor,
     if (!m_main_widget.is_valid())
         return;
 
-    MouseEvent mouse_event { cursor, adopt(this) };
+    MouseEvent mouse_event { MouseEvent::ButtonReleased, cursor, adopt(this) };
     mouse_event.set_released_button(button, {});
-    m_main_widget->on_mouse_button_released_event(mouse_event);
+    m_main_widget->notify(mouse_event);
     update();
 }
 
@@ -112,9 +112,9 @@ void Window::on_mouse_wheel_scrolled_event(NonnullRefPtr<Cursor> const& cursor, 
     if (!m_main_widget.is_valid())
         return;
 
-    MouseEvent mouse_event { cursor, adopt(this) };
+    MouseEvent mouse_event { MouseEvent::WheelScrolled, cursor, adopt(this) };
     mouse_event.set_scroll_delta(delta_x, delta_y, {});
-    m_main_widget->on_mouse_wheel_scrolled_event(mouse_event);
+    m_main_widget->notify(mouse_event);
     update();
 }
 
@@ -136,7 +136,7 @@ void Window::on_layout_event()
         return;
 
     LayoutEvent layout_event { Gfx::IntRect { Gfx::IntPoint::zero(), m_back_buffer->size() } };
-    m_main_widget->on_layout_event(layout_event);
+    m_main_widget->notify(layout_event);
 }
 
 void Window::on_paint_event()
@@ -146,7 +146,7 @@ void Window::on_paint_event()
 
     if (m_main_widget.is_valid()) {
         PaintEvent paint_event { m_paint_buffer };
-        m_main_widget->on_paint_event(paint_event);
+        m_main_widget->notify(paint_event);
     }
 
     m_paint_engine->execute_paint_buffer(m_paint_buffer);

@@ -5,11 +5,14 @@
 
 #pragma once
 
+#include <GUI/Events/Event.h>
 #include <Gfx/Rect.h>
 
 namespace GUI {
 
-class LayoutEvent {
+class LayoutEvent : public Event {
+    GUI_EVENT(LayoutEvent, layout, Event);
+
 public:
     explicit LayoutEvent(Gfx::IntRect region)
         : m_region(region)

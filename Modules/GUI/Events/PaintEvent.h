@@ -5,11 +5,14 @@
 
 #pragma once
 
+#include <GUI/Events/Event.h>
 #include <Gfx/PaintBuffer.h>
 
 namespace GUI {
 
-class PaintEvent {
+class PaintEvent : public Event {
+    GUI_EVENT(PaintEvent, paint, Event);
+
 public:
     explicit PaintEvent(NonnullRefPtr<Gfx::PaintBuffer> const& paint_buffer)
         : m_paint_buffer(paint_buffer)

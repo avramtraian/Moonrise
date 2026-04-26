@@ -16,6 +16,7 @@ set(MODULE_GUI_SOURCE_FILES
     Cursor.h
     DockTree.cpp
     DockTree.h
+    Events/Event.h
     Events/MouseEvent.cpp
     Events/MouseEvent.h
     Events/LayoutEvent.h

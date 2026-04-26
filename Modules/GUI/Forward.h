@@ -10,6 +10,7 @@ namespace GUI {
 class Application;
 class Cursor;
 class DockTree;
+class Event;
 class EventLoop;
 class LayoutEvent;
 class MouseEvent;
