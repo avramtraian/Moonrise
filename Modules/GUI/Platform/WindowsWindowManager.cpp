@@ -123,11 +123,6 @@ Optional<Gfx::IntPoint> WindowsWindowManager::calculate_relative_position(Native
     relative_position.x = relative_cursor.x;
     relative_position.y = client_size.height() - relative_cursor.y;
 
-    // Check that the mouse cursor is inside the window client region.
-    Gfx::IntRect client_rect { Gfx::IntPoint::zero(), client_size };
-    if (!client_rect.contains(relative_position))
-        return {};
-
     return relative_position;
 }
 
