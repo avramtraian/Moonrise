@@ -283,7 +283,7 @@ public:
         // later when we return from the function, and we can't block the entire scope
         // because 'remove_last' also tries to block the container.
         block_reentrant_calls();
-        T element = move(last());
+        T element = move(elements()[m_count - 1]);
         unblock_reentrant_calls();
 
         remove_last();
