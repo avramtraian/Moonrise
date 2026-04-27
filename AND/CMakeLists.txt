@@ -37,6 +37,7 @@ set(AND_SOURCE_FILES
     RefCounted.h
     RefPtr.h
     Span.h
+    Stack.h
     StringBuilder.cpp
     StringBuilder.h
     Time.cpp
