@@ -377,6 +377,12 @@ public:
         }
     }
 
+    ALWAYS_INLINE void clear_and_shrink()
+    {
+        clear();
+        shrink_to_fit();
+    }
+
     ALWAYS_INLINE void ensure_capacity(usize minimum_capacity)
     {
         AND_VECTOR_SCOPED_REENTRANT_BLOCK;
