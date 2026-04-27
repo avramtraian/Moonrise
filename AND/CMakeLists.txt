@@ -33,6 +33,7 @@ set(AND_SOURCE_FILES
     OwnPtr.h
     Platform.h
     PlatformWindows.cpp
+    Queue.h
     RefCounted.h
     RefPtr.h
     Span.h
